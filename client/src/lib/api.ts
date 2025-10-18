@@ -45,6 +45,22 @@ export interface News {
   updated_on: string | Date;
 }
 
+export interface Event {
+  id_event: string;
+  title: string;
+  content: string;
+  summary?: string;
+  slug?: string;
+  image_url: string;
+  event_date: string;
+  location: string;
+  status: string;
+  published_at?: string;
+  author_name: string;
+  created_on: string;
+  updated_on: string;
+}
+
 // --- ADDED: Query Parameters Type ---
 export interface QueryParams {
   page?: number;
@@ -93,4 +109,10 @@ export const newsApi = {
   // UPDATED: getAllNews now accepts pagination parameters
   getAllNews: (params: QueryParams = {}) =>
     apiRequest("GET", createUrlWithParams(getFullApiUrl("/news"), params)).then(handleResponse<ApiResponse<News[]>>),
+};
+
+// --- DITAMBAHKAN: Objek API untuk Event ---
+export const eventApi = {
+  getAllEvents: (params: QueryParams = {}) =>
+    apiRequest("GET", createUrlWithParams(getFullApiUrl("/events"), params)).then(handleResponse<ApiResponse<Event[]>>),
 };

@@ -5,9 +5,11 @@ import AttractionCard from "@/components/attraction-card";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
-    newsApi,
-    type ApiResponse,
-    type News,
+  newsApi,
+  eventApi,
+  type ApiResponse,
+  type News,
+  type Event,
 } from "@/lib/api"; // Mengimpor semua dari api.ts yang telah kita siapkan
 
 // --- Environment Variable & Helper Functions ---
@@ -17,58 +19,56 @@ const SERVER_ROOT_URL = BASE_URL.endsWith('/api') ? BASE_URL.replace('/api', '')
 
 
 const formatDate = (date: Date | string | undefined) => {
-    if (!date) return 'Tanggal tidak diketahui';
-    const d = new Date(date);
-    if (isNaN(d.getTime())) return 'Tanggal tidak valid';
-    return d.toLocaleDateString('id-ID', {
-        day: 'numeric', month: 'long', year: 'numeric'
-    });
+  if (!date) return 'Tanggal tidak diketahui';
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return 'Tanggal tidak valid';
+  return d.toLocaleDateString('id-ID', {
+    day: 'numeric', month: 'long', year: 'numeric'
+  });
 };
 
 const getFullImageUrl = (relativePath: string): string => {
-  console.log('[DEBUG] getFullImageUrl received relativePath:', relativePath);
 
   if (!SERVER_ROOT_URL || !relativePath) {
     console.error('[DEBUG] Gagal membuat URL gambar: SERVER_ROOT_URL atau relativePath kosong.');
     return 'https://placehold.co/600x400/EEE/31343C?text=URL+Error';
   }
   if (relativePath.startsWith('http')) {
-      return relativePath;
+    return relativePath;
   }
-  
+
   // Menggunakan logika yang Anda berikan: hapus '/public' dari path
   const cleanedPath = relativePath.replace('/public', '');
   // Pastikan tidak ada garis miring di awal path agar tidak jadi '//'
   const finalPath = cleanedPath.startsWith('/') ? cleanedPath.slice(1) : cleanedPath;
 
   const fullUrl = `${SERVER_ROOT_URL}/${finalPath}`;
-  
-  console.log('[DEBUG] Constructed Image URL:', fullUrl);
-  
+
+
   return fullUrl;
 };
 
 const stripHtml = (html: string): string => {
-    try {
-        const doc = new DOMParser().parseFromString(html, 'text/html');
-        return doc.body.textContent || "";
-    } catch (e) {
-        return html;
-    }
+  try {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    return doc.body.textContent || "";
+  } catch (e) {
+    return html;
+  }
 };
 
 const getEventStatus = (eventDate: Date | string | null | undefined) => {
-    if (!eventDate) return { text: "Unknown", color: "bg-gray-100 text-gray-700" };
-    const now = new Date();
-    const event = new Date(eventDate);
-    if (isNaN(event.getTime())) return { text: "Invalid Date", color: "bg-red-100 text-red-700" };
-    const diffTime = event.getTime() - now.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  if (!eventDate) return { text: "Unknown", color: "bg-gray-100 text-gray-700" };
+  const now = new Date();
+  const event = new Date(eventDate);
+  if (isNaN(event.getTime())) return { text: "Invalid Date", color: "bg-red-100 text-red-700" };
+  const diffTime = event.getTime() - now.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    if (diffDays > 0) return { text: "Akan Datang", color: "bg-blue-100 text-blue-700" };
-    if (diffDays === 0) return { text: "Hari Ini", color: "bg-orange-100 text-orange-700" };
-    if (diffDays >= -3) return { text: "Berlangsung", color: "bg-orange-100 text-orange-700" };
-    return { text: "Selesai", color: "bg-green-100 text-green-700" };
+  if (diffDays > 0) return { text: "Akan Datang", color: "bg-blue-100 text-blue-700" };
+  if (diffDays === 0) return { text: "Hari Ini", color: "bg-orange-100 text-orange-700" };
+  if (diffDays >= -3) return { text: "Berlangsung", color: "bg-orange-100 text-orange-700" };
+  return { text: "Selesai", color: "bg-green-100 text-green-700" };
 };
 
 // --- Section Components ---
@@ -111,39 +111,44 @@ function NewsSection() {
   return (
     <Card>
       <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-4"><h2 className="text-lg font-semibold text-gray-900">Berita Terkini</h2><Link href="/news"><Button variant="ghost" className="text-teal-600 font-medium text-sm p-0">Lainnya <ExternalLink className="w-4 h-4 ml-1" /></Button></Link></div>
-        {isLoading ? ( <div className="grid grid-cols-1 lg:grid-cols-2 gap-6"><div className="animate-pulse"><div className="bg-gray-200 rounded-xl h-64 mb-3"></div><div className="space-y-2"><div className="bg-gray-200 h-4 w-1/4 rounded"></div><div className="bg-gray-200 h-6 w-3/4 rounded"></div><div className="bg-gray-200 h-4 w-full rounded"></div></div></div><div className="space-y-4">{[...Array(3)].map((_, i) => (<div key={i} className="animate-pulse flex items-center space-x-4"><div className="bg-gray-200 rounded-lg h-20 w-20"></div><div className="flex-1 space-y-2"><div className="bg-gray-200 h-3 w-1/4 rounded"></div><div className="bg-gray-200 h-4 w-full rounded"></div><div className="bg-gray-200 h-3 w-1/2 rounded"></div></div></div>))}</div></div> ) : 
-        !news || news.length === 0 ? ( <div className="text-center py-10 text-gray-500">Belum ada berita terbaru.</div> ) : 
-        ( <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {featuredNews && (
-              <div className="group cursor-pointer">
-                <div className="relative overflow-hidden rounded-xl bg-gray-100 mb-3">
-                  <img src={getFullImageUrl(featuredNews.image_url)} alt={featuredNews.title} className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300 bg-gray-200" onError={(e) => (e.currentTarget.src = 'https://placehold.co/600x400/EEE/31343C?text=Error')} />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                  <div className="absolute bottom-4 left-4 text-white">
-                    <span className="text-xs bg-black/50 px-2 py-1 rounded-full">{formatDate(featuredNews.published_at)}</span>
-                    <h3 className="font-bold text-lg mt-2 drop-shadow-lg">{featuredNews.title}</h3>
-                    <p className="text-xs opacity-80 mt-1">Oleh {featuredNews.author_name}</p>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-gray-900">Berita Terkini</h2>
+          <Link href="/news">
+            <Button variant="ghost" className="text-teal-600 font-medium text-sm p-0">Lainnya <ExternalLink className="w-4 h-4 ml-1" /></Button>
+          </Link>
+        </div>
+        {isLoading ? (<div className="grid grid-cols-1 lg:grid-cols-2 gap-6"><div className="animate-pulse"><div className="bg-gray-200 rounded-xl h-64 mb-3"></div><div className="space-y-2"><div className="bg-gray-200 h-4 w-1/4 rounded"></div><div className="bg-gray-200 h-6 w-3/4 rounded"></div><div className="bg-gray-200 h-4 w-full rounded"></div></div></div><div className="space-y-4">{[...Array(3)].map((_, i) => (<div key={i} className="animate-pulse flex items-center space-x-4"><div className="bg-gray-200 rounded-lg h-20 w-20"></div><div className="flex-1 space-y-2"><div className="bg-gray-200 h-3 w-1/4 rounded"></div><div className="bg-gray-200 h-4 w-full rounded"></div><div className="bg-gray-200 h-3 w-1/2 rounded"></div></div></div>))}</div></div>) :
+          !news || news.length === 0 ? (<div className="text-center py-10 text-gray-500">Belum ada berita terbaru.</div>) :
+            (<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {featuredNews && (
+                <div className="group cursor-pointer">
+                  <div className="relative overflow-hidden rounded-xl bg-gray-100 mb-3">
+                    <img src={getFullImageUrl(featuredNews.image_url)} alt={featuredNews.title} className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300 bg-gray-200" onError={(e) => (e.currentTarget.src = 'https://placehold.co/600x400/EEE/31343C?text=Error')} />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    <div className="absolute bottom-4 left-4 text-white">
+                      <span className="text-xs bg-black/50 px-2 py-1 rounded-full">{formatDate(featuredNews.published_at)}</span>
+                      <h3 className="font-bold text-lg mt-2 drop-shadow-lg">{featuredNews.title}</h3>
+                      <p className="text-xs opacity-80 mt-1">Oleh {featuredNews.author_name}</p>
+                    </div>
                   </div>
+                  <p className="text-sm text-gray-600 line-clamp-2 mt-2 px-1">{stripHtml(featuredNews.content)}</p>
+                  <p className="text-xs text-teal-600 font-medium cursor-pointer mt-1 px-1">selengkapnya →</p>
                 </div>
-                <p className="text-sm text-gray-600 line-clamp-2 mt-2 px-1">{stripHtml(featuredNews.content)}</p>
-                <p className="text-xs text-teal-600 font-medium cursor-pointer mt-1 px-1">selengkapnya →</p>
+              )}
+              <div className="space-y-4">
+                {secondaryNews?.map((item) => (
+                  <div key={item.id_news} className="group cursor-pointer flex items-center space-x-4 p-2 rounded-lg hover:bg-gray-50">
+                    <img src={getFullImageUrl(item.image_url)} alt={item.title} className="w-20 h-20 object-cover rounded-lg flex-shrink-0 bg-gray-200" onError={(e) => (e.currentTarget.src = 'https://placehold.co/80x80/EEE/31343C?text=Error')} />
+                    <div className="space-y-1 flex-1">
+                      <p className="text-xs text-gray-500">{formatDate(item.published_at)}</p>
+                      <h3 className="font-semibold text-sm text-gray-900 group-hover:text-teal-600 transition-colors line-clamp-2">{item.title}</h3>
+                      <p className="text-xs text-gray-500">Oleh {item.author_name}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
-            )}
-            <div className="space-y-4">
-              {secondaryNews?.map((item) => (
-                <div key={item.id_news} className="group cursor-pointer flex items-center space-x-4 p-2 rounded-lg hover:bg-gray-50">
-                  <img src={getFullImageUrl(item.image_url)} alt={item.title} className="w-20 h-20 object-cover rounded-lg flex-shrink-0 bg-gray-200" onError={(e) => (e.currentTarget.src = 'https://placehold.co/80x80/EEE/31343C?text=Error')} />
-                  <div className="space-y-1 flex-1">
-                    <p className="text-xs text-gray-500">{formatDate(item.published_at)}</p>
-                    <h3 className="font-semibold text-sm text-gray-900 group-hover:text-teal-600 transition-colors line-clamp-2">{item.title}</h3>
-                    <p className="text-xs text-gray-500">Oleh {item.author_name}</p>
-                  </div>
-                </div>
-              ))}
             </div>
-          </div>
-        )}
+            )}
       </CardContent>
     </Card>
   );
@@ -246,43 +251,69 @@ function NewsSection() {
 //   );
 // }
 
-// function EventsSection() {
-//     const { data: apiResponse, isLoading, error } = useQuery<ApiResponse<Event[]>>({
-//         queryKey: ['events'],
-//         queryFn: eventApi.getAllEvents,
-//     });
-//     const events = apiResponse?.data;
-//     if (error) return <Card><CardContent className="p-6 text-red-600">Gagal memuat event: {error.message}</CardContent></Card>;
+function EventsSection() {
+  const { data: apiResponse, isLoading, error } = useQuery<ApiResponse<Event[]>>({
+    queryKey: ['events-home'],
+    queryFn: () => eventApi.getAllEvents({ page: 1, pageSize: 3 }),
+  });
 
-//   return (
-//     <Card>
-//       <CardContent className="p-6">
-//         <div className="flex items-center justify-between mb-4"><h2 className="text-lg font-semibold text-gray-900">Event</h2><Link href="/events"><Button variant="ghost" className="text-teal-600 font-medium text-sm p-0">Lainnya <ExternalLink className="w-4 h-4 ml-1" /></Button></Link></div>
-//         {isLoading ? ( <div className="space-y-4">{[...Array(3)].map((_, i) => (<div key={i} className="animate-pulse flex space-x-4 p-4 rounded-xl border border-gray-100"><div className="w-20 h-16 bg-gray-200 rounded-lg flex-shrink-0"></div><div className="flex-1 space-y-2"><div className="bg-gray-200 h-4 w-3/4 rounded"></div><div className="bg-gray-200 h-3 w-full rounded"></div><div className="bg-gray-200 h-3 w-1/2 rounded"></div></div></div>))}</div> ) : 
-//         !events || events.length === 0 ? ( <div className="text-center py-10 text-gray-500">Belum ada event terbaru.</div> ) :
-//         ( <div className="space-y-4">
-//             {events.slice(0, 3).map((item) => {
-//               const status = getEventStatus(item.event_date);
-//               return (
-//                 <div key={item.id_event} className="flex space-x-4 p-4 rounded-xl border border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors">
-//                   <img src={getFullImageUrl(item.image_url)} alt={item.title} className="w-20 h-16 rounded-lg object-cover flex-shrink-0 bg-gray-200" onError={(e) => (e.currentTarget.src = 'https://placehold.co/80x64/EEE/31343C?text=Error')}/>
-//                   <div className="flex-1">
-//                     <h3 className="font-semibold text-gray-900 text-sm mb-1">{item.title}</h3>
-//                     <p className="text-xs text-gray-600 mb-2 line-clamp-2">{stripHtml(item.content)}</p>
-//                     <div className="flex items-center gap-3">
-//                       <span className="text-xs text-teal-600 font-medium">{formatDate(item.event_date)}</span>
-//                       <span className={`text-xs px-2 py-1 rounded-full ${status.color}`}>{status.text}</span>
-//                     </div>
-//                   </div>
-//                 </div>
-//               );
-//             })}
-//           </div>
-//         )}
-//       </CardContent>
-//     </Card>
-//   );
-// }
+  const events = apiResponse?.data;
+
+  if (error) return <Card><CardContent className="p-6 text-red-600">Gagal memuat event: {error.message}</CardContent></Card>;
+
+  return (
+    <Card>
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-gray-900">Event</h2>
+          <Link href="/events">
+            <Button variant="ghost" className="text-teal-600 font-medium text-sm p-0">
+              Lainnya <ExternalLink className="w-4 h-4 ml-1" />
+            </Button>
+          </Link>
+        </div>
+        {isLoading ? (
+          <div className="space-y-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="animate-pulse flex space-x-4 p-4 rounded-xl border border-gray-100">
+                <div className="w-20 h-16 bg-gray-200 rounded-lg flex-shrink-0"></div>
+                <div className="flex-1 space-y-2">
+                  <div className="bg-gray-200 h-4 w-3/4 rounded"></div>
+                  <div className="bg-gray-200 h-3 w-full rounded"></div>
+                  <div className="bg-gray-200 h-3 w-1/2 rounded"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) :
+          !events || events.length === 0 ? (
+            <div className="text-center py-10 text-gray-500">Belum ada event terbaru.</div>
+          ) :
+            (
+              <div className="space-y-4">
+                {events.map((item) => {
+                  const status = getEventStatus(item.event_date);
+                  return (
+                    <div key={item.id_event} className="group flex space-x-4 p-4 rounded-xl border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors">
+                      <img src={getFullImageUrl(item.image_url)} alt={item.title} className="w-20 h-16 rounded-lg object-cover flex-shrink-0 bg-gray-200" onError={(e) => (e.currentTarget.src = 'https://placehold.co/80x64/EEE/31343C?text=Error')} />
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-900 text-sm mb-1 group-hover:text-teal-600">{item.title}</h3>
+                        {/* Menggunakan summary dari backend, atau fallback ke content jika tidak ada */}
+                        <p className="text-xs text-gray-600 mb-2 line-clamp-2">{item.summary || stripHtml(item.content)}</p>
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs text-teal-600 font-medium">{formatDate(item.event_date)}</span>
+                          <span className={`text-xs px-2 py-1 rounded-full ${status.color}`}>{status.text}</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+      </CardContent>
+    </Card>
+  );
+}
 
 // --- Main Home Component Export ---
 export default function Home() {
@@ -293,7 +324,8 @@ export default function Home() {
       {/* <PhotoGallerySection />
       <VideoGallerySection />
       <AttractionsSection />
-      <EventsSection /> */}
+      */}
+      <EventsSection />
     </div>
   );
 }
