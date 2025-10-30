@@ -61,6 +61,22 @@ export interface Event {
   updated_on: string;
 }
 
+export interface Destination {
+  id_destination: string;
+  id_gate: string;
+  name: string;
+  slug: string;
+  description?: string;
+  image_url: string;
+  features?: string;
+  facilities?: string;
+  status: number;
+  created_on: string;
+  updated_on: string;
+  gate?: { name: string };
+  summary?: string;
+}
+
 // --- ADDED: Query Parameters Type ---
 export interface QueryParams {
   page?: number;
@@ -115,4 +131,11 @@ export const newsApi = {
 export const eventApi = {
   getAllEvents: (params: QueryParams = {}) =>
     apiRequest("GET", createUrlWithParams(getFullApiUrl("/events"), params)).then(handleResponse<ApiResponse<Event[]>>),
+};
+
+export const destinationApi = {
+  getAllDestination: (params: QueryParams = {}) =>
+    apiRequest("GET", createUrlWithParams(getFullApiUrl("/destinations"), params)).then(handleResponse<ApiResponse<Destination[]>>),
+  getDestination: (identifier: string) =>
+    apiRequest("GET", getFullApiUrl(`/destinations/slug/${identifier}`)).then(handleResponse<ApiResponse<Destination>>),
 };

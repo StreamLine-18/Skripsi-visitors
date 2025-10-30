@@ -7,15 +7,15 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 import Header from "@/components/layout/header";
 import BottomNav from "@/components/layout/bottom-nav";
-import Sidebar from "@/components/layout/sidebar";
-import Home from "@/pages/home";
+import Footer from "@/components/layout/footer"; 
+import Home from "@/pages/Home";
 import Tickets from "@/pages/tickets";
 import History from "@/pages/history";
 import Profile from "@/pages/profile";
 import AttractionDetail from "@/pages/attraction-detail";
 import NotFound from "@/pages/not-found";
 import NewsPage from "@/pages/news";
-import EventsPage from "@/pages/events";
+import EventsPage from "@/pages/Events";
 
 function Router() {
   return (
@@ -45,7 +45,9 @@ function App() {
             <Router />
           </main>
           
-          {isMobile ? <BottomNav /> : <Sidebar />}
+          <Footer />
+          
+           <BottomNav /> 
           
           <Toaster />
         </div>

@@ -64,7 +64,7 @@ const getEventStatus = (eventDate: Date | string | null | undefined) => {
   return { text: "Selesai", color: "bg-green-100 text-green-700" };
 };
 
-export default function EventsPage() {
+export default function events() {
   const [page, setPage] = useState(1);
   const pageSize = 5;
 

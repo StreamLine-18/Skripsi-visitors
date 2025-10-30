@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { Play, Calendar, MapPin, Camera, Video, ExternalLink } from "lucide-react";
+import { Ticket, FileText, Clock, MapPin, Camera, Video, ExternalLink } from "lucide-react";
 import { Link } from "wouter";
-import AttractionCard from "@/components/attraction-card";
+import DestinationCard from "@/components/destination-card";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,6 +10,8 @@ import {
   type ApiResponse,
   type News,
   type Event,
+  Destination,
+  destinationApi,
 } from "@/lib/api"; // Mengimpor semua dari api.ts yang telah kita siapkan
 
 // --- Environment Variable & Helper Functions ---
@@ -87,14 +89,15 @@ function HeroSection() {
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Selamat Datang di Alas Purwo</h1>
           <p className="text-lg md:text-xl mb-6 opacity-90">Hutan Pertama Jawa - Jelajahi Keindahan Alam yang Menakjubkan</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/attractions"><Button size="lg" variant="outline" className="bg-white text-teal-700 hover:bg-gray-300 font-semibold"><MapPin className="w-5 h-5 mr-2" /> Jelajahi Destinasi</Button></Link>
-            <Link href="/gallery"><Button size="lg" variant="outline" className="bg-white text-teal-700 hover:bg-gray-300 font-semibold"><Camera className="w-5 h-5 mr-2" /> Lihat Galeri</Button></Link>
+            <Link href="/attractions"><Button size="lg" variant="outline" className="bg-white text-green-700 hover:bg-gray-300 font-semibold"><MapPin className="w-5 h-5 mr-2" /> Jelajahi Destinasi</Button></Link>
+            <Link href="/gallery"><Button size="lg" variant="outline" className="bg-white text-green-700 hover:bg-gray-300 font-semibold"><Camera className="w-5 h-5 mr-2" /> Lihat Galeri</Button></Link>
           </div>
         </div>
       </div>
     </div>
   );
 }
+
 
 function NewsSection() {
   const { data: apiResponse, isLoading, error } = useQuery<ApiResponse<News[]>>({
@@ -121,7 +124,7 @@ function NewsSection() {
           !news || news.length === 0 ? (<div className="text-center py-10 text-gray-500">Belum ada berita terbaru.</div>) :
             (<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {featuredNews && (
-                <div className="group cursor-pointer">
+                <div className="group cursor-pointer ">
                   <div className="relative overflow-hidden rounded-xl bg-gray-100 mb-3">
                     <img src={getFullImageUrl(featuredNews.image_url)} alt={featuredNews.title} className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300 bg-gray-200" onError={(e) => (e.currentTarget.src = 'https://placehold.co/600x400/EEE/31343C?text=Error')} />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
@@ -218,38 +221,6 @@ function NewsSection() {
 //   );
 // }
 
-// function AttractionsSection() {
-//   const { data: apiResponse, isLoading, error } = useQuery<ApiResponse<Attraction[]>>({
-//     queryKey: ['attractions'],
-//     queryFn: attractionApi.getAllAttractions
-//   });
-//   const attractions = apiResponse?.data;
-//   if (error) return <Card><CardContent className="p-6 text-red-600">Gagal memuat destinasi: {error.message}</CardContent></Card>;
-
-//   return (
-//     <Card>
-//       <CardContent className="p-6">
-//         <div className="flex items-center justify-between mb-4"><h2 className="text-lg font-semibold text-gray-900">Destinasi Populer</h2><Link href="/attractions"><Button variant="ghost" className="text-teal-600 font-medium text-sm p-0">Lihat Semua</Button></Link></div>
-//         {isLoading ? ( <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">{[...Array(6)].map((_, i) => (<div key={i} className="animate-pulse"><div className="bg-gray-200 rounded-xl h-48 mb-3"></div><div className="space-y-2"><div className="flex justify-between"><div className="bg-gray-200 h-4 w-20 rounded"></div><div className="bg-gray-200 h-4 w-12 rounded"></div></div><div className="bg-gray-200 h-3 w-full rounded"></div></div></div>))}</div> ) : 
-//         !attractions || attractions.length === 0 ? ( <div className="text-center py-10 text-gray-500">Belum ada destinasi.</div> ) :
-//         ( <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-//             {attractions.map((attraction) => (
-//               <AttractionCard key={attraction.id_destination} attraction={{
-//                 ...attraction,
-//                 // Mapping new backend fields to the props AttractionCard expects
-//                 id: attraction.id_destination,
-//                 imageUrl: getFullImageUrl(attraction.image_url),
-//                 shortDescription: stripHtml(attraction.description || '').substring(0, 100) + '...', // Create a summary
-//                 localPrice: attraction.price, // Assuming 'price' is the one to show. Adjust if you have local vs international.
-//                 rating: '4.5', // Add a rating field to your backend for this
-//               }} />
-//             ))}
-//           </div>
-//         )}
-//       </CardContent>
-//     </Card>
-//   );
-// }
 
 function EventsSection() {
   const { data: apiResponse, isLoading, error } = useQuery<ApiResponse<Event[]>>({
@@ -290,11 +261,11 @@ function EventsSection() {
             <div className="text-center py-10 text-gray-500">Belum ada event terbaru.</div>
           ) :
             (
-              <div className="space-y-4">
+              <div className="space-y-4 ">
                 {events.map((item) => {
                   const status = getEventStatus(item.event_date);
                   return (
-                    <div key={item.id_event} className="group flex space-x-4 p-4 rounded-xl border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors">
+                    <div key={item.id_event} className="group flex space-x-4 p-4 rounded-xl border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors ">
                       <img src={getFullImageUrl(item.image_url)} alt={item.title} className="w-20 h-16 rounded-lg object-cover flex-shrink-0 bg-gray-200" onError={(e) => (e.currentTarget.src = 'https://placehold.co/80x64/EEE/31343C?text=Error')} />
                       <div className="flex-1">
                         <h3 className="font-semibold text-gray-900 text-sm mb-1 group-hover:text-teal-600">{item.title}</h3>
@@ -315,17 +286,120 @@ function EventsSection() {
   );
 }
 
+function DestinationsSection() {
+  const { data: apiResponse, isLoading, error } = useQuery<ApiResponse<Destination[]>>({ 
+    queryKey: ['destinations-home'], 
+    queryFn: () => destinationApi.getAllDestination({ page: 1, pageSize: 6 }) 
+  });
+
+  const destinations = apiResponse?.data;
+
+  if (error) return <Card><CardContent className="p-6 text-red-600">Gagal memuat destinasi: {error.message}</CardContent></Card>;
+
+  return (
+    <Card>
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">Destinasi Populer</h2>
+            <Link href="/attractions">
+                <Button variant="ghost" className="text-teal-600 font-medium text-sm p-0">Lihat Semua</Button>
+            </Link>
+        </div>
+        {isLoading ? ( 
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[...Array(6)].map((_, i) => (
+                    <div key={i} className="animate-pulse">
+                        <div className="bg-gray-200 rounded-xl h-48 mb-3"></div>
+                        <div className="space-y-2">
+                            <div className="flex justify-between">
+                                <div className="bg-gray-200 h-4 w-20 rounded"></div>
+                                <div className="bg-gray-200 h-4 w-12 rounded"></div>
+                            </div>
+                            <div className="bg-gray-200 h-3 w-full rounded"></div>
+                        </div>
+                    </div>
+                ))}
+            </div> 
+        ) : 
+        !destinations || destinations.length === 0 ? ( 
+            <div className="text-center py-10 text-gray-500">Belum ada destinasi.</div> 
+        ) :
+        ( 
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {destinations.map((destination) => (
+              <DestinationCard key={destination.id_destination} destination={destination} />
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function InfoCardSection() {
+  const infoItems = [
+    {
+      icon: <Ticket className="w-8 h-8 text-teal-600 group-hover:scale-110 transition-transform" />,
+      title: "Harga Tiket",
+      desc: "Mulai dari Rp10.000 per orang",
+      link: "/prices",
+    },
+    {
+      icon: <FileText className="w-8 h-8 text-teal-600 group-hover:scale-110 transition-transform" />,
+      title: "Aturan",
+      desc: "Panduan dan peraturan selama berkunjung",
+      link: "/rules",
+    },
+    {
+      icon: <Clock className="w-8 h-8 text-teal-600 group-hover:scale-110 transition-transform" />,
+      title: "Jadwal Buka",
+      desc: "Setiap Hari — 07.00 s/d 17.00 WIB",
+      link: "/schedule",
+    },
+    {
+      icon: <MapPin className="w-8 h-8 text-teal-600 group-hover:scale-110 transition-transform" />,
+      title: "Peta Kawasan",
+      desc: "Lihat peta interaktif kawasan Alas Purwo",
+      link: "/map",
+    },
+  ];
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {infoItems.map((item, i) => (
+        <Link key={i} href={item.link}>
+          <Card className="group cursor-pointer border border-gray-100 hover:shadow-md hover:border-teal-200 transition-all duration-300">
+            <CardContent className="flex flex-col items-center text-center p-6 space-y-3">
+              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-teal-50">
+                {item.icon}
+              </div>
+              <h3 className="font-semibold text-gray-800 text-base">{item.title}</h3>
+              <p className="text-sm text-gray-500">{item.desc}</p>
+              <p className="text-xs text-teal-600 font-medium mt-1 group-hover:underline">
+                Selengkapnya →
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
+      ))}
+    </div>
+  );
+}
+
+
 // --- Main Home Component Export ---
-export default function Home() {
+export default function home() {
   return (
     <div className="max-w-7xl mx-auto p-4 space-y-6">
       <HeroSection />
+      <InfoCardSection />
       <NewsSection />
       {/* <PhotoGallerySection />
       <VideoGallerySection />
-      <AttractionsSection />
+
       */}
       <EventsSection />
+      <DestinationsSection />
     </div>
   );
 }

@@ -33,8 +33,11 @@
   --blue-100: hsl(214, 90%, 90%);
   --orange-500: hsl(25, 95%, 53%);
   --orange-100: hsl(25, 95%, 90%);
-  --green-500: hsl(142, 71%, 45%);
+  --green-500: #336633; 
+  --green-600: #2a8a2a;
+
   --green-100: hsl(142, 71%, 90%);
+
 }
 
 .dark {
@@ -72,7 +75,7 @@
 
 @layer components {
   .gradient-primary {
-    background: linear-gradient(135deg, var(--teal-500) 0%, var(--blue-500) 100%);
+    background: linear-gradient(135deg, var(--green-500) 0%, var(--green-600) 100%);
   }
   
   .gradient-card {
@@ -159,7 +162,6 @@
 
 @media (min-width: 769px) {
   .desktop-sidebar-margin {
-    margin-left: 16rem;
-    margin-top: 5rem;
+    margin-top: 0rem;
   }
 }
