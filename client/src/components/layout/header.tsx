@@ -35,7 +35,7 @@ export default function Header() {
 
   return (
     <header className="hidden md:block bg-white shadow-sm border-b sticky top-0 z-40">
-      <div className="max-w-7xl mx-auto px-6 py-4">
+      <div className="max-w-full mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <Link href="/">
             <a className="flex items-center space-x-3 hover:opacity-80 transition-opacity">

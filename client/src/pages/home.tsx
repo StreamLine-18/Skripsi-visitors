@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Ticket, FileText, Clock, MapPin, Camera, Video, ExternalLink } from "lucide-react";
+import { Ticket, FileText, Clock, MapPin, Camera, Video, ExternalLink, AlertTriangle, BarChart3, Megaphone } from "lucide-react";
 import { Link } from "wouter";
 import DestinationCard from "@/components/destination-card";
 import { Card, CardContent } from "@/components/ui/card";
@@ -77,20 +77,42 @@ const getEventStatus = (eventDate: Date | string | null | undefined) => {
 
 function HeroSection() {
   return (
-    <div className="relative h-96 overflow-hidden rounded-2xl">
+    <div className="relative h-[400px] md:h-[600px] overflow-hidden rounded-2xl">
       <img
-        src="public/assets/hero.jpg"
+        src="/assets/hero.png"
         alt="Alas Purwo"
-        className="absolute inset-0 h-full w-full object-cover"
+        className="absolute inset-0 w-full h-full object-cover object-center"
       />
-      <div className="absolute inset-0 bg-black/40"></div>
+      <div className="absolute inset-0 bg-black/20"></div>
+
       <div className="relative h-full flex items-center justify-center text-center text-white p-4">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Selamat Datang di Alas Purwo</h1>
-          <p className="text-lg md:text-xl mb-6 opacity-90">Hutan Pertama Jawa - Jelajahi Keindahan Alam yang Menakjubkan</p>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 ">
+            Selamat Datang di Alas Purwo
+          </h1>
+          <p className="text-lg md:text-xl mb-6 opacity-90">
+            Hutan Pertama Jawa — Jelajahi Keindahan Alam yang Menakjubkan
+          </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/attractions"><Button size="lg" variant="outline" className="bg-white text-green-700 hover:bg-gray-300 font-semibold"><MapPin className="w-5 h-5 mr-2" /> Jelajahi Destinasi</Button></Link>
-            <Link href="/gallery"><Button size="lg" variant="outline" className="bg-white text-green-700 hover:bg-gray-300 font-semibold"><Camera className="w-5 h-5 mr-2" /> Lihat Galeri</Button></Link>
+            <Link href="/attractions">
+              <Button
+                size="lg"
+                variant="outline"
+                className="bg-white text-green-700 hover:bg-gray-300 font-semibold"
+              >
+                <MapPin className="w-5 h-5 mr-2" /> Jelajahi Destinasi
+              </Button>
+            </Link>
+            <Link href="/gallery">
+              <Button
+                size="lg"
+                variant="outline"
+                className="bg-white text-green-700 hover:bg-gray-300 font-semibold"
+              >
+                <Ticket className="w-5 h-5 mr-2" /> 
+                Pesan Tiket
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
@@ -339,27 +361,35 @@ function DestinationsSection() {
 function InfoCardSection() {
   const infoItems = [
     {
-      icon: <Ticket className="w-8 h-8 text-teal-600 group-hover:scale-110 transition-transform" />,
-      title: "Harga Tiket",
-      desc: "Mulai dari Rp10.000 per orang",
-      link: "/prices",
+      icon: (
+        <BarChart3 className="w-8 h-8 text-green-600 group-hover:scale-110 transition-transform" />
+      ),
+      title: "SKM",
+      desc: "Survei Kepuasan Masyarakat",
+      link: "/survey",
     },
     {
-      icon: <FileText className="w-8 h-8 text-teal-600 group-hover:scale-110 transition-transform" />,
-      title: "Aturan",
-      desc: "Panduan dan peraturan selama berkunjung",
-      link: "/rules",
+      icon: (
+        <Megaphone className="w-8 h-8 text-green-600 group-hover:scale-110 transition-transform" />
+      ),
+      title: "Pengaduan Masyarakat",
+      desc: "Saluran Pengaduan Elektronik",
+      link: "/complaint",
     },
     {
-      icon: <Clock className="w-8 h-8 text-teal-600 group-hover:scale-110 transition-transform" />,
-      title: "Jadwal Buka",
-      desc: "Setiap Hari — 07.00 s/d 17.00 WIB",
-      link: "/schedule",
+      icon: (
+        <AlertTriangle className="w-8 h-8 text-green-600 group-hover:scale-110 transition-transform" />
+      ),
+      title: "WBS",
+      desc: "Whistleblowing System",
+      link: "/wbs",
     },
     {
-      icon: <MapPin className="w-8 h-8 text-teal-600 group-hover:scale-110 transition-transform" />,
-      title: "Peta Kawasan",
-      desc: "Lihat peta interaktif kawasan Alas Purwo",
+      icon: (
+        <MapPin className="w-8 h-8 text-green-600 group-hover:scale-110 transition-transform" />
+      ),
+      title: "Destinasi Wisata",
+      desc: "Objek dan Daya Tarik Wisata Alam",
       link: "/map",
     },
   ];
