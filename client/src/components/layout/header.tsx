@@ -16,13 +16,15 @@ export default function Header() {
     return (
       <header className="gradient-primary text-white p-4 shadow-lg md:hidden">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <img src="/public/assets/logo.png" alt="Alas Purwo Logo" className="w-10 h-10" />
-            <div>
-              <h1 className="text-lg font-bold">Taman Nasional Alas Purwo</h1>
-              <p className="text-xs opacity-90">Digital Ticketing System</p>
+          <Link href="/">
+            <div className="flex items-center space-x-3">
+              <img src="/public/assets/logo.png" alt="Alas Purwo Logo" className="w-10 h-10" />
+              <div>
+                <h1 className="text-lg font-bold">Taman Nasional Alas Purwo</h1>
+                <p className="text-xs opacity-90">Digital Ticketing System</p>
+              </div>
             </div>
-          </div>
+          </Link>
           <div className="flex items-center space-x-3">
             <div className="relative">
               <Bell className="w-5 h-5" />
@@ -57,11 +59,10 @@ export default function Header() {
                 const isActive = location === path;
                 return (
                   <Link key={path} href={path}>
-                    <a className={`text-sm font-medium transition-colors relative py-2 ${
-                      isActive 
-                        ? 'text-green-600 font-semibold' 
+                    <a className={`text-sm font-medium transition-colors relative py-2 ${isActive
+                        ? 'text-green-600 font-semibold'
                         : 'text-gray-600 hover:text-green-500'
-                    }`}>
+                      }`}>
                       {label}
                       {isActive && (
                         <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-400 rounded-full"></span>
@@ -83,7 +84,7 @@ export default function Header() {
                   2
                 </span>
               </button>
-              
+
               <Link href="/profile">
                 <a className="w-9 h-9 gradient-primary rounded-full flex items-center justify-center hover:shadow-lg transition-shadow cursor-pointer">
                   <User className="text-white w-5 h-5" />

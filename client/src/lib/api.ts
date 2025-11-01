@@ -1,4 +1,5 @@
 import { apiRequest } from "./queryClient";
+import { useAuth } from "@/hooks/use-auth";
 
 // --- Environment Variable Setup ---
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -139,3 +140,20 @@ export const destinationApi = {
   getDestination: (identifier: string) =>
     apiRequest("GET", getFullApiUrl(`/destinations/slug/${identifier}`)).then(handleResponse<ApiResponse<Destination>>),
 };
+
+export function authHeaders(token?: string | null) {
+  const h: Record<string, string> = { "Content-Type": "application/json" };
+  if (token) h.Authorization = `Bearer ${token}`;
+  return h;
+}
+
+// optional hook helper for queries/mutations
+export function useApiBase() {
+  const base = import.meta.env.VITE_API_BASE_URL || "";
+  const { token } = useAuth();
+  return {
+    base,
+    token,
+    headers: authHeaders(token),
+  };
+}
