@@ -25,6 +25,7 @@ import ComplaintPage from "@/pages/pengaduan";
 import WBS from "@/pages/wbs";
 import RegisterPage from "@/pages/register";
 import LoginPage from "@/pages/login";
+import BookingPage from "./pages/booking";
 
 // Auth Context
 import { AuthProvider } from "@/hooks/use-auth";
@@ -48,6 +49,12 @@ function Router() {
       <Route path="/tickets">
         <ProtectedRoute>
           <Tickets />
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/booking">
+        <ProtectedRoute>
+          <BookingPage />
         </ProtectedRoute>
       </Route>
 
