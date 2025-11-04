@@ -94,7 +94,7 @@ function HeroSection() {
             Hutan Pertama Jawa — Jelajahi Keindahan Alam yang Menakjubkan
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/attractions">
+            <Link href="/destinations">
               <Button
                 size="lg"
                 variant="outline"
@@ -139,7 +139,7 @@ function NewsSection() {
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-gray-900">Berita Terkini</h2>
           <Link href="/news">
-            <Button variant="ghost" className="text-teal-600 font-medium text-sm p-0">Lainnya <ExternalLink className="w-4 h-4 ml-1" /></Button>
+            <Button variant="ghost" className="text-emerald-600 font-medium text-sm p-0">Lainnya <ExternalLink className="w-4 h-4 ml-1" /></Button>
           </Link>
         </div>
         {isLoading ? (<div className="grid grid-cols-1 lg:grid-cols-2 gap-6"><div className="animate-pulse"><div className="bg-gray-200 rounded-xl h-64 mb-3"></div><div className="space-y-2"><div className="bg-gray-200 h-4 w-1/4 rounded"></div><div className="bg-gray-200 h-6 w-3/4 rounded"></div><div className="bg-gray-200 h-4 w-full rounded"></div></div></div><div className="space-y-4">{[...Array(3)].map((_, i) => (<div key={i} className="animate-pulse flex items-center space-x-4"><div className="bg-gray-200 rounded-lg h-20 w-20"></div><div className="flex-1 space-y-2"><div className="bg-gray-200 h-3 w-1/4 rounded"></div><div className="bg-gray-200 h-4 w-full rounded"></div><div className="bg-gray-200 h-3 w-1/2 rounded"></div></div></div>))}</div></div>) :
@@ -157,7 +157,7 @@ function NewsSection() {
                     </div>
                   </div>
                   <p className="text-sm text-gray-600 line-clamp-2 mt-2 px-1">{stripHtml(featuredNews.content)}</p>
-                  <p className="text-xs text-teal-600 font-medium cursor-pointer mt-1 px-1">selengkapnya →</p>
+                  <p className="text-xs text-emerald-600 font-medium cursor-pointer mt-1 px-1">selengkapnya →</p>
                 </div>
               )}
               <div className="space-y-4">
@@ -166,7 +166,7 @@ function NewsSection() {
                     <img src={getFullImageUrl(item.image_url)} alt={item.title} className="w-20 h-20 object-cover rounded-lg flex-shrink-0 bg-gray-200" onError={(e) => (e.currentTarget.src = 'https://placehold.co/80x80/EEE/31343C?text=Error')} />
                     <div className="space-y-1 flex-1">
                       <p className="text-xs text-gray-500">{formatDate(item.published_at)}</p>
-                      <h3 className="font-semibold text-sm text-gray-900 group-hover:text-teal-600 transition-colors line-clamp-2">{item.title}</h3>
+                      <h3 className="font-semibold text-sm text-gray-900 group-hover:text-emerald-600 transition-colors line-clamp-2">{item.title}</h3>
                       <p className="text-xs text-gray-500">Oleh {item.author_name}</p>
                     </div>
                   </div>
@@ -191,7 +191,7 @@ function NewsSection() {
 //   return (
 //     <Card>
 //       <CardContent className="p-6">
-//         <div className="flex items-center justify-between mb-4"><h2 className="text-lg font-semibold text-gray-900">Galeri Foto</h2><Link href="/gallery"><Button variant="ghost" className="text-teal-600 font-medium text-sm p-0">Lainnya <ExternalLink className="w-4 h-4 ml-1" /></Button></Link></div>
+//         <div className="flex items-center justify-between mb-4"><h2 className="text-lg font-semibold text-gray-900">Galeri Foto</h2><Link href="/gallery"><Button variant="ghost" className="text-emerald-600 font-medium text-sm p-0">Lainnya <ExternalLink className="w-4 h-4 ml-1" /></Button></Link></div>
 //         {isLoading ? ( <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">{[...Array(6)].map((_, i) => (<div key={i} className="animate-pulse"><div className="bg-gray-200 rounded-lg h-24 md:h-28"></div></div>))}</div> ) : 
 //         !photos || photos.length === 0 ? ( <div className="text-center py-10 text-gray-500">Belum ada foto.</div> ) :
 //         ( <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -221,7 +221,7 @@ function NewsSection() {
 //   return (
 //     <Card>
 //       <CardContent className="p-6">
-//         <div className="flex items-center justify-between mb-4"><h2 className="text-lg font-semibold text-gray-900">Galeri Video</h2><Link href="/gallery"><Button variant="ghost" className="text-teal-600 font-medium text-sm p-0">Lainnya <ExternalLink className="w-4 h-4 ml-1" /></Button></Link></div>
+//         <div className="flex items-center justify-between mb-4"><h2 className="text-lg font-semibold text-gray-900">Galeri Video</h2><Link href="/gallery"><Button variant="ghost" className="text-emerald-600 font-medium text-sm p-0">Lainnya <ExternalLink className="w-4 h-4 ml-1" /></Button></Link></div>
 //         {isLoading ? ( <div className="grid grid-cols-1 md:grid-cols-2 gap-4">{[...Array(2)].map((_, i) => (<div key={i} className="animate-pulse"><div className="bg-gray-200 rounded-xl h-48"></div></div>))}</div> ) : 
 //         !videos || videos.length === 0 ? ( <div className="text-center py-10 text-gray-500">Belum ada video.</div> ) :
 //         ( <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -260,7 +260,7 @@ function EventsSection() {
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-gray-900">Event</h2>
           <Link href="/events">
-            <Button variant="ghost" className="text-teal-600 font-medium text-sm p-0">
+            <Button variant="ghost" className="text-emerald-600 font-medium text-sm p-0">
               Lainnya <ExternalLink className="w-4 h-4 ml-1" />
             </Button>
           </Link>
@@ -290,11 +290,11 @@ function EventsSection() {
                     <div key={item.id_event} className="group flex space-x-4 p-4 rounded-xl border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors ">
                       <img src={getFullImageUrl(item.image_url)} alt={item.title} className="w-20 h-16 rounded-lg object-cover flex-shrink-0 bg-gray-200" onError={(e) => (e.currentTarget.src = 'https://placehold.co/80x64/EEE/31343C?text=Error')} />
                       <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900 text-sm mb-1 group-hover:text-teal-600">{item.title}</h3>
+                        <h3 className="font-semibold text-gray-900 text-sm mb-1 group-hover:text-emerald-600">{item.title}</h3>
                         {/* Menggunakan summary dari backend, atau fallback ke content jika tidak ada */}
                         <p className="text-xs text-gray-600 mb-2 line-clamp-2">{item.summary || stripHtml(item.content)}</p>
                         <div className="flex items-center gap-3">
-                          <span className="text-xs text-teal-600 font-medium">{formatDate(item.event_date)}</span>
+                          <span className="text-xs text-emerald-600 font-medium">{formatDate(item.event_date)}</span>
                           <span className={`text-xs px-2 py-1 rounded-full ${status.color}`}>{status.text}</span>
                         </div>
                       </div>
@@ -323,8 +323,8 @@ function DestinationsSection() {
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">Destinasi Populer</h2>
-            <Link href="/attractions">
-                <Button variant="ghost" className="text-teal-600 font-medium text-sm p-0">Lihat Semua</Button>
+            <Link href="/destinations">
+                <Button variant="ghost" className="text-emerald-600 font-medium text-sm p-0">Lihat Semua</Button>
             </Link>
         </div>
         {isLoading ? ( 
@@ -390,7 +390,7 @@ function InfoCardSection() {
       ),
       title: "Destinasi Wisata",
       desc: "Objek dan Daya Tarik Wisata Alam",
-      link: "/map",
+      link: "/destinations",
     },
   ];
 
@@ -398,14 +398,14 @@ function InfoCardSection() {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {infoItems.map((item, i) => (
         <Link key={i} href={item.link}>
-          <Card className="group cursor-pointer border border-gray-100 hover:shadow-md hover:border-teal-200 transition-all duration-300">
+          <Card className="group cursor-pointer border border-gray-100 hover:shadow-md hover:border-emerald-200 transition-all duration-300">
             <CardContent className="flex flex-col items-center text-center p-6 space-y-3">
-              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-teal-50">
+              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-50">
                 {item.icon}
               </div>
               <h3 className="font-semibold text-gray-800 text-base">{item.title}</h3>
               <p className="text-sm text-gray-500">{item.desc}</p>
-              <p className="text-xs text-teal-600 font-medium mt-1 group-hover:underline">
+              <p className="text-xs text-emerald-600 font-medium mt-1 group-hover:underline">
                 Selengkapnya →
               </p>
             </CardContent>

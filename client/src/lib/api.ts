@@ -4,16 +4,18 @@ import { useAuth } from "@/hooks/use-auth";
 // --- Environment Variable Setup ---
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-if (!API_BASE_URL && import.meta.env.MODE !== 'production') {
-  console.warn("VITE_API_BASE_URL is not set in .env file. API calls might fail or use relative paths.");
+if (!API_BASE_URL && import.meta.env.MODE !== "production") {
+  console.warn(
+    "VITE_API_BASE_URL is not set in .env file. API calls might fail or use relative paths."
+  );
 }
 
 function getFullApiUrl(path: string): string {
   if (!API_BASE_URL) {
-     console.error("VITE_API_BASE_URL is missing!");
-     throw new Error("Backend API base URL is not configured.");
+    console.error("VITE_API_BASE_URL is missing!");
+    throw new Error("Backend API base URL is not configured.");
   }
-  const formattedPath = path.startsWith('/') ? path : `/${path}`;
+  const formattedPath = path.startsWith("/") ? path : `/${path}`;
   return `${API_BASE_URL}/public${formattedPath}`;
 }
 
@@ -86,59 +88,75 @@ export interface QueryParams {
   [key: string]: any;
 }
 
-
 // --- Generic API Helpers ---
 
 const handleResponse = async <T>(res: Response): Promise<T> => {
-    let errorBody: any = null;
-    try {
-        errorBody = await res.json();
-    } catch (e) {
-        if (!res.ok) {
-            throw new Error(res.statusText || 'Network error without JSON body');
-        }
-        return {} as T;
-    }
-
+  let errorBody: any = null;
+  try {
+    errorBody = await res.json();
+  } catch (e) {
     if (!res.ok) {
-        const errorMessage = errorBody?.meta?.message || errorBody?.message || 'An unknown API error occurred';
-        console.error("API Error Response:", errorBody);
-        throw new Error(errorMessage);
+      throw new Error(res.statusText || "Network error without JSON body");
     }
-    return errorBody;
+    return {} as T;
+  }
+
+  if (!res.ok) {
+    const errorMessage =
+      errorBody?.meta?.message ||
+      errorBody?.message ||
+      "An unknown API error occurred";
+    console.error("API Error Response:", errorBody);
+    throw new Error(errorMessage);
+  }
+  return errorBody;
 };
 
 // --- ADDED: Helper to create URL with query parameters ---
 const createUrlWithParams = (baseUrl: string, params: QueryParams = {}) => {
-    const query = new URLSearchParams();
-    for (const key in params) {
-        if (params[key] !== undefined && params[key] !== null) {
-            query.append(key, String(params[key]));
-        }
+  const query = new URLSearchParams();
+  for (const key in params) {
+    if (params[key] !== undefined && params[key] !== null) {
+      query.append(key, String(params[key]));
     }
-    const queryString = query.toString();
-    return queryString ? `${baseUrl}?${queryString}` : baseUrl;
-}
+  }
+  const queryString = query.toString();
+  return queryString ? `${baseUrl}?${queryString}` : baseUrl;
+};
 
 // --- API Endpoint Functions ---
 
 export const newsApi = {
   // UPDATED: getAllNews now accepts pagination parameters
   getAllNews: (params: QueryParams = {}) =>
-    apiRequest("GET", createUrlWithParams(getFullApiUrl("/news"), params)).then(handleResponse<ApiResponse<News[]>>),
+    apiRequest("GET", createUrlWithParams(getFullApiUrl("/news"), params)).then(
+      handleResponse<ApiResponse<News[]>>
+    ),
+  getNewsById: (id: string) =>
+    apiRequest("GET", getFullApiUrl(`/news/${id}`)).then(
+      handleResponse<ApiResponse<News>>
+    ),
 };
 
 // --- DITAMBAHKAN: Objek API untuk Event ---
 export const eventApi = {
   getAllEvents: (params: QueryParams = {}) =>
-    apiRequest("GET", createUrlWithParams(getFullApiUrl("/events"), params)).then(handleResponse<ApiResponse<Event[]>>),
+    apiRequest(
+      "GET",
+      createUrlWithParams(getFullApiUrl("/events"), params)
+    ).then(handleResponse<ApiResponse<Event[]>>),
 };
 
 export const destinationApi = {
   getAllDestination: (params: QueryParams = {}) =>
-    apiRequest("GET", createUrlWithParams(getFullApiUrl("/destinations"), params)).then(handleResponse<ApiResponse<Destination[]>>),
+    apiRequest(
+      "GET",
+      createUrlWithParams(getFullApiUrl("/destinations"), params)
+    ).then(handleResponse<ApiResponse<Destination[]>>),
   getDestination: (identifier: string) =>
-    apiRequest("GET", getFullApiUrl(`/destinations/slug/${identifier}`)).then(handleResponse<ApiResponse<Destination>>),
+    apiRequest("GET", getFullApiUrl(`/destinations/slug/${identifier}`)).then(
+      handleResponse<ApiResponse<Destination>>
+    ),
 };
 
 export function authHeaders(token?: string | null) {

@@ -53,7 +53,7 @@ type CreateBookingPayload = {
 };
 
 // === Styled Components ===
-const inputCls = "mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all";
+const inputCls = "mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all";
 const labelCls = "block text-sm font-medium text-gray-700 mb-1";
 
 export default function BookingPage() {
@@ -191,8 +191,8 @@ export default function BookingPage() {
           <Card className="border border-gray-200 hover:shadow-md transition-shadow">
             <CardContent className="p-6 space-y-4">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-teal-50 flex items-center justify-center">
-                  <Users className="w-5 h-5 text-teal-600" />
+                <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center">
+                  <Users className="w-5 h-5 text-emerald-600" />
                 </div>
                 <h2 className="text-lg font-semibold text-gray-900">Data Ketua Kelompok</h2>
               </div>
@@ -280,8 +280,8 @@ export default function BookingPage() {
           <Card className="border border-gray-200 hover:shadow-md transition-shadow">
             <CardContent className="p-6 space-y-4">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-teal-50 flex items-center justify-center">
-                  <MapPin className="w-5 h-5 text-teal-600" />
+                <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center">
+                  <MapPin className="w-5 h-5 text-emerald-600" />
                 </div>
                 <h2 className="text-lg font-semibold text-gray-900">Pilih Gerbang & Tanggal</h2>
               </div>
@@ -313,7 +313,7 @@ export default function BookingPage() {
                     min={new Date().toISOString().split('T')[0]}
                   />
                   {departDate && (
-                    <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 text-teal-700 text-xs font-medium">
+                    <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium">
                       <Calendar className="w-3 h-3" />
                       Jenis Hari: {dayType}
                     </div>
@@ -327,8 +327,8 @@ export default function BookingPage() {
           <Card className="border border-gray-200 hover:shadow-md transition-shadow">
             <CardContent className="p-6 space-y-4">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-teal-50 flex items-center justify-center">
-                  <Ticket className="w-5 h-5 text-teal-600" />
+                <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center">
+                  <Ticket className="w-5 h-5 text-emerald-600" />
                 </div>
                 <h2 className="text-lg font-semibold text-gray-900">Tiket Dipilih</h2>
               </div>
@@ -348,7 +348,7 @@ export default function BookingPage() {
                     return (
                       <div
                         key={i}
-                        className="flex items-center justify-between p-4 rounded-lg border border-gray-200 bg-gray-50 hover:bg-white hover:border-teal-200 transition-all"
+                        className="flex items-center justify-between p-4 rounded-lg border border-gray-200 bg-gray-50 hover:bg-white hover:border-emerald-200 transition-all"
                       >
                         <div className="flex-1">
                           <p className="font-semibold text-gray-900 text-sm mb-1">
@@ -358,7 +358,7 @@ export default function BookingPage() {
                             <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700">
                               {info?.dayType.name}
                             </span>
-                            <span className="text-sm font-medium text-teal-600">
+                            <span className="text-sm font-medium text-emerald-600">
                               Rp {Number(info?.price).toLocaleString("id-ID")}
                             </span>
                             <span className="text-xs text-gray-500">per orang</span>
@@ -379,7 +379,7 @@ export default function BookingPage() {
                                   )
                                 )
                               }
-                              className="w-16 text-center border border-gray-300 rounded-md py-1 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                              className="w-16 text-center border border-gray-300 rounded-md py-1 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                             />
                           </div>
                           <Button
@@ -420,7 +420,7 @@ export default function BookingPage() {
                         { id_ticket_price: alt.id_ticket_price, quantity: 1 },
                       ]);
                   }}
-                  className="w-full border-dashed border-2 border-teal-300 text-teal-600 hover:bg-teal-50 hover:border-teal-400"
+                  className="w-full border-dashed border-2 border-emerald-300 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-400"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Tambah Tiket Kategori Lain
@@ -436,7 +436,7 @@ export default function BookingPage() {
             <Card className="shadow-lg border border-gray-200">
               <CardContent className="p-6 space-y-4">
                 <div className="flex items-center gap-3 pb-4 border-b border-gray-200">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-500 to-green-600 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center">
                     <Ticket className="w-6 h-6 text-white" />
                   </div>
                   <div>
@@ -447,7 +447,7 @@ export default function BookingPage() {
 
                 <div className="space-y-3">
                   <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
-                    <MapPin className="w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5" />
+                    <MapPin className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
                     <div>
                       <p className="text-xs text-gray-500 font-medium mb-1">Gerbang Masuk</p>
                       <p className="text-sm font-semibold text-gray-900">
@@ -457,7 +457,7 @@ export default function BookingPage() {
                   </div>
 
                   <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
-                    <Calendar className="w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5" />
+                    <Calendar className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
                     <div>
                       <p className="text-xs text-gray-500 font-medium mb-1">Tanggal Kunjungan</p>
                       <p className="text-sm font-semibold text-gray-900">
@@ -473,7 +473,7 @@ export default function BookingPage() {
                   </div>
 
                   <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
-                    <Users className="w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5" />
+                    <Users className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
                     <div>
                       <p className="text-xs text-gray-500 font-medium mb-1">Jumlah Tiket</p>
                       <p className="text-sm font-semibold text-gray-900">
@@ -486,14 +486,14 @@ export default function BookingPage() {
                 <div className="pt-4 border-t border-gray-200">
                   <div className="flex justify-between items-center mb-4">
                     <span className="text-sm font-medium text-gray-600">Total Pembayaran</span>
-                    <span className="text-2xl font-bold text-teal-600">
+                    <span className="text-2xl font-bold text-emerald-600">
                       Rp {totalPrice.toLocaleString("id-ID")}
                     </span>
                   </div>
 
                   <Button
                     size="lg"
-                    className="w-full bg-gradient-to-r from-teal-600 to-green-600 hover:from-teal-700 hover:to-green-700 text-white font-semibold shadow-md hover:shadow-lg transition-all"
+                    className="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white font-semibold shadow-md hover:shadow-lg transition-all"
                     onClick={() => createBooking.mutate()}
                     disabled={createBooking.isPending || tickets.length === 0}
                   >

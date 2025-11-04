@@ -26,6 +26,8 @@ import WBS from "@/pages/wbs";
 import RegisterPage from "@/pages/register";
 import LoginPage from "@/pages/login";
 import BookingPage from "./pages/booking";
+import DestinationsPage from "./pages/destinations";
+import NewsDetailPage from "./pages/news-detail";
 
 // Auth Context
 import { AuthProvider } from "@/hooks/use-auth";
@@ -37,11 +39,13 @@ function Router() {
       {/* Public Pages */}
       <Route path="/" component={Home} />
       <Route path="/news" component={NewsPage} />
+      <Route path="/news/:id" component={NewsDetailPage} />
       <Route path="/events" component={EventsPage} />
       <Route path="/survey" component={Survey} />
       <Route path="/complaint" component={ComplaintPage} />
       <Route path="/wbs" component={WBS} />
       <Route path="/attraction/:slug" component={AttractionDetail} />
+      <Route path="/destinations" component={DestinationsPage} />
       <Route path="/register" component={RegisterPage} />
       <Route path="/login" component={LoginPage} />
 
