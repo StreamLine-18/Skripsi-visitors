@@ -3,9 +3,12 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MapPin, Calendar, Users, Ticket, Plus, Trash2 } from "lucide-react";
+import { useMidtransSnap } from "@/hooks/use-midtrans-snap";
 
+// === Config ===
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
-const HOLIDAY_API = import.meta.env.HOLIDAY_API || "";
+const HOLIDAY_API = import.meta.env.VITE_HOLIDAY_API || "";
+const CLIENT_KEY = import.meta.env.VITE_MIDTRANS_CLIENT_KEY;
 
 // === Utils ===
 async function checkIsHoliday(dateStr: string): Promise<boolean> {
@@ -52,12 +55,15 @@ type CreateBookingPayload = {
   ticketOrders: TicketOrder[];
 };
 
-// === Styled Components ===
-const inputCls = "mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all";
+// === Style Helpers ===
+const inputCls =
+  "mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all";
 const labelCls = "block text-sm font-medium text-gray-700 mb-1";
 
 export default function BookingPage() {
-  const CLIENT_KEY = import.meta.env.VITE_MIDTRANS_CLIENT_KEY;
+  // ✅ Load Midtrans Snap (false = sandbox)
+  useMidtransSnap(false);
+
   const [leader, setLeader] = useState<Leader>({
     name: "",
     nationality: "",
@@ -93,32 +99,25 @@ export default function BookingPage() {
     },
   });
 
-  // === detect holiday & set day type ===
+  // === Detect Holiday ===
   useEffect(() => {
     if (!departDate) return;
     (async () => {
       const holiday = await checkIsHoliday(departDate);
-      const detected = detectDayType(departDate, holiday);
-      setDayType(detected);
+      setDayType(detectDayType(departDate, holiday));
     })();
   }, [departDate]);
 
-  // === auto pick ticket when nationality/gate/date change ===
+  // === Auto-select Ticket ===
   useEffect(() => {
     if (!ticketsQuery.data || !leader.nationality || !selectedGate) return;
-
     const base = ticketsQuery.data.find(
       (t) =>
         t.gate.name === selectedGate &&
         t.category.name === leader.nationality &&
         t.dayType.name === dayType
     );
-
-    if (base) {
-      setTickets([{ id_ticket_price: base.id_ticket_price, quantity: 1 }]);
-    } else {
-      setTickets([]);
-    }
+    setTickets(base ? [{ id_ticket_price: base.id_ticket_price, quantity: 1 }] : []);
   }, [leader.nationality, selectedGate, dayType, ticketsQuery.data]);
 
   const totalPrice = useMemo(() => {
@@ -129,7 +128,7 @@ export default function BookingPage() {
     }, 0);
   }, [tickets, ticketsQuery.data]);
 
-  // === Create Booking Mutation ===
+  // === Create Booking ===
   const createBooking = useMutation({
     mutationFn: async () => {
       if (!leader.name) throw new Error("Nama wajib diisi");
@@ -138,13 +137,9 @@ export default function BookingPage() {
       if (!selectedGate) throw new Error("Pilih gerbang");
       if (tickets.length === 0) throw new Error("Tidak ada tiket yang sesuai");
 
-      const payload: CreateBookingPayload = {
-        leader,
-        ticketOrders: tickets,
-      };
-
+      const payload: CreateBookingPayload = { leader, ticketOrders: tickets };
       const headers: Record<string, string> = { "Content-Type": "application/json" };
-      const token = localStorage.getItem("access_token");
+      const token = localStorage.getItem("token");
       if (token) headers["Authorization"] = `Bearer ${token}`;
 
       const resp = await fetch(`${BASE_URL}/public/bookings`, {
@@ -154,20 +149,22 @@ export default function BookingPage() {
       });
 
       const json = await resp.json();
+      console.log("Create Booking Response:", json);
       if (!resp.ok) throw new Error(json?.meta?.message || "Gagal membuat booking");
-      return { token: json.data.payment_token, id_booking: json.data.id_booking };
+      return { token: json.data.transactionToken, id_booking: json.data.id_booking };
     },
     onSuccess: ({ token, id_booking }) => {
-      // @ts-ignore
-      if (!window.snap?.pay) {
-        alert("Midtrans Snap belum siap. Muat ulang halaman.");
+      const snap = (window as any).snap;
+      if (!snap || typeof snap.pay !== "function") {
+        alert("Layanan pembayaran sedang bermasalah. Silakan muat ulang halaman.");
+        console.error("Midtrans Snap not available", snap);
         return;
       }
-      // @ts-ignore
-      window.snap.pay(token, {
-        onSuccess: () => (window.location.href = `/payment/success?id=${id_booking}`),
-        onPending: () => (window.location.href = `/payment/pending?id=${id_booking}`),
-        onError: () => (window.location.href = `/payment/failed?id=${id_booking}`),
+
+      snap.pay(token, {
+        onSuccess: () => (window.location.href = `/ticket/success?id=${id_booking}`),
+        onPending: () => (window.location.href = `/ticket/pending?id=${id_booking}`),
+        onError: () => (window.location.href = `/ticket/failed?id=${id_booking}`),
       });
     },
   });
@@ -252,12 +249,13 @@ export default function BookingPage() {
                     className={inputCls}
                     value={leader.idType}
                     onChange={(e) =>
-                      setLeader({ ...leader, idType: e.target.value as Leader["idType"] })}
+                      setLeader({ ...leader, idType: e.target.value as Leader["idType"] })
+                    }
                   >
                     <option value="">Pilih jenis identitas</option>
                     <option value="KTP">KTP</option>
                     <option value="SIM">SIM</option>
-                    <option value="PASSPORT">Paspor</option>
+                    <option value="Passport">Paspor</option>
                     <option value="KTM">Kartu Mahasiswa</option>
                     <option value="Lainnya">Lainnya</option>
                   </select>
@@ -310,7 +308,7 @@ export default function BookingPage() {
                     value={departDate}
                     onChange={(e) => setDepartDate(e.target.value)}
                     className={inputCls}
-                    min={new Date().toISOString().split('T')[0]}
+                    min={new Date().toISOString().split("T")[0]}
                   />
                   {departDate && (
                     <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium">
@@ -399,33 +397,36 @@ export default function BookingPage() {
                 </div>
               )}
 
-              {/* Tambah Tiket */}
-              {!tickets.some(
-                (t) =>
-                  ticketsQuery.data?.find((p) => p.id_ticket_price === t.id_ticket_price)?.category.name !==
-                  leader.nationality
-              ) && leader.nationality && selectedGate && (
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    const alt = ticketsQuery.data?.find(
-                      (p) =>
-                        p.gate.name === selectedGate &&
-                        p.category.name !== leader.nationality &&
-                        p.dayType.name === dayType
-                    );
-                    if (alt)
-                      setTickets((prev) => [
-                        ...prev,
-                        { id_ticket_price: alt.id_ticket_price, quantity: 1 },
-                      ]);
-                  }}
-                  className="w-full border-dashed border-2 border-emerald-300 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-400"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Tambah Tiket Kategori Lain
-                </Button>
-              )}
+              {/* Tambah Tiket Kategori Lain */}
+              {leader.nationality &&
+                selectedGate &&
+                ticketsQuery.data &&
+                !tickets.some(
+                  (t) =>
+                    ticketsQuery.data?.find((p) => p.id_ticket_price === t.id_ticket_price)
+                      ?.category.name !== leader.nationality
+                ) && (
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      const alt = ticketsQuery.data?.find(
+                        (p) =>
+                          p.gate.name === selectedGate &&
+                          p.category.name !== leader.nationality &&
+                          p.dayType.name === dayType
+                      );
+                      if (alt)
+                        setTickets((prev) => [
+                          ...prev,
+                          { id_ticket_price: alt.id_ticket_price, quantity: 1 },
+                        ]);
+                    }}
+                    className="w-full border-dashed border-2 border-emerald-300 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-400"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Tambah Tiket Kategori Lain
+                  </Button>
+                )}
             </CardContent>
           </Card>
         </div>
