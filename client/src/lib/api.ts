@@ -80,6 +80,25 @@ export interface Destination {
   summary?: string;
 }
 
+export interface BookingItem {
+  quantity: number;
+  id_ticket_price: string;
+}
+
+export interface Booking {
+  id_booking: string;
+  leader_name: string;
+  leader_gender: string | null;
+  leader_nationality: string;
+  leader_phone: string;
+  visit_date: string | null;
+  total_amount: string;
+  status: string;
+  created_on: string;
+  updated_on: string;
+  items: BookingItem[];
+}
+
 // --- ADDED: Query Parameters Type ---
 export interface QueryParams {
   page?: number;
@@ -158,6 +177,25 @@ export const destinationApi = {
       handleResponse<ApiResponse<Destination>>
     ),
 };
+
+
+export const bookingApi = {
+  getAllBookings: async (params: any, options?: any) => {
+    // ✅ Build the full correct URL
+    const url = createUrlWithParams(getFullApiUrl("/bookings"), params);
+
+    // ✅ Call apiRequest normally
+    const response = await apiRequest("GET", url, {
+      headers: options?.headers,
+    });
+
+    // ✅ Parse the response using your handleResponse
+    return handleResponse<ApiResponse<Booking[]>>(response);
+  },
+};
+
+
+
 
 export function authHeaders(token?: string | null) {
   const h: Record<string, string> = { "Content-Type": "application/json" };

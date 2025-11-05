@@ -15,34 +15,26 @@ export const queryClient = new QueryClient({
   },
 });
 
-// Basic fetch function (can be used by api.ts)
-// No token logic here, assuming public access or separate auth handling for visitors
-export const apiRequest = async (
-  method: string,
-  fullUrl: string, // Expects the full URL now
-  data?: unknown | undefined,
-  headers: HeadersInit = {}
-): Promise<Response> => {
 
+export const apiRequest = async (
+method: string, fullUrl: string, options?: {
+  data?: unknown;
+  headers?: HeadersInit;
+}, p0?: Record<string, string>): Promise<Response> => {
   const defaultHeaders: HeadersInit = {
     "Content-Type": "application/json",
-    ...headers,
+    ...options?.headers,
   };
-
-  // No Authorization header added here for the visitor app by default
 
   const response = await fetch(fullUrl, {
     method,
     headers: defaultHeaders,
-    body: data ? JSON.stringify(data) : undefined,
-    // credentials: "omit", // Or 'same-origin' - check CORS needs
+    body: options?.data ? JSON.stringify(options.data) : undefined,
   });
 
-  // Basic check before passing to handleResponse in api.ts
-  // handleResponse will do the detailed error parsing
-    // We return the raw response to be handled by `handleResponse` in api.ts
   return response;
 };
+
 
 // You might still need a multipart version if visitors upload files (unlikely now)
 export const apiMultipartRequest = async (
