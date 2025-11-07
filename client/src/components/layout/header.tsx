@@ -39,17 +39,19 @@ export default function Header() {
     <header className="hidden md:block bg-white shadow-sm border-b sticky top-0 z-40">
       <div className="max-w-full mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          <Link href="/">
-            <a className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-              <div className="w-15 h-15  rounded-lg flex items-center justify-center ">
-                <img src="/public/assets/logo.png" alt="Alas Purwo Logo" className="w-10 h-10" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">Taman Nasional Alas Purwo</h1>
-                <p className="text-xs text-gray-600">Digital Ticketing System</p>
-              </div>
-            </a>
+          <Link
+            href="/"
+            className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
+          >
+            <div className="w-15 h-15 rounded-lg flex items-center justify-center">
+              <img src="/public/assets/logo.png" alt="Alas Purwo Logo" className="w-10 h-10" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-gray-900">Taman Nasional Alas Purwo</h1>
+              <p className="text-xs text-gray-600">Digital Ticketing System</p>
+            </div>
           </Link>
+
 
           {/* Navigasi & Ikon di Kanan */}
           <div className="flex items-center space-x-8">
@@ -58,17 +60,20 @@ export default function Header() {
               {navItems.map(({ path, label }) => {
                 const isActive = location === path;
                 return (
-                  <Link key={path} href={path}>
-                    <a className={`text-sm font-medium transition-colors relative py-2 ${isActive
-                        ? 'text-green-600 font-semibold'
-                        : 'text-gray-600 hover:text-green-500'
-                      }`}>
-                      {label}
-                      {isActive && (
-                        <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-400 rounded-full"></span>
-                      )}
-                    </a>
+                  <Link
+                    key={path}
+                    href={path}
+                    className={`text-sm font-medium transition-colors relative py-2 ${isActive
+                      ? "text-green-600 font-semibold"
+                      : "text-gray-600 hover:text-green-500"
+                      }`}
+                  >
+                    {label}
+                    {isActive && (
+                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-400 rounded-full"></span>
+                    )}
                   </Link>
+
                 );
               })}
             </nav>
@@ -85,11 +90,13 @@ export default function Header() {
                 </span>
               </button>
 
-              <Link href="/profile">
-                <a className="w-9 h-9 gradient-primary rounded-full flex items-center justify-center hover:shadow-lg transition-shadow cursor-pointer">
-                  <User className="text-white w-5 h-5" />
-                </a>
+              <Link
+                href="/profile"
+                className="w-9 h-9 gradient-primary rounded-full flex items-center justify-center hover:shadow-lg transition-shadow cursor-pointer"
+              >
+                <User className="text-white w-5 h-5" />
               </Link>
+
             </div>
           </div>
         </div>

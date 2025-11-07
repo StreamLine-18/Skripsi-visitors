@@ -31,8 +31,8 @@ function detectDayType(date: string, isHoliday: boolean): "Weekday" | "Weekend" 
 type Leader = {
   name: string;
   nationality: "Nusantara" | "Mancanegara" | "";
-  idType: "KTP" | "Passport" | "KTM" | "SIM" | "Lainnya" | "";
-  idNumber: string;
+  id_type: "KTP" | "Passport" | "KTM" | "SIM" | "Lainnya" | "";
+  id_number: string;
   phone: string;
   gender: string;
 };
@@ -69,8 +69,8 @@ export default function BookingPage() {
     nationality: "",
     phone: "",
     gender: "",
-    idType: "",
-    idNumber: "",
+    id_type: "",
+    id_number: "",
   });
   const [departDate, setDepartDate] = useState("");
   const [dayType, setDayType] = useState<"Weekday" | "Weekend">("Weekday");
@@ -141,7 +141,7 @@ export default function BookingPage() {
       const headers: Record<string, string> = { "Content-Type": "application/json" };
       const token = localStorage.getItem("token");
       if (token) headers["Authorization"] = `Bearer ${token}`;
-
+      console.log("Create Booking Payload:", payload);
       const resp = await fetch(`${BASE_URL}/public/bookings`, {
         method: "POST",
         headers,
@@ -162,9 +162,9 @@ export default function BookingPage() {
       }
 
       snap.pay(token, {
-        onSuccess: () => (window.location.href = `/ticket/success?id=${id_booking}`),
-        onPending: () => (window.location.href = `/ticket/pending?id=${id_booking}`),
-        onError: () => (window.location.href = `/ticket/failed?id=${id_booking}`),
+        onSuccess: () => (window.location.href = `/history`),
+        onPending: () => (window.location.href = `/history`),
+        onError: () => (window.location.href = `/history`),
       });
     },
   });
@@ -247,9 +247,9 @@ export default function BookingPage() {
                   <label className={labelCls}>Jenis Identitas</label>
                   <select
                     className={inputCls}
-                    value={leader.idType}
+                    value={leader.id_type}
                     onChange={(e) =>
-                      setLeader({ ...leader, idType: e.target.value as Leader["idType"] })
+                      setLeader({ ...leader, id_type: e.target.value as Leader["id_type"] })
                     }
                   >
                     <option value="">Pilih jenis identitas</option>
@@ -265,8 +265,8 @@ export default function BookingPage() {
                   <label className={labelCls}>Nomor Identitas</label>
                   <input
                     className={inputCls}
-                    value={leader.idNumber}
-                    onChange={(e) => setLeader({ ...leader, idNumber: e.target.value })}
+                    value={leader.id_number}
+                    onChange={(e) => setLeader({ ...leader, id_number: e.target.value })}
                     placeholder="Masukkan nomor identitas sesuai dokumen"
                   />
                 </div>
@@ -313,7 +313,7 @@ export default function BookingPage() {
                   {departDate && (
                     <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium">
                       <Calendar className="w-3 h-3" />
-                      Jenis Hari: {dayType}
+                      Jenis Hari: {dayType === "Weekend" ? "Akhir Pekan/Hari Libur Nasional" : "Hari Kerja"}
                     </div>
                   )}
                 </div>
