@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Clock, ChevronLeft, ChevronRight, Filter, Calendar, Receipt, CheckCircle2, XCircle, AlertCircle, History } from "lucide-react";
 import { bookingApi } from "@/lib/api";
+import { Link } from "wouter";
 
 export default function HistoryPage() {
   const [statusFilter, setStatusFilter] = useState("all");
@@ -249,57 +250,62 @@ export default function HistoryPage() {
         {bookings.length > 0 ? (
           <div className="space-y-4">
             {bookings.map((b: any) => (
-              <Card
-                key={b.id_booking}
-                className="group border-0 shadow-md hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden bg-white"
-              >
-                <CardContent className="p-0">
-                  <div className="flex flex-col md:flex-row items-stretch">
-                    {/* Left Accent Bar */}
-                    <div className={`w-full md:w-2 h-2 md:h-auto ${getStatusColor(b.computed_status).split(' ')[0]}`}></div>
+              <Link key={b.id_booking} href={`/history/${b.id_booking}`} className="block">
+                <Card
+                  className="group border-0 shadow-md hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden bg-white cursor-pointer"
+                >
+                  <CardContent className="p-0">
+                    <div className="flex flex-col md:flex-row items-stretch">
+                      {/* Left Accent Bar */}
+                      <div className={`w-full md:w-2 h-2 md:h-auto ${getStatusColor(b.status).split(' ')[0]}`}></div>
 
-                    {/* Content */}
-                    <div className="flex-1 p-5 md:p-6">
-                      <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
-                        {/* Left Info */}
-                        <div className="space-y-3">
-                          <div className="flex items-start space-x-3">
-                            <div className="w-10 h-10 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                              <Receipt className="w-5 h-5 text-emerald-600" />
+                      {/* Content */}
+                      <div className="flex-1 p-5 md:p-6">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+                          {/* Left Info */}
+                          <div className="space-y-3">
+                            <div className="flex items-start space-x-3">
+                              <div className="w-10 h-10 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <Receipt className="w-5 h-5 text-emerald-600" />
+                              </div>
+                              <div>
+                                <p className="text-base md:text-lg font-bold text-gray-900">
+                                  {b.leader_name || "Tanpa Nama"}
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                  No. HP: {b.leader_phone || "-"}
+                                </p>
+                              </div>
                             </div>
-                            <div>
-                              <p className="text-base md:text-lg font-bold text-gray-900">
-                                {b.leader_name || "Tanpa Nama"}
+
+                            <div className="flex items-center space-x-2 text-sm text-gray-500 pl-13">
+                              <Clock className="w-4 h-4" />
+                              <span>{formatDate(b.created_on)}</span>
+                            </div>
+                          </div>
+
+                          {/* Right Info */}
+                          <div className="flex flex-row md:flex-col items-start md:items-end space-x-4 md:space-x-0 md:space-y-3">
+                            <div
+                              className={`flex items-center space-x-2 px-3 py-2 rounded-xl border ${getStatusColor(b.status)} font-semibold text-sm shadow-sm`}
+                            >
+                              {getStatusIcon(b.status)}
+                              <span>{getStatusText(b.status)}</span>
+                            </div>
+
+                            <div className="text-right">
+                              <p className="text-xs text-gray-500 mb-1">Total Pembayaran</p>
+                              <p className="text-xl md:text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                                Rp {Number(b.total_amount).toLocaleString("id-ID")}
                               </p>
-                              <p className="text-sm text-gray-500">No. HP: {b.leader_phone || "-"}</p>
                             </div>
-                          </div>
-
-                          <div className="flex items-center space-x-2 text-sm text-gray-500 pl-13">
-                            <Clock className="w-4 h-4" />
-                            <span>{formatDate(b.created_on)}</span>
-                          </div>
-                        </div>
-
-                        {/* Right Info */}
-                        <div className="flex flex-row md:flex-col items-start md:items-end space-x-4 md:space-x-0 md:space-y-3">
-                          <div className={`flex items-center space-x-2 px-3 py-2 rounded-xl border ${getStatusColor(b.computed_status)} font-semibold text-sm shadow-sm`}>
-                            {getStatusIcon(b.computed_status)}
-                            <span>{getStatusText(b.computed_status)}</span>
-                          </div>
-
-                          <div className="text-right">
-                            <p className="text-xs text-gray-500 mb-1">Total Pembayaran</p>
-                            <p className="text-xl md:text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                              Rp {Number(b.total_amount).toLocaleString("id-ID")}
-                            </p>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         ) : (

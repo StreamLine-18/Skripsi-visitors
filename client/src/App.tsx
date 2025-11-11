@@ -28,6 +28,7 @@ import LoginPage from "@/pages/login";
 import BookingPage from "./pages/booking";
 import DestinationsPage from "./pages/destinations";
 import NewsDetailPage from "./pages/news-detail";
+import BookingDetailPage from "./pages/booking-detail";
 
 // Auth Context
 import { AuthProvider } from "@/hooks/use-auth";
@@ -65,6 +66,12 @@ function Router() {
       <Route path="/history">
         <ProtectedRoute>
           <History />
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/history/:id">
+        <ProtectedRoute>
+          <BookingDetailPage />
         </ProtectedRoute>
       </Route>
 

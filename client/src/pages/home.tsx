@@ -77,39 +77,37 @@ const getEventStatus = (eventDate: Date | string | null | undefined) => {
 
 function HeroSection() {
   return (
-    <div className="relative h-[400px] md:h-[600px] overflow-hidden rounded-2xl">
+    <div className="relative h-screen overflow-hidden">
       <img
         src="/assets/hero.png"
         alt="Alas Purwo"
         className="absolute inset-0 w-full h-full object-cover object-center"
       />
-      <div className="absolute inset-0 bg-black/20"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50"></div>
 
-      <div className="relative h-full flex items-center justify-center text-center text-white p-4">
+      <div className="relative h-full flex items-center justify-center text-center text-white px-4">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 ">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6 drop-shadow-2xl">
             Selamat Datang di Alas Purwo
           </h1>
-          <p className="text-lg md:text-xl mb-6 opacity-90">
+          <p className="text-base sm:text-lg md:text-2xl lg:text-3xl mb-6 md:mb-8 opacity-90 drop-shadow-lg px-4">
             Hutan Pertama Jawa — Jelajahi Keindahan Alam yang Menakjubkan
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center px-4">
             <Link href="/destinations">
               <Button
                 size="lg"
-                variant="outline"
-                className="bg-white text-green-700 hover:bg-gray-300 font-semibold"
+                className="bg-white text-green-700 hover:bg-green-50 font-semibold shadow-lg w-full sm:w-auto"
               >
-                <MapPin className="w-5 h-5 mr-2" /> Jelajahi Destinasi
+                <MapPin className="w-4 h-4 md:w-5 md:h-5 mr-2" /> Jelajahi Destinasi
               </Button>
             </Link>
             <Link href="/booking">
               <Button
                 size="lg"
-                variant="outline"
-                className="bg-white text-green-700 hover:bg-gray-300 font-semibold"
+                className="bg-white text-green-700 hover:bg-green-50 font-semibold shadow-lg w-full sm:w-auto"
               >
-                <Ticket className="w-5 h-5 mr-2" /> 
+                <Ticket className="w-4 h-4 md:w-5 md:h-5 mr-2" />
                 Pesan Tiket
               </Button>
             </Link>
@@ -119,6 +117,7 @@ function HeroSection() {
     </div>
   );
 }
+
 
 
 function NewsSection() {
@@ -309,9 +308,9 @@ function EventsSection() {
 }
 
 function DestinationsSection() {
-  const { data: apiResponse, isLoading, error } = useQuery<ApiResponse<Destination[]>>({ 
-    queryKey: ['destinations-home'], 
-    queryFn: () => destinationApi.getAllDestination({ page: 1, pageSize: 6 }) 
+  const { data: apiResponse, isLoading, error } = useQuery<ApiResponse<Destination[]>>({
+    queryKey: ['destinations-home'],
+    queryFn: () => destinationApi.getAllDestination({ page: 1, pageSize: 6 })
   });
 
   const destinations = apiResponse?.data;
@@ -322,37 +321,37 @@ function DestinationsSection() {
     <Card>
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Destinasi Populer</h2>
-            <Link href="/destinations">
-                <Button variant="ghost" className="text-emerald-600 font-medium text-sm p-0">Lihat Semua</Button>
-            </Link>
+          <h2 className="text-lg font-semibold text-gray-900">Destinasi Populer</h2>
+          <Link href="/destinations">
+            <Button variant="ghost" className="text-emerald-600 font-medium text-sm p-0">Lihat Semua</Button>
+          </Link>
         </div>
-        {isLoading ? ( 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {[...Array(6)].map((_, i) => (
-                    <div key={i} className="animate-pulse">
-                        <div className="bg-gray-200 rounded-xl h-48 mb-3"></div>
-                        <div className="space-y-2">
-                            <div className="flex justify-between">
-                                <div className="bg-gray-200 h-4 w-20 rounded"></div>
-                                <div className="bg-gray-200 h-4 w-12 rounded"></div>
-                            </div>
-                            <div className="bg-gray-200 h-3 w-full rounded"></div>
-                        </div>
-                    </div>
-                ))}
-            </div> 
-        ) : 
-        !destinations || destinations.length === 0 ? ( 
-            <div className="text-center py-10 text-gray-500">Belum ada destinasi.</div> 
-        ) :
-        ( 
+        {isLoading ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {destinations.map((destination) => (
-              <DestinationCard key={destination.id_destination} destination={destination} />
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="bg-gray-200 rounded-xl h-48 mb-3"></div>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <div className="bg-gray-200 h-4 w-20 rounded"></div>
+                    <div className="bg-gray-200 h-4 w-12 rounded"></div>
+                  </div>
+                  <div className="bg-gray-200 h-3 w-full rounded"></div>
+                </div>
+              </div>
             ))}
           </div>
-        )}
+        ) :
+          !destinations || destinations.length === 0 ? (
+            <div className="text-center py-10 text-gray-500">Belum ada destinasi.</div>
+          ) :
+            (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {destinations.map((destination) => (
+                  <DestinationCard key={destination.id_destination} destination={destination} />
+                ))}
+              </div>
+            )}
       </CardContent>
     </Card>
   );
@@ -420,16 +419,19 @@ function InfoCardSection() {
 // --- Main Home Component Export ---
 export default function home() {
   return (
-    <div className="max-w-7xl mx-auto p-4 space-y-6">
+    <div className="-mt-[76px] max-w-full mx-auto space-y-6">
       <HeroSection />
-      <InfoCardSection />
-      <NewsSection />
+      <div className="max-w-7xl mx-auto px-4 space-y-6 py-6 relative z-20">
+        <InfoCardSection />
+        <NewsSection />
+        <EventsSection />
+        <DestinationsSection />
+      </div>
       {/* <PhotoGallerySection />
       <VideoGallerySection />
 
       */}
-      <EventsSection />
-      <DestinationsSection />
+
     </div>
   );
 }

@@ -91,11 +91,16 @@ export interface Booking {
   leader_gender: string | null;
   leader_nationality: string;
   leader_phone: string;
+  leader_id_number: string;
+  leader_id_type: string;
   visit_date: string | null;
   total_amount: string;
   status: string;
   created_on: string;
   updated_on: string;
+  expired_at?: string;
+  paid_at?: string;
+  payment_gateway_token?: string;
   items: BookingItem[];
 }
 
@@ -191,6 +196,23 @@ export const bookingApi = {
 
     // ✅ Parse the response using your handleResponse
     return handleResponse<ApiResponse<Booking[]>>(response);
+  },
+
+    // ✅ New endpoint: getBookingById
+    // ✅ New endpoint: getBookingById
+  getBookingById: (id: string, options?: any) => {
+    const url = getFullApiUrl(`/bookings/${id}`);
+    return apiRequest("GET", url, {
+      headers: options?.headers,
+    }).then(handleResponse<ApiResponse<Booking>>);
+  },
+
+  // ✅ New endpoint: retryPayment
+  retryPayment: (id: string, options?: any) => {
+    const url = getFullApiUrl(`/midtrans/retry/{${id}}`);
+    return apiRequest("POST", url, {
+      headers: options?.headers,
+    }).then(handleResponse<ApiResponse<{ transactionToken: string }>>);
   },
 };
 

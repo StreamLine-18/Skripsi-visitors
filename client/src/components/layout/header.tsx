@@ -1,6 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Mountain, Bell, User, Home, Ticket, History } from "lucide-react";
+import { useState, useEffect } from "react";
 
 const navItems = [
   { path: "/", icon: Home, label: "Beranda" },
@@ -11,6 +12,17 @@ const navItems = [
 export default function Header() {
   const isMobile = useIsMobile();
   const [location] = useLocation();
+  const [isScrolled, setIsScrolled] = useState(false);
+  const isHomePage = location === "/";
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 200);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   if (isMobile) {
     return (
@@ -35,9 +47,27 @@ export default function Header() {
     );
   }
 
+  // Determine navbar styling based on page and scroll state
+  const isTransparent = isHomePage && !isScrolled;
+const navbarClasses = `
+  hidden md:block
+  sticky top-0 z-50 w-full
+  transition-all duration-500
+  ${isTransparent ? "bg-transparent" : "bg-white/100 shadow-md border-b"}
+`;
+
+
+  const textColorClass = isTransparent ? "text-white" : "text-gray-900";
+  const textColorSecondary = isTransparent ? "text-white/90" : "text-gray-600";
+  const navLinkColor = isTransparent ? "text-white/90 hover:text-white" : "text-gray-600 hover:text-green-500";
+  const activeLinkColor = isTransparent ? "text-white font-semibold" : "text-green-600 font-semibold";
+  const activeIndicatorColor = isTransparent ? "bg-white" : "bg-green-400";
+  // const iconColor = isTransparent ? "text-white hover:text-white hover:bg-white/20" : "text-gray-600 hover:text-teal-600 hover:bg-teal-50";
+  const dividerColor = isTransparent ? "bg-white/30" : "bg-gray-300";
+
   return (
-    <header className="hidden md:block bg-white shadow-sm border-b sticky top-0 z-40">
-      <div className="max-w-full mx-auto px-6 py-4">
+    <header className={navbarClasses}>
+      <div className="max-w-full mx-auto px-9 py-4">
         <div className="flex items-center justify-between">
           <Link
             href="/"
@@ -47,11 +77,14 @@ export default function Header() {
               <img src="/public/assets/logo.png" alt="Alas Purwo Logo" className="w-10 h-10" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Taman Nasional Alas Purwo</h1>
-              <p className="text-xs text-gray-600">Digital Ticketing System</p>
+              <h1 className={`text-xl font-bold ${textColorClass} transition-colors duration-300`}>
+                Taman Nasional Alas Purwo
+              </h1>
+              <p className={`text-xs ${textColorSecondary} transition-colors duration-300`}>
+                Digital Ticketing System
+              </p>
             </div>
           </Link>
-
 
           {/* Navigasi & Ikon di Kanan */}
           <div className="flex items-center space-x-8">
@@ -63,40 +96,34 @@ export default function Header() {
                   <Link
                     key={path}
                     href={path}
-                    className={`text-sm font-medium transition-colors relative py-2 ${isActive
-                      ? "text-green-600 font-semibold"
-                      : "text-gray-600 hover:text-green-500"
+                    className={`text-sm font-medium transition-colors duration-300 relative py-2 ${isActive
+                        ? activeLinkColor
+                        : navLinkColor
                       }`}
                   >
                     {label}
                     {isActive && (
-                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-400 rounded-full"></span>
+                      <span className={`absolute bottom-0 left-0 right-0 h-0.5 ${activeIndicatorColor} rounded-full transition-colors duration-300`}></span>
                     )}
                   </Link>
-
                 );
               })}
             </nav>
 
             {/* Divider */}
-            <div className="h-8 w-px bg-gray-500"></div>
+            <div className={`h-8 w-px ${dividerColor} transition-colors duration-300`}></div>
 
-            {/* Ikon (Notifikasi & Profil) */}
+            {/* Ikon (Profil) */}
             <div className="flex items-center space-x-3">
-              <button className="relative p-2 text-gray-600 hover:text-teal-600 hover:bg-teal-50 rounded-full transition-all">
-                <Bell className="w-5 h-5" />
-                <span className="absolute top-1 right-1 bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold shadow-md">
-                  2
-                </span>
-              </button>
-
               <Link
                 href="/profile"
-                className="w-9 h-9 gradient-primary rounded-full flex items-center justify-center hover:shadow-lg transition-shadow cursor-pointer"
+                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer ${isTransparent
+                    ? "bg-white/20 hover:bg-white/30 backdrop-blur-sm"
+                    : "gradient-primary hover:shadow-lg"
+                  }`}
               >
                 <User className="text-white w-5 h-5" />
               </Link>
-
             </div>
           </div>
         </div>
