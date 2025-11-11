@@ -12,17 +12,32 @@ const navItems = [
 export default function Header() {
   const isMobile = useIsMobile();
   const [location] = useLocation();
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [isScrolled] = useState(false);
   const isHomePage = location === "/";
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 200);
-    };
+  const [scrollState, setScrollState] = useState<"transparent" | "glass" | "white">("transparent");
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+useEffect(() => {
+  const handleScroll = () => {
+    if (!isHomePage) {
+      setScrollState("white");
+      return;
+    }
+
+    const y = window.scrollY;
+
+    if (y < 100) setScrollState("transparent");
+    else if (y < 850) setScrollState("glass");
+    else setScrollState("white");
+  };
+
+  // Run immediately when location changes
+  handleScroll();
+
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, [isHomePage, location]);
+
 
   if (isMobile) {
     return (
@@ -49,21 +64,61 @@ export default function Header() {
 
   // Determine navbar styling based on page and scroll state
   const isTransparent = isHomePage && !isScrolled;
-const navbarClasses = `
+  const navbarClasses = `
   hidden md:block
   sticky top-0 z-50 w-full
-  transition-all duration-500
-  ${isTransparent ? "bg-transparent" : "bg-white/100 shadow-md border-b"}
+  transition-all duration-500 ease-in-out
+  ${scrollState === "transparent"
+      ? "bg-transparent"
+      : scrollState === "glass"
+        ? "bg-white/20 backdrop-blur-md border-b border-white/20 shadow-sm"
+        : "bg-white/90 backdrop-blur-none border-b border-gray-200 shadow-md"
+    }
 `;
 
 
-  const textColorClass = isTransparent ? "text-white" : "text-gray-900";
-  const textColorSecondary = isTransparent ? "text-white/90" : "text-gray-600";
-  const navLinkColor = isTransparent ? "text-white/90 hover:text-white" : "text-gray-600 hover:text-green-500";
-  const activeLinkColor = isTransparent ? "text-white font-semibold" : "text-green-600 font-semibold";
-  const activeIndicatorColor = isTransparent ? "bg-white" : "bg-green-400";
-  // const iconColor = isTransparent ? "text-white hover:text-white hover:bg-white/20" : "text-gray-600 hover:text-teal-600 hover:bg-teal-50";
-  const dividerColor = isTransparent ? "bg-white/30" : "bg-gray-300";
+
+  const textColorClass =
+    scrollState === "transparent" || scrollState === "glass"
+      ? "text-white"
+      : "text-gray-900";
+
+  const textColorSecondary =
+    scrollState === "transparent" || scrollState === "glass"
+      ? "text-white/90"
+      : "text-gray-600";
+
+  const navLinkColor =
+    scrollState === "transparent" || scrollState === "glass"
+      ? "text-white/90 hover:text-white"
+      : "text-gray-600 hover:text-green-500";
+
+  const activeLinkColor =
+    scrollState === "transparent" || scrollState === "glass"
+      ? "text-white font-semibold"
+      : "text-green-600 font-semibold";
+
+  const activeIndicatorColor =
+    scrollState === "transparent" || scrollState === "glass"
+      ? "bg-white"
+      : "bg-green-400";
+
+  const dividerColor =
+    scrollState === "transparent" || scrollState === "glass"
+      ? "bg-white/30"
+      : "bg-gray-300";
+
+  const profileButtonClass =
+    scrollState === "transparent"
+      ? "bg-white/20 hover:bg-white/30 backdrop-blur-sm"
+      : scrollState === "glass"
+        ? "bg-white/30 hover:bg-white/40 backdrop-blur-md"
+        : "gradient-primary hover:shadow-lg";
+
+  const userIconColor =
+    scrollState === "transparent" || scrollState === "glass"
+      ? "text-white"
+      : "text-white"; // stays white over gradient-primary
 
   return (
     <header className={navbarClasses}>
@@ -97,8 +152,8 @@ const navbarClasses = `
                     key={path}
                     href={path}
                     className={`text-sm font-medium transition-colors duration-300 relative py-2 ${isActive
-                        ? activeLinkColor
-                        : navLinkColor
+                      ? activeLinkColor
+                      : navLinkColor
                       }`}
                   >
                     {label}
@@ -117,13 +172,11 @@ const navbarClasses = `
             <div className="flex items-center space-x-3">
               <Link
                 href="/profile"
-                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer ${isTransparent
-                    ? "bg-white/20 hover:bg-white/30 backdrop-blur-sm"
-                    : "gradient-primary hover:shadow-lg"
-                  }`}
+                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer ${profileButtonClass}`}
               >
-                <User className="text-white w-5 h-5" />
+                <User className={`w-5 h-5 ${userIconColor}`} />
               </Link>
+
             </div>
           </div>
         </div>
