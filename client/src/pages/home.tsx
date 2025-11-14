@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Ticket, FileText, Clock, MapPin, Camera, Video, ExternalLink, AlertTriangle, BarChart3, Megaphone } from "lucide-react";
+import { Ticket, FileText, Clock, MapPin, Camera, Video, ExternalLink, AlertTriangle, BarChart3, Megaphone, Calendar, User } from "lucide-react";
 import { Link } from "wouter";
 import DestinationCard from "@/components/destination-card";
 import { Card, CardContent } from "@/components/ui/card";
@@ -83,35 +83,58 @@ function HeroSection() {
         alt="Alas Purwo"
         className="absolute inset-0 w-full h-full object-cover object-center"
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60"></div>
 
       <div className="relative h-full flex items-center justify-center text-center text-white px-4">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6 drop-shadow-2xl">
-            Selamat Datang di Alas Purwo
-          </h1>
-          <p className="text-base sm:text-lg md:text-2xl lg:text-3xl mb-6 md:mb-8 opacity-90 drop-shadow-lg px-4">
-            Hutan Pertama Jawa — Jelajahi Keindahan Alam yang Menakjubkan
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center px-4">
+        <div className="max-w-6xl mx-auto space-y-8">
+          <div className="space-y-6">
+            <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-bold leading-tight drop-shadow-2xl">
+              Taman Nasional 
+            </h1>
+            <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold leading-tight drop-shadow-2xl">
+              Alas Purwo
+            </h1>
+            <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl mb-8 opacity-95 drop-shadow-lg max-w-4xl mx-auto leading-relaxed">
+              Hutan Pertama di Pulau Jawa — Jelajahi Keindahan Alam yang Menakjubkan dan Keanekaragaman Hayati yang Luar Biasa
+            </p>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link href="/destinations">
               <Button
                 size="lg"
-                className="bg-white text-green-700 hover:bg-green-50 font-semibold shadow-lg w-full sm:w-auto"
+                className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold shadow-xl px-8 py-6 text-lg rounded-full w-full sm:w-auto border-0"
               >
-                <MapPin className="w-4 h-4 md:w-5 md:h-5 mr-2" /> Jelajahi Destinasi
+                <MapPin className="w-5 h-5 mr-2" /> 
+                Jelajahi Destinasi
               </Button>
             </Link>
             <Link href="/booking">
               <Button
                 size="lg"
-                className="bg-white text-green-700 hover:bg-green-50 font-semibold shadow-lg w-full sm:w-auto"
+                variant="outline"
+                className="bg-white/10 backdrop-blur-sm text-white border-white/30 hover:bg-white/20 font-semibold shadow-xl px-8 py-6 text-lg rounded-full w-full sm:w-auto"
               >
-                <Ticket className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+                <Ticket className="w-5 h-5 mr-2" />
                 Pesan Tiket
               </Button>
             </Link>
           </div>
+
+          {/* <div className="flex justify-center space-x-8 text-white/80 text-sm">
+            <div className="text-center">
+              <div className="font-bold text-2xl">50+</div>
+              <div>Destinasi</div>
+            </div>
+            <div className="text-center">
+              <div className="font-bold text-2xl">24/7</div>
+              <div>Akses</div>
+            </div>
+            <div className="text-center">
+              <div className="font-bold text-2xl">100%</div>
+              <div>Aman</div>
+            </div>
+          </div> */}
         </div>
       </div>
     </div>
@@ -130,51 +153,127 @@ function NewsSection() {
   const featuredNews = news?.[0];
   const secondaryNews = news?.slice(1, 4);
 
-  if (error) return <Card><CardContent className="p-6 text-red-600">Gagal memuat berita: {error.message}</CardContent></Card>;
+  if (error) return <Card className="border-0 shadow-lg rounded-2xl"><CardContent className="p-8 text-red-600">Gagal memuat berita: {error.message}</CardContent></Card>;
 
   return (
-    <Card>
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-gray-900">Berita Terkini</h2>
-          <Link href="/news">
-            <Button variant="ghost" className="text-emerald-600 font-medium text-sm p-0">Lainnya <ExternalLink className="w-4 h-4 ml-1" /></Button>
-          </Link>
-        </div>
-        {isLoading ? (<div className="grid grid-cols-1 lg:grid-cols-2 gap-6"><div className="animate-pulse"><div className="bg-gray-200 rounded-xl h-64 mb-3"></div><div className="space-y-2"><div className="bg-gray-200 h-4 w-1/4 rounded"></div><div className="bg-gray-200 h-6 w-3/4 rounded"></div><div className="bg-gray-200 h-4 w-full rounded"></div></div></div><div className="space-y-4">{[...Array(3)].map((_, i) => (<div key={i} className="animate-pulse flex items-center space-x-4"><div className="bg-gray-200 rounded-lg h-20 w-20"></div><div className="flex-1 space-y-2"><div className="bg-gray-200 h-3 w-1/4 rounded"></div><div className="bg-gray-200 h-4 w-full rounded"></div><div className="bg-gray-200 h-3 w-1/2 rounded"></div></div></div>))}</div></div>) :
-          !news || news.length === 0 ? (<div className="text-center py-10 text-gray-500">Belum ada berita terbaru.</div>) :
-            (<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {featuredNews && (
-                <div className="group cursor-pointer ">
-                  <div className="relative overflow-hidden rounded-xl bg-gray-100 mb-3">
-                    <img src={getFullImageUrl(featuredNews.image_url)} alt={featuredNews.title} className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300 bg-gray-200" onError={(e) => (e.currentTarget.src = 'https://placehold.co/600x400/EEE/31343C?text=Error')} />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                    <div className="absolute bottom-4 left-4 text-white">
-                      <span className="text-xs bg-black/50 px-2 py-1 rounded-full">{formatDate(featuredNews.published_at)}</span>
-                      <h3 className="font-bold text-lg mt-2 drop-shadow-lg">{featuredNews.title}</h3>
-                      <p className="text-xs opacity-80 mt-1">Oleh {featuredNews.author_name}</p>
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-600 line-clamp-2 mt-2 px-1">{stripHtml(featuredNews.content)}</p>
-                  <p className="text-xs text-emerald-600 font-medium cursor-pointer mt-1 px-1">selengkapnya →</p>
+    <div className="space-y-8">
+      <div className="text-center">
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Berita Terkini</h2>
+        <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+          Dapatkan informasi terbaru dan perkembangan dari Taman Nasional Alas Purwo
+        </p>
+      </div>
+      
+      <Card className="border-0 shadow-xl rounded-2xl overflow-hidden">
+        <CardContent className="p-8">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <FileText className="w-5 h-5 text-blue-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900">Informasi Terbaru</h3>
+            </div>
+            <Link href="/news">
+              <Button variant="ghost" className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-semibold">
+                Lihat Semua <ExternalLink className="w-4 h-4 ml-1" />
+              </Button>
+            </Link>
+          </div>
+          {isLoading ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="animate-pulse">
+                <div className="bg-gray-200 rounded-2xl h-72 mb-4"></div>
+                <div className="space-y-3">
+                  <div className="bg-gray-200 h-4 w-1/4 rounded"></div>
+                  <div className="bg-gray-200 h-6 w-3/4 rounded"></div>
+                  <div className="bg-gray-200 h-4 w-full rounded"></div>
                 </div>
-              )}
-              <div className="space-y-4">
-                {secondaryNews?.map((item) => (
-                  <div key={item.id_news} className="group cursor-pointer flex items-center space-x-4 p-2 rounded-lg hover:bg-gray-50">
-                    <img src={getFullImageUrl(item.image_url)} alt={item.title} className="w-20 h-20 object-cover rounded-lg flex-shrink-0 bg-gray-200" onError={(e) => (e.currentTarget.src = 'https://placehold.co/80x80/EEE/31343C?text=Error')} />
-                    <div className="space-y-1 flex-1">
-                      <p className="text-xs text-gray-500">{formatDate(item.published_at)}</p>
-                      <h3 className="font-semibold text-sm text-gray-900 group-hover:text-emerald-600 transition-colors line-clamp-2">{item.title}</h3>
-                      <p className="text-xs text-gray-500">Oleh {item.author_name}</p>
+              </div>
+              <div className="space-y-6">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="animate-pulse flex items-center space-x-4">
+                    <div className="bg-gray-200 rounded-xl h-20 w-20"></div>
+                    <div className="flex-1 space-y-2">
+                      <div className="bg-gray-200 h-3 w-1/4 rounded"></div>
+                      <div className="bg-gray-200 h-4 w-full rounded"></div>
+                      <div className="bg-gray-200 h-3 w-1/2 rounded"></div>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
-            )}
-      </CardContent>
-    </Card>
+          ) :
+            !news || news.length === 0 ? (
+              <div className="text-center py-16 text-gray-500">
+                <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <p className="text-lg">Belum ada berita terbaru.</p>
+              </div>
+            ) :
+              (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {featuredNews && (
+                    <Link href={`/news/${featuredNews.id_news}`}>
+                      <div className="group cursor-pointer">
+                        <div className="relative overflow-hidden rounded-2xl bg-gray-100 mb-4">
+                          <img 
+                            src={getFullImageUrl(featuredNews.image_url)} 
+                            alt={featuredNews.title} 
+                            className="w-full h-72 object-cover group-hover:scale-105 transition-transform duration-500" 
+                            onError={(e) => (e.currentTarget.src = 'https://placehold.co/600x400/EEE/31343C?text=Error')} 
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                          <div className="absolute top-4 right-4">
+                            <span className="bg-white/95 backdrop-blur-sm text-gray-800 text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg">
+                              Berita Utama
+                            </span>
+                          </div>
+                          <div className="absolute bottom-0 left-0 right-0 p-6">
+                            <div className="text-white/90 text-sm mb-2 flex items-center space-x-2">
+                              <Calendar className="w-4 h-4" />
+                              <span>{formatDate(featuredNews.published_at)}</span>
+                            </div>
+                            <h3 className="font-bold text-xl text-white mb-2 leading-tight group-hover:text-blue-200 transition-colors">
+                              {featuredNews.title}
+                            </h3>
+                            <p className="text-white/80 text-sm">Oleh {featuredNews.author_name}</p>
+                          </div>
+                        </div>
+                        <p className="text-gray-600 line-clamp-3 leading-relaxed">{stripHtml(featuredNews.content)}</p>
+                      </div>
+                    </Link>
+                  )}
+                  <div className="space-y-6">
+                    {secondaryNews?.map((item) => (
+                      <Link key={item.id_news} href={`/news/${item.id_news}`}>
+                        <div className="group cursor-pointer flex items-start space-x-4 p-4 rounded-xl hover:bg-gray-50 transition-colors">
+                          <img 
+                            src={getFullImageUrl(item.image_url)} 
+                            alt={item.title} 
+                            className="w-24 h-20 object-cover rounded-xl flex-shrink-0 group-hover:scale-105 transition-transform duration-300" 
+                            onError={(e) => (e.currentTarget.src = 'https://placehold.co/96x80/EEE/31343C?text=Error')} 
+                          />
+                          <div className="space-y-2 flex-1">
+                            <div className="flex items-center text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full w-fit">
+                              <Calendar className="w-3 h-3 mr-1" />
+                              <span>{formatDate(item.published_at)}</span>
+                            </div>
+                            <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug">
+                              {item.title}
+                            </h3>
+                            <p className="text-xs text-gray-500 flex items-center">
+                              <User className="w-3 h-3 mr-1" />
+                              {item.author_name}
+                            </p>
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
@@ -251,59 +350,98 @@ function EventsSection() {
 
   const events = apiResponse?.data;
 
-  if (error) return <Card><CardContent className="p-6 text-red-600">Gagal memuat event: {error.message}</CardContent></Card>;
+  if (error) return <Card className="border-0 shadow-lg rounded-2xl"><CardContent className="p-8 text-red-600">Gagal memuat event: {error.message}</CardContent></Card>;
 
   return (
-    <Card>
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-gray-900">Event</h2>
-          <Link href="/events">
-            <Button variant="ghost" className="text-emerald-600 font-medium text-sm p-0">
-              Lainnya <ExternalLink className="w-4 h-4 ml-1" />
-            </Button>
-          </Link>
-        </div>
-        {isLoading ? (
-          <div className="space-y-4">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="animate-pulse flex space-x-4 p-4 rounded-xl border border-gray-100">
-                <div className="w-20 h-16 bg-gray-200 rounded-lg flex-shrink-0"></div>
-                <div className="flex-1 space-y-2">
-                  <div className="bg-gray-200 h-4 w-3/4 rounded"></div>
-                  <div className="bg-gray-200 h-3 w-full rounded"></div>
-                  <div className="bg-gray-200 h-3 w-1/2 rounded"></div>
-                </div>
+    <div className="space-y-8">
+      <div className="text-center">
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Event & Kegiatan</h2>
+        <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+          Ikuti berbagai kegiatan menarik dan event spesial di Taman Nasional Alas Purwo
+        </p>
+      </div>
+      
+      <Card className="border-0 shadow-xl rounded-2xl overflow-hidden">
+        <CardContent className="p-8">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                <Calendar className="w-5 h-5 text-orange-600" />
               </div>
-            ))}
+              <h3 className="text-xl font-semibold text-gray-900">Kegiatan Terbaru</h3>
+            </div>
+            <Link href="/events">
+              <Button variant="ghost" className="text-orange-600 hover:text-orange-700 hover:bg-orange-50 font-semibold">
+                Lihat Semua <ExternalLink className="w-4 h-4 ml-1" />
+              </Button>
+            </Link>
           </div>
-        ) :
-          !events || events.length === 0 ? (
-            <div className="text-center py-10 text-gray-500">Belum ada event terbaru.</div>
+          {isLoading ? (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="bg-gray-200 rounded-2xl h-48 mb-4"></div>
+                  <div className="space-y-2">
+                    <div className="bg-gray-200 h-4 w-3/4 rounded"></div>
+                    <div className="bg-gray-200 h-3 w-full rounded"></div>
+                    <div className="bg-gray-200 h-3 w-1/2 rounded"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
           ) :
-            (
-              <div className="space-y-4 ">
-                {events.map((item) => {
-                  const status = getEventStatus(item.event_date);
-                  return (
-                    <div key={item.id_event} className="group flex space-x-4 p-4 rounded-xl border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors ">
-                      <img src={getFullImageUrl(item.image_url)} alt={item.title} className="w-20 h-16 rounded-lg object-cover flex-shrink-0 bg-gray-200" onError={(e) => (e.currentTarget.src = 'https://placehold.co/80x64/EEE/31343C?text=Error')} />
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900 text-sm mb-1 group-hover:text-emerald-600">{item.title}</h3>
-                        {/* Menggunakan summary dari backend, atau fallback ke content jika tidak ada */}
-                        <p className="text-xs text-gray-600 mb-2 line-clamp-2">{item.summary || stripHtml(item.content)}</p>
-                        <div className="flex items-center gap-3">
-                          <span className="text-xs text-emerald-600 font-medium">{formatDate(item.event_date)}</span>
-                          <span className={`text-xs px-2 py-1 rounded-full ${status.color}`}>{status.text}</span>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+            !events || events.length === 0 ? (
+              <div className="text-center py-16 text-gray-500">
+                <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <p className="text-lg">Belum ada event terbaru.</p>
               </div>
-            )}
-      </CardContent>
-    </Card>
+            ) :
+              (
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {events.map((item) => {
+                    const status = getEventStatus(item.event_date);
+                    return (
+                      <Link key={item.id_event} href={`/events/${item.slug}`}>
+                        <Card className="group cursor-pointer border-0 shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden">
+                          <CardContent className="p-0">
+                            <div className="relative h-48 overflow-hidden">
+                              <img 
+                                src={getFullImageUrl(item.image_url)} 
+                                alt={item.title} 
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                                onError={(e) => (e.currentTarget.src = 'https://placehold.co/400x200/EEE/31343C?text=Error')} 
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                              <div className="absolute top-4 right-4">
+                                <span className={`text-xs px-3 py-1.5 rounded-full font-semibold ${status.color}`}>
+                                  {status.text}
+                                </span>
+                              </div>
+                              <div className="absolute bottom-0 left-0 right-0 p-4">
+                                <h3 className="font-bold text-white mb-1 line-clamp-2 group-hover:text-orange-200 transition-colors">
+                                  {item.title}
+                                </h3>
+                                <div className="flex items-center text-white/90 text-sm">
+                                  <Calendar className="w-4 h-4 mr-1" />
+                                  <span>{formatDate(item.event_date)}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="p-4">
+                              <p className="text-gray-600 text-sm line-clamp-2 leading-relaxed">
+                                {item.summary || stripHtml(item.content)}
+                              </p>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
@@ -315,45 +453,63 @@ function DestinationsSection() {
 
   const destinations = apiResponse?.data;
 
-  if (error) return <Card><CardContent className="p-6 text-red-600">Gagal memuat destinasi: {error.message}</CardContent></Card>;
+  if (error) return <Card className="border-0 shadow-lg rounded-2xl"><CardContent className="p-8 text-red-600">Gagal memuat destinasi: {error.message}</CardContent></Card>;
 
   return (
-    <Card>
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Destinasi Populer</h2>
-          <Link href="/destinations">
-            <Button variant="ghost" className="text-emerald-600 font-medium text-sm p-0">Lihat Semua</Button>
-          </Link>
-        </div>
-        {isLoading ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="bg-gray-200 rounded-xl h-48 mb-3"></div>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <div className="bg-gray-200 h-4 w-20 rounded"></div>
-                    <div className="bg-gray-200 h-4 w-12 rounded"></div>
-                  </div>
-                  <div className="bg-gray-200 h-3 w-full rounded"></div>
-                </div>
+    <div className="space-y-8">
+      <div className="text-center">
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Destinasi Populer</h2>
+        <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+          Jelajahi keindahan alam dan destinasi menakjubkan di Taman Nasional Alas Purwo
+        </p>
+      </div>
+      
+      <Card className="border-0 shadow-xl rounded-2xl overflow-hidden">
+        <CardContent className="p-8">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                <MapPin className="w-5 h-5 text-emerald-600" />
               </div>
-            ))}
+              <h3 className="text-xl font-semibold text-gray-900">Objek Wisata Alam</h3>
+            </div>
+            <Link href="/destinations">
+              <Button variant="ghost" className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 font-semibold">
+                Lihat Semua <ExternalLink className="w-4 h-4 ml-1" />
+              </Button>
+            </Link>
           </div>
-        ) :
-          !destinations || destinations.length === 0 ? (
-            <div className="text-center py-10 text-gray-500">Belum ada destinasi.</div>
+          
+          {isLoading ? (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="bg-gray-200 rounded-2xl h-56 mb-4"></div>
+                  <div className="space-y-2">
+                    <div className="bg-gray-200 h-4 w-3/4 rounded"></div>
+                    <div className="bg-gray-200 h-3 w-full rounded"></div>
+                    <div className="bg-gray-200 h-3 w-1/2 rounded"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
           ) :
-            (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {destinations.map((destination) => (
-                  <DestinationCard key={destination.id_destination} destination={destination} />
-                ))}
+            !destinations || destinations.length === 0 ? (
+              <div className="text-center py-16 text-gray-500">
+                <MapPin className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <p className="text-lg">Belum ada destinasi.</p>
               </div>
-            )}
-      </CardContent>
-    </Card>
+            ) :
+              (
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {destinations.map((destination) => (
+                    <DestinationCard key={destination.id_destination} destination={destination} />
+                  ))}
+                </div>
+              )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
@@ -361,52 +517,62 @@ function InfoCardSection() {
   const infoItems = [
     {
       icon: (
-        <BarChart3 className="w-8 h-8 text-green-600 group-hover:scale-110 transition-transform" />
+        <BarChart3 className="w-8 h-8 text-white-600 group-hover:scale-110 transition-transform" />
       ),
       title: "SKM",
       desc: "Survei Kepuasan Masyarakat",
       link: "/survey",
+      gradient: "from-emerald-500 to-teal-500"
     },
     {
       icon: (
-        <Megaphone className="w-8 h-8 text-green-600 group-hover:scale-110 transition-transform" />
+        <Megaphone className="w-8 h-8 text-white-600 group-hover:scale-110 transition-transform" />
       ),
       title: "Pengaduan Masyarakat",
       desc: "Saluran Pengaduan Elektronik",
       link: "/complaint",
+      gradient: "from-orange-500 to-amber-500"
     },
     {
       icon: (
-        <AlertTriangle className="w-8 h-8 text-green-600 group-hover:scale-110 transition-transform" />
+        <AlertTriangle className="w-8 h-8 text-white-600 group-hover:scale-110 transition-transform" />
       ),
       title: "WBS",
       desc: "Whistleblowing System",
       link: "/wbs",
+      gradient: "from-red-500 to-pink-500"
     },
     {
       icon: (
-        <MapPin className="w-8 h-8 text-green-600 group-hover:scale-110 transition-transform" />
+        <MapPin className="w-8 h-8 text-white-600 group-hover:scale-110 transition-transform" />
       ),
       title: "Destinasi Wisata",
       desc: "Objek dan Daya Tarik Wisata Alam",
       link: "/destinations",
+      gradient: "from-blue-500 to-indigo-500"
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       {infoItems.map((item, i) => (
         <Link key={i} href={item.link}>
-          <Card className="group cursor-pointer border border-gray-100 hover:shadow-md hover:border-emerald-200 transition-all duration-300">
-            <CardContent className="flex flex-col items-center text-center p-6 space-y-3">
-              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-50">
-                {item.icon}
+          <Card className="group cursor-pointer border-0 shadow-lg hover:shadow-2xl transition-all duration-500 rounded-2xl overflow-hidden">
+            <CardContent className="relative p-8 text-center space-y-4">
+              <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-5 group-hover:opacity-10 transition-opacity`}></div>
+              <div className="relative">
+                <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br ${item.gradient} shadow-lg`}>
+                  <div className="text-white">
+                    {item.icon}
+                  </div>
+                </div>
+                <h3 className="font-bold text-gray-900 text-lg mt-4">{item.title}</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">{item.desc}</p>
+                <div className="inline-flex items-center text-sm font-semibold text-gray-700 group-hover:text-gray-900 mt-3">
+                  <span>Selengkapnya</span>
+                  <ExternalLink className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                </div>
               </div>
-              <h3 className="font-semibold text-gray-800 text-base">{item.title}</h3>
-              <p className="text-sm text-gray-500">{item.desc}</p>
-              <p className="text-xs text-emerald-600 font-medium mt-1 group-hover:underline">
-                Selengkapnya →
-              </p>
             </CardContent>
           </Card>
         </Link>
@@ -419,19 +585,47 @@ function InfoCardSection() {
 // --- Main Home Component Export ---
 export default function home() {
   return (
-    <div className="-mt-[76px] max-w-full mx-auto space-y-6">
+    <div className="-mt-[77px] max-w-full mx-auto">
       <HeroSection />
-      <div className="max-w-7xl mx-auto px-4 space-y-6 py-6 relative z-20">
+      <div className="max-w-7xl mx-auto px-4 space-y-16 py-16 relative z-20">
         <InfoCardSection />
         <NewsSection />
         <EventsSection />
         <DestinationsSection />
       </div>
-      {/* <PhotoGallerySection />
-      <VideoGallerySection />
-
-      */}
-
+      
+      {/* Call to Action Section */}
+      <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 py-20">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            Mulai Petualangan Anda
+          </h2>
+          <p className="text-white/90 text-xl mb-10 max-w-3xl mx-auto leading-relaxed">
+            Rasakan keajaiban alam Taman Nasional Alas Purwo. Dari pantai eksotis hingga hutan tropis yang menakjubkan, setiap sudut menawarkan pengalaman tak terlupakan.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Link href="/destinations">
+              <Button
+                size="lg"
+                className="bg-white text-emerald-600 hover:bg-gray-100 font-semibold px-10 py-6 text-lg rounded-full shadow-xl border-0"
+              >
+                <MapPin className="w-5 h-5 mr-2" />
+                Jelajahi Destinasi
+              </Button>
+            </Link>
+            <Link href="/booking">
+              <Button
+                size="lg"
+                variant="outline"
+                className="bg-transparent text-white border-white/30 hover:bg-white/10 font-semibold px-10 py-6 text-lg rounded-full"
+              >
+                <Ticket className="w-5 h-5 mr-2" />
+                Pesan Tiket Sekarang
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

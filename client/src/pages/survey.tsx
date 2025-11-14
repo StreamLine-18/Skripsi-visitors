@@ -59,61 +59,107 @@ export default function SurveyPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4 space-y-6">
-      {/* Header */}
-      <div className="relative h-[280px] md:h-[360px] overflow-hidden rounded-2xl">
-        <img
-          src="/assets/hero.png"
-          alt="Survei Kepuasan Masyarakat"
-          className="absolute inset-0 w-full h-full object-cover object-center"
-        />
-        <div className="absolute inset-0 bg-black/40"></div>
-        <div className="relative h-full flex flex-col items-center justify-center text-center text-white p-4">
-          <BarChart3 className="w-12 h-12 mb-4 text-white" />
-          <h1 className="text-3xl md:text-4xl font-bold mb-2">Survei Kepuasan Masyarakat</h1>
-          <p className="text-lg opacity-90 max-w-2xl">
-            Kami menghargai waktu Anda untuk membantu meningkatkan pelayanan Taman Nasional Alas Purwo.
-          </p>
+    <div className="min-h-screen bg-white">
+      {/* Hero Section */}
+      <div className="relative h-[400px] bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/assets/hero.png')] bg-cover bg-center opacity-20"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 h-full flex flex-col justify-center">
+          <Link href="/">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-white hover:bg-white/20 mb-6 -ml-2 rounded-lg w-fit"
+            >
+              ← Kembali
+            </Button>
+          </Link>
+          
+          <div className="space-y-4 text-white max-w-4xl">
+            <div className="flex items-center space-x-2">
+              <BarChart3 className="w-6 h-6" />
+              <span className="text-sm font-medium tracking-wider uppercase">Survei Kepuasan</span>
+            </div>
+            <h1 className="text-4xl md:text-6xl font-bold leading-tight">
+              Survei Kepuasan<br />Masyarakat
+            </h1>
+            <p className="text-lg md:text-xl text-white/90 max-w-3xl leading-relaxed">
+              Bantu kami meningkatkan kualitas pelayanan Taman Nasional Alas Purwo dengan memberikan penilaian dan masukan Anda
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* Form */}
-      <Card>
-        <CardContent className="p-6 space-y-6">
-          {isSuccess ? (
-            <div className="text-center py-10">
-              <p className="text-green-600 font-semibold text-lg">✅ Terima kasih telah mengisi survei!</p>
-              <p className="text-gray-600 text-sm mt-2">
-                Jawaban Anda akan membantu kami dalam meningkatkan mutu pelayanan publik.
-              </p>
-              <Link href="/">
-                <Button className="mt-6" variant="outline">← Kembali ke Beranda</Button>
-              </Link>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-8">
-              {/* SECTION I */}
-              <div>
-                <h2 className="text-lg font-semibold text-gray-800 mb-3">I. Informasi Responden</h2>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <Label>Tanggal Survei *</Label>
-                    <Input type="date" name="tanggal_survei" required onChange={handleChange} />
-                  </div>
+      {/* Form Section */}
+      <div className="max-w-4xl mx-auto px-4 py-16">
 
-                  <div>
-                    <Label>Jam Survei *</Label>
-                    <select name="jam_survei" required onChange={handleChange} className="w-full border rounded-md p-2">
-                      <option value="">Pilih jam</option>
-                      <option value="08.00 - 12.00">08.00 - 12.00</option>
-                      <option value="13.00 - 17.00">13.00 - 17.00</option>
-                    </select>
+        <Card className="border-0 shadow-2xl rounded-2xl overflow-hidden">
+          <CardContent className="p-8 md:p-12">
+            {isSuccess ? (
+              <div className="text-center py-16">
+                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <BarChart3 className="w-10 h-10 text-green-600" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Terima Kasih!</h2>
+                <p className="text-gray-600 text-lg mb-2">
+                  Survei Anda telah berhasil dikirim
+                </p>
+                <p className="text-gray-500 mb-8 max-w-md mx-auto">
+                  Masukan Anda sangat berharga untuk meningkatkan kualitas pelayanan kami
+                </p>
+                <Link href="/">
+                  <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 px-8">
+                    Kembali ke Beranda
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-10">
+                {/* SECTION I */}
+                <div className="space-y-6">
+                  <div className="flex items-center space-x-3 mb-6">
+                    <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                      <BarChart3 className="w-5 h-5 text-emerald-600" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-gray-900">Informasi Responden</h2>
                   </div>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label className="text-sm font-semibold text-gray-700">Tanggal Survei *</Label>
+                      <Input 
+                        type="date" 
+                        name="tanggal_survei" 
+                        required 
+                        onChange={handleChange}
+                        className="h-12 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 rounded-lg"
+                      />
+                    </div>
 
-                  <div className="md:col-span-2">
-                    <Label>Dimana anda mengakses unit pelayanan Anda? *</Label>
-                    <Input name="lokasi_pelayanan" required onChange={handleChange} placeholder="Contoh: Kantor TNAP, website, aplikasi..." />
-                  </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-semibold text-gray-700">Jam Survei *</Label>
+                      <select 
+                        name="jam_survei" 
+                        required 
+                        onChange={handleChange} 
+                        className="w-full h-12 border border-gray-200 rounded-lg px-3 focus:border-emerald-500 focus:ring-emerald-500"
+                      >
+                        <option value="">Pilih jam</option>
+                        <option value="08.00 - 12.00">08.00 - 12.00</option>
+                        <option value="13.00 - 17.00">13.00 - 17.00</option>
+                      </select>
+                    </div>
+
+                    <div className="md:col-span-2 space-y-2">
+                      <Label className="text-sm font-semibold text-gray-700">Dimana anda mengakses unit pelayanan Anda? *</Label>
+                      <Input 
+                        name="lokasi_pelayanan" 
+                        required 
+                        onChange={handleChange} 
+                        placeholder="Contoh: Kantor TNAP, website, aplikasi..."
+                        className="h-12 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 rounded-lg"
+                      />
+                    </div>
 
                   <div>
                     <Label>Apakah Anda penyandang disabilitas? *</Label>
@@ -188,9 +234,14 @@ export default function SurveyPage() {
                 </div>
               </div>
 
-              {/* SECTION II */}
-              <div>
-                <h2 className="text-lg font-semibold text-gray-800 mb-3">II. Pendapat Responden tentang Pelayanan</h2>
+                {/* SECTION II */}
+                <div className="space-y-6">
+                  <div className="flex items-center space-x-3 mb-6">
+                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <Send className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-gray-900">Penilaian Pelayanan</h2>
+                  </div>
                 {[
                   ["q1", "Kesesuaian persyaratan pelayanan dengan informasi", "Tidak Sesuai", "Kurang Sesuai", "Sesuai", "Sangat Sesuai"],
                   ["q2", "Kemudahan prosedur pelayanan", "Tidak Mudah", "Kurang Mudah", "Mudah", "Sangat Mudah"],
@@ -222,13 +273,21 @@ export default function SurveyPage() {
                 </div>
               </div>
 
-              <Button type="submit" disabled={isPending} size="lg" className="w-full bg-green-600 hover:bg-green-700 text-white">
-                {isPending ? "Mengirim..." : (<><Send className="w-5 h-5 mr-2" /> Kirim Survei</>)}
-              </Button>
-            </form>
-          )}
-        </CardContent>
-      </Card>
+                <div className="pt-8 border-t border-gray-200">
+                  <Button 
+                    type="submit" 
+                    disabled={isPending} 
+                    size="lg" 
+                    className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-6 text-lg rounded-lg shadow-lg"
+                  >
+                    {isPending ? "Mengirim..." : (<><Send className="w-5 h-5 mr-2" /> Kirim Survei</>)}
+                  </Button>
+                </div>
+              </form>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

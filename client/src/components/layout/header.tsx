@@ -13,27 +13,34 @@ export default function Header() {
   const isMobile = useIsMobile();
   const [location] = useLocation();
   const isHomePage = location === "/";
+  const isRegisterPage = location === "/register";
+  const isLoginPage = location === "/login";
 
   const [scrollState, setScrollState] = useState<"transparent" | "glass" | "white">("transparent");
 
   // Handle scroll state
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!isHomePage) {
-        setScrollState("white");
-        return;
-      }
+useEffect(() => {
+  const handleScroll = () => {
+    // Remove login/register override
 
-      const y = window.scrollY;
-      if (y < 100) setScrollState("transparent");
-      else if (y < 850) setScrollState("glass");
-      else setScrollState("white");
-    };
+    // For non-home pages (except login/register), use white background
+    if (!isHomePage && !isLoginPage && !isRegisterPage) {
+      setScrollState("white");
+      return;
+    }
 
-    handleScroll(); // run immediately on load
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [isHomePage, location]);
+    // For home, login, register → use scroll-based states
+    const y = window.scrollY;
+    if (y < 100) setScrollState("transparent");
+    else if (y < 850) setScrollState("glass");
+    else setScrollState("white");
+  };
+
+  handleScroll(); 
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, [isHomePage, isLoginPage, isRegisterPage, location]);
+
 
   // Shared color logic
   const textColorClass =
