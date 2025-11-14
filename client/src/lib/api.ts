@@ -169,6 +169,10 @@ export const eventApi = {
       "GET",
       createUrlWithParams(getFullApiUrl("/events"), params)
     ).then(handleResponse<ApiResponse<Event[]>>),
+  getEvent: (identifier: string) =>
+    apiRequest("GET", getFullApiUrl(`/events/${identifier}`)).then(
+      handleResponse<ApiResponse<Event>>
+    ),
 };
 
 export const destinationApi = {
@@ -178,7 +182,7 @@ export const destinationApi = {
       createUrlWithParams(getFullApiUrl("/destinations"), params)
     ).then(handleResponse<ApiResponse<Destination[]>>),
   getDestination: (identifier: string) =>
-    apiRequest("GET", getFullApiUrl(`/destinations/slug/${identifier}`)).then(
+    apiRequest("GET", getFullApiUrl(`/destinations/${identifier}`)).then(
       handleResponse<ApiResponse<Destination>>
     ),
 };

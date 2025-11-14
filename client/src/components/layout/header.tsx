@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Mountain, Bell, User, Home, Ticket, History } from "lucide-react";
+import { Bell, User, Home, Ticket, History } from "lucide-react";
 import { useState, useEffect } from "react";
 
 const navItems = [
@@ -12,72 +12,30 @@ const navItems = [
 export default function Header() {
   const isMobile = useIsMobile();
   const [location] = useLocation();
-  const [isScrolled] = useState(false);
   const isHomePage = location === "/";
 
   const [scrollState, setScrollState] = useState<"transparent" | "glass" | "white">("transparent");
 
-useEffect(() => {
-  const handleScroll = () => {
-    if (!isHomePage) {
-      setScrollState("white");
-      return;
-    }
+  // Handle scroll state
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!isHomePage) {
+        setScrollState("white");
+        return;
+      }
 
-    const y = window.scrollY;
+      const y = window.scrollY;
+      if (y < 100) setScrollState("transparent");
+      else if (y < 850) setScrollState("glass");
+      else setScrollState("white");
+    };
 
-    if (y < 100) setScrollState("transparent");
-    else if (y < 850) setScrollState("glass");
-    else setScrollState("white");
-  };
+    handleScroll(); // run immediately on load
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isHomePage, location]);
 
-  // Run immediately when location changes
-  handleScroll();
-
-  window.addEventListener("scroll", handleScroll);
-  return () => window.removeEventListener("scroll", handleScroll);
-}, [isHomePage, location]);
-
-
-  if (isMobile) {
-    return (
-      <header className="gradient-primary text-white p-4 shadow-lg md:hidden">
-        <div className="flex items-center justify-between">
-          <Link href="/">
-            <div className="flex items-center space-x-3">
-              <img src="/public/assets/logo.png" alt="Alas Purwo Logo" className="w-10 h-10" />
-              <div>
-                <h1 className="text-lg font-bold">Taman Nasional Alas Purwo</h1>
-                <p className="text-xs opacity-90">Digital Ticketing System</p>
-              </div>
-            </div>
-          </Link>
-          <div className="flex items-center space-x-3">
-            <div className="relative">
-              <Bell className="w-5 h-5" />
-            </div>
-          </div>
-        </div>
-      </header>
-    );
-  }
-
-  // Determine navbar styling based on page and scroll state
-  const isTransparent = isHomePage && !isScrolled;
-  const navbarClasses = `
-  hidden md:block
-  sticky top-0 z-50 w-full
-  transition-all duration-500 ease-in-out
-  ${scrollState === "transparent"
-      ? "bg-transparent"
-      : scrollState === "glass"
-        ? "bg-white/20 backdrop-blur-md border-b border-white/20 shadow-sm"
-        : "bg-white/90 backdrop-blur-none border-b border-gray-200 shadow-md"
-    }
-`;
-
-
-
+  // Shared color logic
   const textColorClass =
     scrollState === "transparent" || scrollState === "glass"
       ? "text-white"
@@ -112,38 +70,90 @@ useEffect(() => {
     scrollState === "transparent"
       ? "bg-white/20 hover:bg-white/30 backdrop-blur-sm"
       : scrollState === "glass"
-        ? "bg-white/30 hover:bg-white/40 backdrop-blur-md"
-        : "gradient-primary hover:shadow-lg";
+      ? "bg-white/30 hover:bg-white/40 backdrop-blur-md ring-1 ring-white/40"
+      : "gradient-primary hover:shadow-lg";
 
   const userIconColor =
     scrollState === "transparent" || scrollState === "glass"
       ? "text-white"
-      : "text-white"; // stays white over gradient-primary
+      : "text-white";
+
+  // 🔹 MOBILE HEADER
+  if (isMobile) {
+    return (
+      <header className="gradient-primary text-white p-4 shadow-lg md:hidden sticky top-0 z-50">
+        <div className="flex items-center justify-between">
+          <Link href="/">
+            <div className="flex items-center space-x-3">
+              <img
+                src="/assets/logo.png"
+                alt="Alas Purwo Logo"
+                className="w-10 h-10"
+              />
+              <div>
+                <h1 className="text-lg font-bold">
+                  Taman Nasional Alas Purwo
+                </h1>
+                <p className="text-xs opacity-90">Digital Ticketing System</p>
+              </div>
+            </div>
+          </Link>
+          <div className="flex items-center space-x-3">
+            <div className="relative">
+              <Bell className="w-5 h-5" />
+            </div>
+          </div>
+        </div>
+      </header>
+    );
+  }
+
+  // 🔹 DESKTOP HEADER
+  const navbarClasses = `
+    hidden md:block
+    sticky top-0 z-50 w-full
+    transition-all duration-500 ease-in-out
+    ${
+      scrollState === "transparent"
+        ? "bg-transparent border-b shadow-none border-transparent"
+        : scrollState === "glass"
+        ? "bg-white/20 backdrop-blur-md border-b border-white/20 shadow-sm"
+        : "bg-white backdrop-blur-none border-b border-gray-200 shadow-md"
+    }
+  `;
 
   return (
     <header className={navbarClasses}>
       <div className="max-w-full mx-auto px-9 py-4">
         <div className="flex items-center justify-between">
+          {/* 🔹 Logo Section */}
           <Link
             href="/"
             className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
           >
             <div className="w-15 h-15 rounded-lg flex items-center justify-center">
-              <img src="/public/assets/logo.png" alt="Alas Purwo Logo" className="w-10 h-10" />
+              <img
+                src="/assets/logo.png"
+                alt="Alas Purwo Logo"
+                className="w-10 h-10"
+              />
             </div>
             <div>
-              <h1 className={`text-xl font-bold ${textColorClass} transition-colors duration-300`}>
+              <h1
+                className={`text-xl font-bold ${textColorClass} transition-colors duration-300`}
+              >
                 Taman Nasional Alas Purwo
               </h1>
-              <p className={`text-xs ${textColorSecondary} transition-colors duration-300`}>
+              <p
+                className={`text-xs ${textColorSecondary} transition-colors duration-300`}
+              >
                 Digital Ticketing System
               </p>
             </div>
           </Link>
 
-          {/* Navigasi & Ikon di Kanan */}
+          {/* 🔹 Navigation & Icons */}
           <div className="flex items-center space-x-8">
-            {/* Menu Navigasi */}
             <nav className="flex items-center space-x-6">
               {navItems.map(({ path, label }) => {
                 const isActive = location === path;
@@ -151,14 +161,15 @@ useEffect(() => {
                   <Link
                     key={path}
                     href={path}
-                    className={`text-sm font-medium transition-colors duration-300 relative py-2 ${isActive
-                      ? activeLinkColor
-                      : navLinkColor
-                      }`}
+                    className={`text-sm font-medium transition-colors duration-300 relative py-2 ${
+                      isActive ? activeLinkColor : navLinkColor
+                    }`}
                   >
                     {label}
                     {isActive && (
-                      <span className={`absolute bottom-0 left-0 right-0 h-0.5 ${activeIndicatorColor} rounded-full transition-colors duration-300`}></span>
+                      <span
+                        className={`absolute bottom-0 left-0 right-0 h-0.5 ${activeIndicatorColor} rounded-full transition-colors duration-300`}
+                      ></span>
                     )}
                   </Link>
                 );
@@ -166,9 +177,11 @@ useEffect(() => {
             </nav>
 
             {/* Divider */}
-            <div className={`h-8 w-px ${dividerColor} transition-colors duration-300`}></div>
+            <div
+              className={`h-8 w-px ${dividerColor} transition-colors duration-300`}
+            ></div>
 
-            {/* Ikon (Profil) */}
+            {/* Profile Icon */}
             <div className="flex items-center space-x-3">
               <Link
                 href="/profile"
@@ -176,7 +189,6 @@ useEffect(() => {
               >
                 <User className={`w-5 h-5 ${userIconColor}`} />
               </Link>
-
             </div>
           </div>
         </div>
