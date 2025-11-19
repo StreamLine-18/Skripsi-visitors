@@ -10,12 +10,13 @@ import {
   XCircle,
   CheckCircle2,
   AlertCircle,
-  ChevronLeft,
-  Phone,
-  Globe,
-  Users,
-  CreditCard as IdCard,
+  ArrowLeft,
+  Camera,
+  Info,
+  MapPin,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { bookingApi } from "@/lib/api";
 import { useMidtransSnap } from "@/hooks/use-midtrans-snap";
 
@@ -28,7 +29,7 @@ declare global {
 }
 
 export default function BookingDetailPage() {
-  const [match, params] = useRoute("/history/:id");
+  const [, params] = useRoute("/history/:id");
   const [isPaying, setIsPaying] = useState(false);
   const bookingId = params?.id;
 
@@ -173,206 +174,289 @@ export default function BookingDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50/30">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-100 sticky top-0 z-10 backdrop-blur-sm bg-white/90">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <Link href="/history" className="flex items-center gap-2 text-gray-700 hover:text-gray-900">
-            <ChevronLeft className="w-5 h-5" />
-            <span className="font-medium">Kembali ke Riwayat Pemesanan</span>
+    <div className="min-h-screen bg-white">
+      {/* Hero Section */}
+      <div className="relative h-[300px] bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1920')] bg-cover bg-center opacity-20"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 h-full flex flex-col justify-center">
+          <Link href="/history">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-white hover:bg-white/20 mb-6 -ml-2 rounded-lg w-fit"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Kembali ke Riwayat
+            </Button>
           </Link>
+          
+          <div className="space-y-4 text-white">
+            <div className="flex items-center space-x-2">
+              <Camera className="w-6 h-6" />
+              <span className="text-sm font-medium tracking-wider uppercase">Detail Pemesanan</span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold leading-tight">
+              Informasi Booking
+            </h1>
+            <p className="text-lg md:text-xl text-white/90 max-w-3xl leading-relaxed">
+              Detail lengkap pemesanan tiket Anda di Taman Nasional Alas Purwo
+            </p>
+          </div>
         </div>
       </div>
 
       {/* Body */}
-      <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
+      <div className="max-w-7xl mx-auto px-4 py-12 space-y-8">
         {/* Status Card */}
-        <div className={`${statusConfig.bg} ${statusConfig.border} border-2 rounded-3xl p-8 shadow-lg`}>
-          <div className="flex items-start justify-between mb-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-white rounded-2xl shadow-md">{statusConfig.icon}</div>
-              <div>
-                <h1 className={`text-2xl font-bold ${statusConfig.textColor}`}>
-                  {statusConfig.text}
-                </h1>
-                <p className="text-sm text-gray-600 mt-1">
-                  ID Booking:{" "}
-                  <span className="font-mono text-xs">{booking.id_booking}</span>
-                </p>
+        <Card className={`${statusConfig.bg} ${statusConfig.border} border-2 rounded-2xl shadow-xl overflow-hidden`}>
+          <CardContent className="p-8">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+              <div className="flex items-center gap-4">
+                <div className="p-4 bg-white rounded-xl shadow-md">{statusConfig.icon}</div>
+                <div>
+                  <h2 className={`text-2xl md:text-3xl font-bold ${statusConfig.textColor}`}>
+                    {statusConfig.text}
+                  </h2>
+                  <p className="text-sm text-gray-600 mt-2">
+                    ID Booking: <span className="font-mono font-semibold">{booking.id_booking}</span>
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                {booking.paid_at && (
+                  <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-200">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <span className="text-sm font-medium text-gray-700">
+                      Dibayar {formatDateShort(booking.paid_at)}
+                    </span>
+                  </div>
+                )}
+                {booking.expired_at && isPaid && (
+                  <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-200">
+                    <Clock className="w-4 h-4 text-amber-600" />
+                    <span className="text-sm font-medium text-gray-700">
+                      Berlaku hingga {formatDateShort(booking.expired_at)}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            {booking.paid_at && (
-              <div className="flex items-center gap-2 bg-white/80 px-4 py-2 rounded-full shadow-sm">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                <span className="text-sm font-medium text-gray-700">
-                  Dibayar {formatDateShort(booking.paid_at)}
-                </span>
-              </div>
-            )}
-            {booking.expired_at && isPaid && (
-              <div className="flex items-center gap-2 bg-white/80 px-4 py-2 rounded-full shadow-sm">
-                <Clock className="w-4 h-4 text-amber-600" />
-                <span className="text-sm font-medium text-gray-700">
-                  Berlaku hingga {formatDateShort(booking.expired_at)}
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Main Grid */}
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className="grid lg:grid-cols-3 gap-8">
           {/* Left Column */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-8">
             {/* Leader Info */}
-            <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
-              <div className="bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-4">
-                <h2 className="text-white font-semibold flex items-center gap-2">
-                  <User className="w-5 h-5" />
-                  Informasi Pemimpin Rombongan
-                </h2>
-              </div>
-              <div className="p-6 space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-xs text-gray-500 mb-1">Nama Lengkap</p>
-                    <p className="font-semibold text-gray-900">{booking.leader_name}</p>
+            <Card className="border-0 shadow-xl rounded-2xl overflow-hidden">
+              <CardContent className="p-0">
+                <div className="bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-5">
+                  <h2 className="text-white text-xl font-bold flex items-center gap-3">
+                    <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                      <User className="w-5 h-5" />
+                    </div>
+                    Informasi Pemimpin Rombongan
+                  </h2>
+                </div>
+                <div className="p-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <p className="text-sm font-semibold text-gray-700">Nama Lengkap</p>
+                      <p className="text-lg text-gray-900">{booking.leader_name}</p>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-sm font-semibold text-gray-700">Jenis Kelamin</p>
+                      <p className="text-lg text-gray-900">{booking.leader_gender}</p>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-sm font-semibold text-gray-700">No. Telepon</p>
+                      <p className="text-lg text-gray-900">{booking.leader_phone}</p>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-sm font-semibold text-gray-700">Kewarganegaraan</p>
+                      <p className="text-lg text-gray-900">{booking.leader_nationality}</p>
+                    </div>
+                    <div className="col-span-1 md:col-span-2 space-y-2">
+                      <p className="text-sm font-semibold text-gray-700">Identitas</p>
+                      <p className="text-lg text-gray-900">
+                        {booking.leader_id_type} - {booking.leader_id_number}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Visit Date */}
+            <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200 border-2 rounded-2xl shadow-lg">
+              <CardContent className="p-8">
+                <div className="flex items-center gap-4">
+                  <div className="p-4 bg-white rounded-xl shadow-md">
+                    <Calendar className="w-8 h-8 text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500 mb-1">Jenis Kelamin</p>
-                    <p className="font-semibold text-gray-900">{booking.leader_gender}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 mb-1">No. Telepon</p>
-                    <p className="font-semibold text-gray-900">{booking.leader_phone}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 mb-1">Kewarganegaraan</p>
-                    <p className="font-semibold text-gray-900">{booking.leader_nationality}</p>
-                  </div>
-                  <div className="col-span-2">
-                    <p className="text-xs text-gray-500 mb-1">Identitas</p>
-                    <p className="font-semibold text-gray-900">
-                      {booking.leader_id_type} - {booking.leader_id_number}
+                    <p className="text-sm text-blue-600 font-semibold mb-2">
+                      Tanggal Kunjungan
+                    </p>
+                    <p className="text-xl md:text-2xl font-bold text-gray-900">
+                      {formatDate(booking.visit_date || booking.created_on)}
                     </p>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            {/* Visit Date */}
-            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl shadow-md border-2 border-indigo-100 p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-4 bg-white rounded-2xl shadow-sm">
-                  <Calendar className="w-8 h-8 text-indigo-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-indigo-600 font-medium mb-1">
-                    Tanggal Kunjungan
-                  </p>
-                  <p className="text-xl font-bold text-gray-900">
-                    {formatDate(booking.visit_date || booking.created_on)}
-                  </p>
-                </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
 
             {/* Ticket List */}
-            <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
-              <div className="bg-gradient-to-r from-purple-500 to-pink-600 px-6 py-4">
-                <h2 className="text-white font-semibold flex items-center gap-2">
-                  <Ticket className="w-5 h-5" />
-                  Detail Tiket
-                </h2>
-              </div>
-              <div className="p-6 space-y-3">
-                {booking.items?.map((item: any, idx: number) => (
-                  <div
-                    key={idx}
-                    className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200"
-                  >
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900 text-sm">{item.type}</p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        Rp {Number(item.price).toLocaleString("id-ID")} × {item.quantity}
-                      </p>
+            <Card className="border-0 shadow-xl rounded-2xl overflow-hidden">
+              <CardContent className="p-0">
+                <div className="bg-gradient-to-r from-purple-500 to-pink-600 px-6 py-5">
+                  <h2 className="text-white text-xl font-bold flex items-center gap-3">
+                    <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                      <Ticket className="w-5 h-5" />
                     </div>
-                    <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-bold">
-                      {item.quantity}x
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
+                    Detail Tiket
+                  </h2>
+                </div>
+                <div className="p-8 space-y-4">
+                  {booking.items?.map((item: any, idx: number) => (
+                    <div
+                      key={idx}
+                      className="flex items-center justify-between p-5 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200 hover:shadow-md transition-shadow"
+                    >
+                      <div className="flex-1">
+                        <p className="font-semibold text-gray-900 text-base mb-1">{item.gate_name} - {item.category_name}</p>
+                        <p className="text-sm text-gray-600">
+                          Rp {Number(item.price).toLocaleString("id-ID")} × {item.quantity}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <span className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-lg text-sm font-bold">
+                          Rp {(Number(item.price) * item.quantity).toLocaleString("id-ID")}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Right Column */}
-          <div className="space-y-6">
-            <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-xl p-6 text-white sticky top-24">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-white/20 rounded-lg">
-                  <CreditCard className="w-5 h-5" />
-                </div>
-                <p className="text-sm font-medium opacity-90">Total Pembayaran</p>
-              </div>
-              <p className="text-4xl font-bold mb-6">
-                Rp {Number(booking.total_amount).toLocaleString("id-ID")}
-              </p>
-
-              <div className="space-y-3">
-                {isPaymentExpired && (
-                  <button
-                    onClick={handleRetryPayment}
-                    disabled={isPaying}
-                    className="w-full bg-white text-emerald-600 hover:bg-gray-50 disabled:opacity-50 py-3 px-6 rounded-xl font-semibold shadow-lg transition-all transform hover:scale-105 active:scale-95"
-                  >
-                    {isPaying ? "Memproses..." : "Bayar Lagi"}
-                  </button>
-                )}
-
-                {isPending && (
-                  <button
-                    onClick={handleRetryPayment}
-                    className="w-full bg-white text-emerald-600 hover:bg-gray-50 py-3 px-6 rounded-xl font-semibold shadow-lg transition-all transform hover:scale-105 active:scale-95"
-                  >
-                    Lanjutkan Pembayaran
-                  </button>
-                )}
-
-                {isPaid && (
-                  <Link href="/tickets">
-                    <button className="w-full bg-white text-emerald-600 hover:bg-gray-50 py-3 px-6 rounded-xl font-semibold shadow-lg transition-all transform hover:scale-105 active:scale-95">
-                      Lihat Tiket Saya
-                    </button>
-                  </Link>
-                )}
-
-                <button className="w-full bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white py-3 px-6 rounded-xl font-semibold border-2 border-white/30 transition-all">
-                  Hubungi Customer Service
-                </button>
-              </div>
-
-              <div className="mt-6 pt-6 border-t border-white/20 space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="opacity-80">Dibuat</span>
-                  <span className="font-medium">
-                    {formatDateShort(booking.created_on)}
-                  </span>
-                </div>
-                {booking.paid_at && (
-                  <div className="flex justify-between">
-                    <span className="opacity-80">Dibayar</span>
-                    <span className="font-medium">
-                      {formatDateShort(booking.paid_at)}
-                    </span>
+          <div className="lg:col-span-1">
+            <div className="sticky top-6 space-y-6">
+              {/* Payment Card */}
+              <Card className="border-0 shadow-2xl rounded-2xl overflow-hidden">
+                <CardContent className="p-8">
+                  <div className="text-center mb-6">
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full mb-4">
+                      <CreditCard className="w-8 h-8 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">
+                      Total Pembayaran
+                    </h3>
+                    <p className="text-4xl font-bold text-emerald-600">
+                      Rp {Number(booking.total_amount).toLocaleString("id-ID")}
+                    </p>
                   </div>
-                )}
-              </div>
+
+                  <div className="space-y-3 mb-6">
+                    {isPaymentExpired && (
+                      <Button
+                        onClick={handleRetryPayment}
+                        disabled={isPaying}
+                        className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-6 text-lg rounded-lg shadow-lg"
+                      >
+                        {isPaying ? "Memproses..." : "Bayar Lagi"}
+                      </Button>
+                    )}
+
+                    {isPending && (
+                      <Button
+                        onClick={handleRetryPayment}
+                        disabled={isPaying}
+                        className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-6 text-lg rounded-lg shadow-lg"
+                      >
+                        {isPaying ? "Memproses..." : "Lanjutkan Pembayaran"}
+                      </Button>
+                    )}
+
+                    {isPaid && (
+                      <Link href="/tickets">
+                        <Button className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-6 text-lg rounded-lg shadow-lg">
+                          Lihat Tiket Saya
+                        </Button>
+                      </Link>
+                    )}
+
+                    <Button
+                      variant="outline"
+                      className="w-full border-2 border-gray-200 hover:bg-gray-50 font-semibold py-3"
+                    >
+                      Hubungi Customer Service
+                    </Button>
+                  </div>
+
+                  <div className="pt-6 border-t border-gray-200 space-y-3 text-sm">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Dibuat</span>
+                      <span className="font-semibold text-gray-900">
+                        {formatDateShort(booking.created_on)}
+                      </span>
+                    </div>
+                    {booking.paid_at && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">Dibayar</span>
+                        <span className="font-semibold text-gray-900">
+                          {formatDateShort(booking.paid_at)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Info Card */}
+              <Card className="border-amber-200 bg-amber-50/50 rounded-2xl">
+                <CardContent className="p-6">
+                  <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
+                    <Info className="w-4 h-4 mr-2 text-amber-600" />
+                    Informasi Penting
+                  </h4>
+                  <ul className="space-y-2 text-sm text-gray-700">
+                    <li>• Simpan bukti pembayaran Anda</li>
+                    <li>• Tunjukkan tiket saat memasuki kawasan</li>
+                    <li>• Tiket berlaku sesuai tanggal kunjungan</li>
+                    <li>• Hubungi CS jika ada kendala</li>
+                  </ul>
+                </CardContent>
+              </Card>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Call to Action Section */}
+      <div className="bg-gradient-to-r from-emerald-600 to-teal-600 py-16 mt-16">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            Rencanakan Kunjungan Berikutnya
+          </h2>
+          <p className="text-white/90 text-lg mb-8 max-w-2xl mx-auto">
+            Jelajahi destinasi lain dan buat pengalaman wisata yang tak terlupakan
+          </p>
+          <Link href="/destinations">
+            <Button
+              size="lg"
+              className="bg-white text-emerald-600 hover:bg-gray-100 font-semibold px-8 py-6 text-lg rounded-full shadow-xl"
+            >
+              <MapPin className="w-5 h-5 mr-2" />
+              Jelajahi Destinasi
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

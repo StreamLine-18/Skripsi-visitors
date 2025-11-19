@@ -160,12 +160,8 @@ export default function BookingPage() {
         console.error("Midtrans Snap not available", snap);
         return;
       }
-
-      snap.pay(token, {
-        onSuccess: () => (window.location.href = `/history`),
-        onPending: () => (window.location.href = `/history`),
-        onError: () => (window.location.href = `/history`),
-      });
+    console.log("Midtrans Snap:", snap);
+      snap.pay(token);
     },
   });
 

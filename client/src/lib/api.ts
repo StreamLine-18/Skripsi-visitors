@@ -213,7 +213,7 @@ export const bookingApi = {
 
   // ✅ New endpoint: retryPayment
   retryPayment: (id: string, options?: any) => {
-    const url = getFullApiUrl(`/midtrans/retry/{${id}}`);
+    const url = getFullApiUrl(`/midtrans/retry/${id}`);
     return apiRequest("POST", url, {
       headers: options?.headers,
     }).then(handleResponse<ApiResponse<{ transactionToken: string }>>);

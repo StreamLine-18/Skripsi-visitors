@@ -31,8 +31,8 @@ useEffect(() => {
 
     // For home, login, register → use scroll-based states
     const y = window.scrollY;
-    if (y < 100) setScrollState("transparent");
-    else if (y < 850) setScrollState("glass");
+    if (y < 120) setScrollState("transparent");
+    else if (y < 930) setScrollState("glass");
     else setScrollState("white");
   };
 

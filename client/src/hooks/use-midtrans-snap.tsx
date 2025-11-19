@@ -1,9 +1,7 @@
 import { useEffect } from "react";
 
 /**
- * Hook untuk memuat Midtrans Snap.js secara dinamis
- * Pastikan kamu sudah punya VITE_MIDTRANS_CLIENT_KEY di .env
- * dan sesuaikan environment (sandbox/production)
+ * Auto-load Midtrans Snap.js correctly with client key
  */
 export function useMidtransSnap(isProduction = false) {
   useEffect(() => {
@@ -13,11 +11,11 @@ export function useMidtransSnap(isProduction = false) {
       return;
     }
 
-    // Hindari duplikat load
-    if ((window as any).snap) return;
-
     const scriptId = "midtrans-snap-script";
-    if (document.getElementById(scriptId)) return;
+
+    // Remove previous script to avoid stale snap instance
+    const existing = document.getElementById(scriptId);
+    if (existing) existing.remove();
 
     const script = document.createElement("script");
     script.id = scriptId;
