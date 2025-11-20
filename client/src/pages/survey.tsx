@@ -7,45 +7,58 @@ import { Textarea } from "@/components/ui/textarea";
 import { BarChart3, Send } from "lucide-react";
 import { Link } from "wouter";
 import { useMutation } from "@tanstack/react-query";
+import { surveyApi } from "@/lib/api";
 
 export default function SurveyPage() {
   const [form, setForm] = useState({
-    tanggal_survei: "",
-    jam_survei: "",
-    lokasi_pelayanan: "",
-    disabilitas: "",
-    jenis_disabilitas: "",
+    survey_date: new Date().toISOString().split('T')[0],
+    survey_time: "",
+    access_location: "",
+    is_disabled: "false",
+    disability_type: "",
     gender: "",
-    usia: "",
-    pendidikan: "",
-    pekerjaan: "",
-    jenis_pelayanan: "",
-    tanggal_pelayanan: "",
-    jam_pelayanan: "",
-    q1: "",
-    q2: "",
-    q3: "",
-    q4: "",
-    q5: "",
-    q6a: "",
-    q6b: "",
-    q7a: "",
-    q7b: "",
-    q8: "",
-    q9a: "",
-    q9b: "",
-    saran: "",
+    age: "",
+    education: "",
+    occupation: "",
+    service_type: "",
+    service_received_date: "",
+    service_received_time: "",
+    q1_requirement_match: "",
+    q2_procedure_ease: "",
+    q3_time_match: "",
+    q4_cost_match: "",
+    q5_product_match: "",
+    q6a_app_speed: "",
+    q6b_staff_competence: "",
+    q7a_app_ease: "",
+    q7b_staff_behavior: "",
+    q8_complaint_channel: "",
+    q9a_app_content: "",
+    q9b_facilities: "",
+    q10_feedback: "",
   });
 
   const { mutate, isPending, isSuccess } = useMutation({
     mutationFn: async () => {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/survey`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      if (!res.ok) throw new Error("Gagal mengirim survei");
-      return res.json();
+      const payload = {
+        ...form,
+        age: parseInt(form.age),
+        is_disabled: form.is_disabled === "true",
+        q1_requirement_match: parseInt(form.q1_requirement_match),
+        q2_procedure_ease: parseInt(form.q2_procedure_ease),
+        q3_time_match: parseInt(form.q3_time_match),
+        q4_cost_match: parseInt(form.q4_cost_match),
+        q5_product_match: parseInt(form.q5_product_match),
+        q6a_app_speed: parseInt(form.q6a_app_speed),
+        q6b_staff_competence: parseInt(form.q6b_staff_competence),
+        q7a_app_ease: parseInt(form.q7a_app_ease),
+        q7b_staff_behavior: parseInt(form.q7b_staff_behavior),
+        q8_complaint_channel: parseInt(form.q8_complaint_channel),
+        q9a_app_content: parseInt(form.q9a_app_content),
+        q9b_facilities: parseInt(form.q9b_facilities),
+      };
+      
+      return surveyApi.submitSurvey(payload);
     },
   });
 
@@ -129,7 +142,8 @@ export default function SurveyPage() {
                       <Label className="text-sm font-semibold text-gray-700">Tanggal Survei *</Label>
                       <Input 
                         type="date" 
-                        name="tanggal_survei" 
+                        name="survey_date" 
+                        value={form.survey_date}
                         required 
                         onChange={handleChange}
                         className="h-12 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 rounded-lg"
@@ -139,7 +153,7 @@ export default function SurveyPage() {
                     <div className="space-y-2">
                       <Label className="text-sm font-semibold text-gray-700">Jam Survei *</Label>
                       <select 
-                        name="jam_survei" 
+                        name="survey_time" 
                         required 
                         onChange={handleChange} 
                         className="w-full h-12 border border-gray-200 rounded-lg px-3 focus:border-emerald-500 focus:ring-emerald-500"
@@ -151,9 +165,9 @@ export default function SurveyPage() {
                     </div>
 
                     <div className="md:col-span-2 space-y-2">
-                      <Label className="text-sm font-semibold text-gray-700">Dimana anda mengakses unit pelayanan Anda? *</Label>
+                      <Label className="text-sm font-semibold text-gray-700">Dimana anda mengakses unit pelayanan? *</Label>
                       <Input 
-                        name="lokasi_pelayanan" 
+                        name="access_location" 
                         required 
                         onChange={handleChange} 
                         placeholder="Contoh: Kantor TNAP, website, aplikasi..."
@@ -161,77 +175,102 @@ export default function SurveyPage() {
                       />
                     </div>
 
-                  <div>
-                    <Label>Apakah Anda penyandang disabilitas? *</Label>
-                    <select name="disabilitas" required onChange={handleChange} className="w-full border rounded-md p-2">
-                      <option value="">Pilih</option>
-                      <option value="Ya">Ya</option>
-                      <option value="Tidak">Tidak</option>
-                    </select>
-                  </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-semibold text-gray-700">Apakah Anda penyandang disabilitas? *</Label>
+                      <select name="is_disabled" required onChange={handleChange} className="w-full h-12 border border-gray-200 rounded-lg px-3 focus:border-emerald-500 focus:ring-emerald-500">
+                        <option value="">Pilih</option>
+                        <option value="false">Tidak</option>
+                        <option value="true">Ya</option>
+                      </select>
+                    </div>
 
-                  <div>
-                    <Label>Jika Ya, jenis disabilitas (bisa kosong)</Label>
-                    <Input name="jenis_disabilitas" onChange={handleChange} placeholder="Tuna netra, rungu, daksa, dll." />
-                  </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-semibold text-gray-700">Jenis disabilitas (jika ada)</Label>
+                      <Input 
+                        name="disability_type" 
+                        onChange={handleChange} 
+                        placeholder="Tuna netra, rungu, daksa, dll."
+                        className="h-12 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 rounded-lg"
+                      />
+                    </div>
 
-                  <div>
-                    <Label>Jenis Kelamin *</Label>
-                    <select name="gender" required onChange={handleChange} className="w-full border rounded-md p-2">
-                      <option value="">Pilih</option>
-                      <option value="L">L</option>
-                      <option value="P">P</option>
-                    </select>
-                  </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-semibold text-gray-700">Jenis Kelamin *</Label>
+                      <select name="gender" required onChange={handleChange} className="w-full h-12 border border-gray-200 rounded-lg px-3 focus:border-emerald-500 focus:ring-emerald-500">
+                        <option value="">Pilih</option>
+                        <option value="L">Laki-laki</option>
+                        <option value="P">Perempuan</option>
+                      </select>
+                    </div>
 
-                  <div>
-                    <Label>Usia *</Label>
-                    <Input name="usia" required onChange={handleChange} placeholder="Contoh: 25" />
-                  </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-semibold text-gray-700">Usia *</Label>
+                      <Input 
+                        type="number" 
+                        name="age" 
+                        required 
+                        onChange={handleChange} 
+                        placeholder="Contoh: 25"
+                        className="h-12 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 rounded-lg"
+                      />
+                    </div>
 
-                  <div>
-                    <Label>Pendidikan Terakhir *</Label>
-                    <select name="pendidikan" required onChange={handleChange} className="w-full border rounded-md p-2">
-                      <option value="">Pilih</option>
-                      <option value="SD">SD/Sederajat</option>
-                      <option value="SMP">SMP/Sederajat</option>
-                      <option value="SMA">SMA/Sederajat</option>
-                      <option value="D1/D2/D3">D1/D2/D3</option>
-                      <option value="D4/S1">D4/S1</option>
-                      <option value="S2">S2</option>
-                      <option value="S3">S3</option>
-                    </select>
-                  </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-semibold text-gray-700">Pendidikan Terakhir *</Label>
+                      <select name="education" required onChange={handleChange} className="w-full h-12 border border-gray-200 rounded-lg px-3 focus:border-emerald-500 focus:ring-emerald-500">
+                        <option value="">Pilih</option>
+                        <option value="SD">SD/Sederajat</option>
+                        <option value="SMP">SMP/Sederajat</option>
+                        <option value="SMA">SMA/Sederajat</option>
+                        <option value="D1/D2/D3">D1/D2/D3</option>
+                        <option value="D4/S1">D4/S1</option>
+                        <option value="S2">S2</option>
+                        <option value="S3">S3</option>
+                      </select>
+                    </div>
 
-                  <div>
-                    <Label>Pekerjaan *</Label>
-                    <select name="pekerjaan" required onChange={handleChange} className="w-full border rounded-md p-2">
-                      {["PNS","TNI","POLRI","Swasta","Wiraswasta","IRT","Pelajar/Mahasiswa","Petani/Nelayan","Freelance","Tidak Bekerja","Pensiunan"].map((v) => (
-                        <option key={v} value={v}>{v}</option>
-                      ))}
-                    </select>
-                  </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-semibold text-gray-700">Pekerjaan *</Label>
+                      <select name="occupation" required onChange={handleChange} className="w-full h-12 border border-gray-200 rounded-lg px-3 focus:border-emerald-500 focus:ring-emerald-500">
+                        <option value="">Pilih</option>
+                        {["PNS","TNI","POLRI","Swasta","Wiraswasta","IRT","Pelajar/Mahasiswa","Petani/Nelayan","Freelance","Tidak Bekerja","Pensiunan"].map((v) => (
+                          <option key={v} value={v}>{v}</option>
+                        ))}
+                      </select>
+                    </div>
 
-                  <div className="md:col-span-2">
-                    <Label>Jenis Pelayanan yang Anda akses *</Label>
-                    <Input name="jenis_pelayanan" required onChange={handleChange} placeholder="Contoh: SIMAKSI, Informasi Kawasan, IUPJWA, dll." />
-                  </div>
+                    <div className="md:col-span-2 space-y-2">
+                      <Label className="text-sm font-semibold text-gray-700">Jenis Pelayanan yang Anda akses *</Label>
+                      <Input 
+                        name="service_type" 
+                        required 
+                        onChange={handleChange} 
+                        placeholder="Contoh: SIMAKSI, Informasi Kawasan, IUPJWA, dll."
+                        className="h-12 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 rounded-lg"
+                      />
+                    </div>
 
-                  <div>
-                    <Label>Tanggal menerima produk pelayanan *</Label>
-                    <Input type="date" name="tanggal_pelayanan" required onChange={handleChange} />
-                  </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-semibold text-gray-700">Tanggal menerima produk pelayanan *</Label>
+                      <Input 
+                        type="date" 
+                        name="service_received_date" 
+                        required 
+                        onChange={handleChange}
+                        className="h-12 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 rounded-lg"
+                      />
+                    </div>
 
-                  <div>
-                    <Label>Jam menerima produk pelayanan *</Label>
-                    <select name="jam_pelayanan" required onChange={handleChange} className="w-full border rounded-md p-2">
-                      <option value="">Pilih</option>
-                      <option value="08.00 – 12.00">08.00 – 12.00</option>
-                      <option value="13.00 – 17.00">13.00 – 17.00</option>
-                      <option value=">17.00">Lebih dari 17.00</option>
-                    </select>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-semibold text-gray-700">Jam menerima produk pelayanan *</Label>
+                      <select name="service_received_time" required onChange={handleChange} className="w-full h-12 border border-gray-200 rounded-lg px-3 focus:border-emerald-500 focus:ring-emerald-500">
+                        <option value="">Pilih</option>
+                        <option value="08.00 – 12.00">08.00 – 12.00</option>
+                        <option value="13.00 – 17.00">13.00 – 17.00</option>
+                        <option value="Lebih dari 17.00">Lebih dari 17.00</option>
+                      </select>
+                    </div>
                   </div>
-                </div>
               </div>
 
                 {/* SECTION II */}
@@ -242,35 +281,50 @@ export default function SurveyPage() {
                     </div>
                     <h2 className="text-2xl font-bold text-gray-900">Penilaian Pelayanan</h2>
                   </div>
-                {[
-                  ["q1", "Kesesuaian persyaratan pelayanan dengan informasi", "Tidak Sesuai", "Kurang Sesuai", "Sesuai", "Sangat Sesuai"],
-                  ["q2", "Kemudahan prosedur pelayanan", "Tidak Mudah", "Kurang Mudah", "Mudah", "Sangat Mudah"],
-                  ["q3", "Kesesuaian waktu penyelesaian dengan informasi", "Tidak Sesuai", "Kurang Sesuai", "Sesuai", "Sangat Sesuai"],
-                  ["q4", "Kesesuaian biaya pelayanan", "Tidak Sesuai", "Kurang Sesuai", "Sesuai", "Sangat Sesuai"],
-                  ["q5", "Kesesuaian produk pelayanan", "Tidak Sesuai", "Kurang Sesuai", "Sesuai", "Sangat Sesuai"],
-                  ["q6a", "Kecepatan respon sistem pelayanan", "Tidak Cepat", "Kurang Cepat", "Cepat", "Sangat Cepat"],
-                  ["q6b", "Kemampuan petugas pelayanan", "Tidak Baik", "Kurang Baik", "Baik", "Sangat Baik"],
-                  ["q7a", "Kemudahan fitur aplikasi", "Tidak Mudah", "Kurang Mudah", "Mudah", "Sangat Mudah"],
-                  ["q7b", "Perilaku petugas pelayanan", "Tidak Baik", "Kurang Baik", "Baik", "Sangat Baik"],
-                  ["q8", "Ketersediaan media pengaduan/saran", "Tidak Baik", "Kurang Baik", "Baik", "Sangat Baik"],
-                  ["q9a", "Kualitas isi/konten layanan", "Tidak Baik", "Kurang Baik", "Baik", "Sangat Baik"],
-                  ["q9b", "Ketersediaan sarana & prasarana", "Tidak Baik", "Kurang Baik", "Baik", "Sangat Baik"],
-                ].map(([key, question, ...options]) => (
-                  <div key={key}>
-                    <Label className="font-medium">{question} *</Label>
-                    <select name={key} required onChange={handleChange} className="w-full border rounded-md p-2 mt-1">
-                      <option value="">Pilih jawaban</option>
-                      {options.map((o) => (
-                        <option key={o} value={o}>{o}</option>
-                      ))}
-                    </select>
-                  </div>
-                ))}
+                  <div className="grid gap-6">
+                    {[
+                      ["q1_requirement_match", "Kesesuaian persyaratan pelayanan dengan informasi"],
+                      ["q2_procedure_ease", "Kemudahan prosedur pelayanan"],
+                      ["q3_time_match", "Kesesuaian waktu penyelesaian dengan informasi"],
+                      ["q4_cost_match", "Kesesuaian biaya pelayanan"],
+                      ["q5_product_match", "Kesesuaian produk pelayanan"],
+                      ["q6a_app_speed", "Kecepatan respon sistem/aplikasi pelayanan"],
+                      ["q6b_staff_competence", "Kemampuan/kompetensi petugas pelayanan"],
+                      ["q7a_app_ease", "Kemudahan penggunaan fitur aplikasi"],
+                      ["q7b_staff_behavior", "Perilaku/sikap petugas pelayanan"],
+                      ["q8_complaint_channel", "Ketersediaan media pengaduan/saran"],
+                      ["q9a_app_content", "Kualitas isi/konten layanan"],
+                      ["q9b_facilities", "Ketersediaan sarana & prasarana"],
+                    ].map(([key, question]) => (
+                      <div key={key} className="space-y-2">
+                        <Label className="text-sm font-semibold text-gray-700">{question} *</Label>
+                        <select 
+                          name={key} 
+                          required 
+                          onChange={handleChange} 
+                          className="w-full h-12 border border-gray-200 rounded-lg px-3 focus:border-emerald-500 focus:ring-emerald-500"
+                        >
+                          <option value="">Pilih jawaban</option>
+                          <option value="1">1 - Tidak Baik</option>
+                          <option value="2">2 - Kurang Baik</option>
+                          <option value="3">3 - Baik</option>
+                          <option value="4">4 - Sangat Baik</option>
+                        </select>
+                      </div>
+                    ))}
 
-                <div>
-                  <Label>Saran / Masukan *</Label>
-                  <Textarea name="saran" rows={4} required onChange={handleChange} placeholder="Tuliskan pendapat atau saran anda..." />
-                </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-semibold text-gray-700">Saran / Masukan *</Label>
+                      <Textarea 
+                        name="q10_feedback" 
+                        rows={4} 
+                        required 
+                        onChange={handleChange} 
+                        placeholder="Tuliskan pendapat atau saran anda..."
+                        className="border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 rounded-lg"
+                      />
+                    </div>
+                  </div>
               </div>
 
                 <div className="pt-8 border-t border-gray-200">

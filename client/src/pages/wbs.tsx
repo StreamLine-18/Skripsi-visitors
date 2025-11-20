@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { AlertTriangle, Upload, Send } from "lucide-react";
 import { Link } from "wouter";
+import { wbsApi } from "@/lib/api";
 
 const MAX_FILES = 10;
 const MAX_SIZE = 100 * 1024 * 1024; // 100 MB
@@ -16,13 +17,13 @@ export default function WBSPage() {
     email: "",
     phone: "",
     gender: "",
-    apa: "",
-    dimana: "",
-    kapan: "",
-    siapa: "",
-    bagaimana: "",
-    bukti: "",
-    deskripsi: "",
+    what: "",
+    where: "",
+    when: "",
+    who: "",
+    how: "",
+    evidence: "",
+    description: "",
     priority: "",
   });
 
@@ -35,15 +36,9 @@ export default function WBSPage() {
     mutationFn: async () => {
       const fd = new FormData();
       Object.entries(form).forEach(([k, v]) => fd.append(k, v));
-      files.forEach((f) => fd.append("attachments", f));
+      files.forEach((f) => fd.append("files", f));
 
-      const base = import.meta.env.VITE_API_BASE_URL || "";
-      const res = await fetch(`${base}/wbs`, {
-        method: "POST",
-        body: fd,
-      });
-      if (!res.ok) throw new Error("Gagal mengirim WBS");
-      return res.json();
+      return wbsApi.submitReport(fd);
     },
   });
 
@@ -151,62 +146,64 @@ export default function WBSPage() {
                     <h2 className="text-2xl font-bold text-gray-900">Informasi Pelapor</h2>
                   </div>
                   <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <Label htmlFor="email">Alamat email *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    required
-                    value={form.email}
-                    onChange={onChange("email")}
-                    placeholder="email@domain.com"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="phone">No. telp/ WA *</Label>
-                  <Input
-                    id="phone"
-                    required
-                    value={form.phone}
-                    onChange={onChange("phone")}
-                    placeholder="0812xxxxxxx"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    No. Telp/ Nomor Whatsapp yg dapat dihubungi
-                  </p>
-                </div>
-                <div>
-                  <Label htmlFor="gender">Jenis Kelamin *</Label>
-                  <select
-                    id="gender"
-                    required
-                    value={form.gender}
-                    onChange={onChange("gender")}
-                    className="w-full rounded-md border border-gray-300 p-2"
-                  >
-                    <option value="">Pilih</option>
-                    <option value="Laki - laki">Laki - laki</option>
-                    <option value="Perempuan">Perempuan</option>
-                  </select>
-                </div>
-                <div>
-                  <Label htmlFor="priority">Prioritas *</Label>
-                  <select
-                    id="priority"
-                    required
-                    value={form.priority}
-                    onChange={onChange("priority")}
-                    className="w-full rounded-md border border-gray-300 p-2"
-                  >
-                    <option value="">Pilih prioritas</option>
-                    <option value="5">Sangat tinggi</option>
-                    <option value="4">4</option>
-                    <option value="3">3</option>
-                    <option value="2">2</option>
-                    <option value="1">Sangat rendah</option>
-                  </select>
-                </div>
-              </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-sm font-semibold text-gray-700">Alamat Email *</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        required
+                        value={form.email}
+                        onChange={onChange("email")}
+                        placeholder="email@domain.com"
+                        className="h-12 border-gray-200 focus:border-red-500 focus:ring-red-500 rounded-lg"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="phone" className="text-sm font-semibold text-gray-700">No. Telp / WA *</Label>
+                      <Input
+                        id="phone"
+                        required
+                        value={form.phone}
+                        onChange={onChange("phone")}
+                        placeholder="0812xxxxxxx"
+                        className="h-12 border-gray-200 focus:border-red-500 focus:ring-red-500 rounded-lg"
+                      />
+                      <p className="text-xs text-gray-500">
+                        Nomor yang dapat dihubungi untuk tindak lanjut
+                      </p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="gender" className="text-sm font-semibold text-gray-700">Jenis Kelamin *</Label>
+                      <select
+                        id="gender"
+                        required
+                        value={form.gender}
+                        onChange={onChange("gender")}
+                        className="w-full h-12 border border-gray-200 rounded-lg px-3 focus:border-red-500 focus:ring-red-500"
+                      >
+                        <option value="">Pilih</option>
+                        <option value="Laki-laki">Laki-laki</option>
+                        <option value="Perempuan">Perempuan</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="priority" className="text-sm font-semibold text-gray-700">Prioritas *</Label>
+                      <select
+                        id="priority"
+                        required
+                        value={form.priority}
+                        onChange={onChange("priority")}
+                        className="w-full h-12 border border-gray-200 rounded-lg px-3 focus:border-red-500 focus:ring-red-500"
+                      >
+                        <option value="">Pilih prioritas</option>
+                        <option value="SangatTinggi">Sangat Tinggi</option>
+                        <option value="Tinggi">Tinggi</option>
+                        <option value="Sedang">Sedang</option>
+                        <option value="Rendah">Rendah</option>
+                        <option value="SangatRendah">Sangat Rendah</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Report Details */}
@@ -218,97 +215,168 @@ export default function WBSPage() {
                     <h2 className="text-2xl font-bold text-gray-900">Detail Laporan</h2>
                   </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="apa">1. Apa *</Label>
-                    <Input id="apa" required value={form.apa} onChange={onChange("apa")} placeholder="Apa dugaan pelanggarannya?" />
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="what" className="text-sm font-semibold text-gray-700">1. Apa yang terjadi? *</Label>
+                      <Input 
+                        id="what" 
+                        required 
+                        value={form.what} 
+                        onChange={onChange("what")} 
+                        placeholder="Apa dugaan pelanggarannya?"
+                        className="h-12 border-gray-200 focus:border-red-500 focus:ring-red-500 rounded-lg"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="where" className="text-sm font-semibold text-gray-700">2. Dimana kejadian? *</Label>
+                      <Input 
+                        id="where" 
+                        required 
+                        value={form.where} 
+                        onChange={onChange("where")} 
+                        placeholder="Lokasi kejadian"
+                        className="h-12 border-gray-200 focus:border-red-500 focus:ring-red-500 rounded-lg"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="when" className="text-sm font-semibold text-gray-700">3. Kapan kejadian? *</Label>
+                      <Input 
+                        id="when" 
+                        required 
+                        value={form.when} 
+                        onChange={onChange("when")} 
+                        placeholder="Tanggal/Jam peristiwa"
+                        className="h-12 border-gray-200 focus:border-red-500 focus:ring-red-500 rounded-lg"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="who" className="text-sm font-semibold text-gray-700">4. Siapa yang terlibat? *</Label>
+                      <Input 
+                        id="who" 
+                        required 
+                        value={form.who} 
+                        onChange={onChange("who")} 
+                        placeholder="Pihak yang terlibat (jika diketahui)"
+                        className="h-12 border-gray-200 focus:border-red-500 focus:ring-red-500 rounded-lg"
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <Label htmlFor="dimana">2. Dimana *</Label>
-                    <Input id="dimana" required value={form.dimana} onChange={onChange("dimana")} placeholder="Lokasi kejadian" />
-                  </div>
-                  <div>
-                    <Label htmlFor="kapan">3. Kapan *</Label>
-                    <Input id="kapan" required value={form.kapan} onChange={onChange("kapan")} placeholder="Tanggal/Jam peristiwa" />
-                  </div>
-                  <div>
-                    <Label htmlFor="siapa">4. Siapa *</Label>
-                    <Input id="siapa" required value={form.siapa} onChange={onChange("siapa")} placeholder="Pihak yang terlibat (jika diketahui)" />
-                  </div>
-                </div>
 
-                <div>
-                  <Label htmlFor="bagaimana">5. Bagaimana *</Label>
-                  <Textarea
-                    id="bagaimana"
-                    required
-                    rows={3}
-                    value={form.bagaimana}
-                    onChange={onChange("bagaimana")}
-                    placeholder="Kronologi kejadian secara ringkas"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="bukti">6. Bukti</Label>
-                  <Textarea
-                    id="bukti"
-                    rows={3}
-                    value={form.bukti}
-                    onChange={onChange("bukti")}
-                    placeholder="Tautan/identifikasi bukti pendukung (opsional, selain file upload)"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="deskripsi">Deskripsi</Label>
-                  <Textarea
-                    id="deskripsi"
-                    rows={4}
-                    value={form.deskripsi}
-                    onChange={onChange("deskripsi")}
-                    placeholder="Detail tambahan yang perlu diketahui"
-                  />
-                </div>
-              </div>
-
-              {/* Upload Lampiran */}
-              <div className="space-y-2">
-                <Label>File Pendukung</Label>
-                <div className="flex items-center gap-3">
-                  <label className="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-gray-300 cursor-pointer hover:bg-gray-50">
-                    <Upload className="w-4 h-4" />
-                    <span>Pilih File</span>
-                    <input
-                      type="file"
-                      multiple
-                      className="hidden"
-                      onChange={onFiles}
+                  <div className="space-y-2">
+                    <Label htmlFor="how" className="text-sm font-semibold text-gray-700">5. Bagaimana kejadian? *</Label>
+                    <Textarea
+                      id="how"
+                      required
+                      rows={4}
+                      value={form.how}
+                      onChange={onChange("how")}
+                      placeholder="Kronologi kejadian secara ringkas"
+                      className="border-gray-200 focus:border-red-500 focus:ring-red-500 rounded-lg"
                     />
-                  </label>
-                  <span className="text-sm text-gray-500">
-                    Upload hingga {MAX_FILES} file. Maks {prettyMax} per file.
-                  </span>
-                </div>
+                  </div>
 
-                {!!fileErr && <p className="text-sm text-red-600">{fileErr}</p>}
+                  <div className="space-y-2">
+                    <Label htmlFor="evidence" className="text-sm font-semibold text-gray-700">6. Bukti yang ada *</Label>
+                    <Textarea
+                      id="evidence"
+                      required
+                      rows={3}
+                      value={form.evidence}
+                      onChange={onChange("evidence")}
+                      placeholder="Jelaskan bukti yang Anda miliki (dokumen, foto, rekaman, dll)"
+                      className="border-gray-200 focus:border-red-500 focus:ring-red-500 rounded-lg"
+                    />
+                  </div>
 
-                {files.length > 0 && (
-                  <ul className="mt-2 space-y-2">
-                    {files.map((f, i) => (
-                      <li key={i} className="flex items-center justify-between rounded-md border p-2 text-sm">
-                        <span className="truncate max-w-[70%]">{f.name}</span>
-                        <div className="flex items-center gap-3">
-                          <span className="text-xs text-gray-500">{(f.size / (1024 * 1024)).toFixed(1)} MB</span>
-                          <Button type="button" variant="ghost" size="sm" onClick={() => removeFile(i)}>
-                            Hapus
-                          </Button>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                  <div className="space-y-2">
+                    <Label htmlFor="description" className="text-sm font-semibold text-gray-700">Deskripsi Tambahan</Label>
+                    <Textarea
+                      id="description"
+                      rows={4}
+                      value={form.description}
+                      onChange={onChange("description")}
+                      placeholder="Detail tambahan yang perlu diketahui (opsional)"
+                      className="border-gray-200 focus:border-red-500 focus:ring-red-500 rounded-lg"
+                    />
+                  </div>
               </div>
+
+                {/* Upload Lampiran */}
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                      <Upload className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-gray-900">File Pendukung</h2>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <Label className="text-sm font-semibold text-gray-700">Upload Bukti (Opsional)</Label>
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-red-400 transition-colors">
+                      <label className="cursor-pointer">
+                        <div className="flex flex-col items-center gap-3">
+                          <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                            <Upload className="w-6 h-6 text-red-600" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-gray-700">
+                              Klik untuk upload atau drag & drop
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1">
+                              JPG, PNG, WEBP, PDF, DOC, DOCX (Maks {prettyMax} per file)
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              Maksimal {MAX_FILES} file
+                            </p>
+                          </div>
+                        </div>
+                        <input
+                          type="file"
+                          multiple
+                          accept=".jpg,.jpeg,.png,.webp,.pdf,.doc,.docx"
+                          className="hidden"
+                          onChange={onFiles}
+                        />
+                      </label>
+                    </div>
+
+                    {!!fileErr && (
+                      <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                        <p className="text-sm text-red-600">{fileErr}</p>
+                      </div>
+                    )}
+
+                    {files.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="text-sm font-semibold text-gray-700">File yang dipilih ({files.length}):</p>
+                        <ul className="space-y-2">
+                          {files.map((f, i) => (
+                            <li key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+                              <div className="flex items-center gap-3 flex-1 min-w-0">
+                                <div className="w-8 h-8 bg-red-100 rounded flex items-center justify-center flex-shrink-0">
+                                  <Upload className="w-4 h-4 text-red-600" />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <p className="text-sm font-medium text-gray-900 truncate">{f.name}</p>
+                                  <p className="text-xs text-gray-500">{(f.size / (1024 * 1024)).toFixed(2)} MB</p>
+                                </div>
+                              </div>
+                              <Button 
+                                type="button" 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => removeFile(i)}
+                                className="text-red-600 hover:text-red-700 hover:bg-red-50 flex-shrink-0"
+                              >
+                                Hapus
+                              </Button>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </div>
 
               {/* Error submit */}
               {error && (

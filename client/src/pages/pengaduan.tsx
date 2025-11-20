@@ -7,28 +7,27 @@ import { Label } from "@/components/ui/label";
 import { Megaphone, Send } from "lucide-react";
 import { Link } from "wouter";
 import { useMutation } from "@tanstack/react-query";
+import { complaintApi } from "@/lib/api";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function ComplaintPage() {
+  const { token } = useAuth();
   const [form, setForm] = useState({
-    name: "",
+    full_name: "",
     email: "",
-    complaint_type: "",
+    phone: "",
     gender: "",
     status: "",
-    phone: "",
+    complaint_type: "",
     description: "",
     priority: "",
   });
 
   const { mutate, isPending, isSuccess } = useMutation({
     mutationFn: async () => {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/complaints`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+      return complaintApi.submitComplaint(form, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-      if (!res.ok) throw new Error("Gagal mengirim pengaduan");
-      return res.json();
     },
   });
 
@@ -108,107 +107,138 @@ export default function ComplaintPage() {
                     <h2 className="text-2xl font-bold text-gray-900">Informasi Pengadu</h2>
                   </div>
                   
-                  <div className="space-y-2">
-                    <Label htmlFor="name" className="text-sm font-semibold text-gray-700">Nama Lengkap *</Label>
-                    <Input 
-                      id="name" 
-                      name="name" 
-                      required 
-                      value={form.name} 
-                      onChange={handleChange} 
-                      placeholder="Nama lengkap anda"
-                      className="h-12 border-gray-200 focus:border-orange-500 focus:ring-orange-500 rounded-lg"
-                    />
-                    <p className="text-xs text-gray-500">
-                      Kerahasiaan informasi anda dijamin secara hukum sesuai peraturan yang berlaku
-                    </p>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="full_name" className="text-sm font-semibold text-gray-700">Nama Lengkap *</Label>
+                      <Input 
+                        id="full_name" 
+                        name="full_name" 
+                        required 
+                        value={form.full_name} 
+                        onChange={handleChange} 
+                        placeholder="Nama lengkap anda"
+                        className="h-12 border-gray-200 focus:border-orange-500 focus:ring-orange-500 rounded-lg"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-sm font-semibold text-gray-700">Alamat Email *</Label>
+                      <Input 
+                        id="email" 
+                        name="email" 
+                        type="email" 
+                        required 
+                        value={form.email} 
+                        onChange={handleChange} 
+                        placeholder="email@gmail.com"
+                        className="h-12 border-gray-200 focus:border-orange-500 focus:ring-orange-500 rounded-lg"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="phone" className="text-sm font-semibold text-gray-700">No. Telp / WA *</Label>
+                      <Input 
+                        id="phone" 
+                        name="phone" 
+                        required 
+                        value={form.phone} 
+                        onChange={handleChange} 
+                        placeholder="0812xxxxxxx"
+                        className="h-12 border-gray-200 focus:border-orange-500 focus:ring-orange-500 rounded-lg"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="gender" className="text-sm font-semibold text-gray-700">Jenis Kelamin *</Label>
+                      <select
+                        id="gender"
+                        name="gender"
+                        value={form.gender}
+                        onChange={handleChange}
+                        required
+                        className="w-full h-12 border border-gray-200 rounded-lg px-3 focus:border-orange-500 focus:ring-orange-500"
+                      >
+                        <option value="">Pilih jenis kelamin</option>
+                        <option value="Laki-laki">Laki-laki</option>
+                        <option value="Perempuan">Perempuan</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="status" className="text-sm font-semibold text-gray-700">Status *</Label>
+                      <select
+                        id="status"
+                        name="status"
+                        value={form.status}
+                        onChange={handleChange}
+                        required
+                        className="w-full h-12 border border-gray-200 rounded-lg px-3 focus:border-orange-500 focus:ring-orange-500"
+                      >
+                        <option value="">Pilih status</option>
+                        <option value="Pelajar">Pelajar</option>
+                        <option value="Mahasiswa">Mahasiswa</option>
+                        <option value="Peneliti">Peneliti</option>
+                        <option value="Mancanegara">Mancanegara</option>
+                        <option value="Umum">Umum</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="complaint_type" className="text-sm font-semibold text-gray-700">Jenis Pengaduan *</Label>
+                      <select
+                        id="complaint_type"
+                        name="complaint_type"
+                        value={form.complaint_type}
+                        onChange={handleChange}
+                        required
+                        className="w-full h-12 border border-gray-200 rounded-lg px-3 focus:border-orange-500 focus:ring-orange-500"
+                      >
+                        <option value="">Pilih jenis pengaduan</option>
+                        <option value="Pelayanan">Pelayanan</option>
+                        <option value="Fasilitas">Fasilitas</option>
+                        <option value="Keamanan">Keamanan</option>
+                        <option value="Lingkungan">Lingkungan</option>
+                        <option value="Lainnya">Lainnya</option>
+                      </select>
+                    </div>
+
+                    <div className="md:col-span-2 space-y-2">
+                      <Label htmlFor="priority" className="text-sm font-semibold text-gray-700">Prioritas *</Label>
+                      <select
+                        id="priority"
+                        name="priority"
+                        value={form.priority}
+                        onChange={handleChange}
+                        required
+                        className="w-full h-12 border border-gray-200 rounded-lg px-3 focus:border-orange-500 focus:ring-orange-500"
+                      >
+                        <option value="">Pilih tingkat prioritas</option>
+                        <option value="SangatTinggi">Sangat Tinggi</option>
+                        <option value="Tinggi">Tinggi</option>
+                        <option value="Sedang">Sedang</option>
+                        <option value="Rendah">Rendah</option>
+                        <option value="SangatRendah">Sangat Rendah</option>
+                      </select>
+                    </div>
+
+                    <div className="md:col-span-2 space-y-2">
+                      <Label htmlFor="description" className="text-sm font-semibold text-gray-700">Deskripsi Pengaduan *</Label>
+                      <Textarea
+                        id="description"
+                        name="description"
+                        required
+                        value={form.description}
+                        onChange={handleChange}
+                        rows={5}
+                        placeholder="Jelaskan masalah atau pengaduan anda secara detail..."
+                        className="border-gray-200 focus:border-orange-500 focus:ring-orange-500 rounded-lg"
+                      />
+                      <p className="text-xs text-gray-500">
+                        Kerahasiaan informasi anda dijamin secara hukum sesuai peraturan yang berlaku
+                      </p>
+                    </div>
                   </div>
                 </div>
-
-              <div>
-                <Label htmlFor="email">Alamat Email *</Label>
-                <Input id="email" name="email" type="email" required value={form.email} onChange={handleChange} placeholder="email@gmail.com" />
-              </div>
-
-              <div>
-                <Label htmlFor="complaint_type">Jenis Pengaduan *</Label>
-                <Input id="complaint_type" name="complaint_type" required value={form.complaint_type} onChange={handleChange} placeholder="Contoh: Pelayanan, Kebersihan, Fasilitas, dll." />
-              </div>
-
-              <div>
-                <Label htmlFor="gender">Jenis Kelamin *</Label>
-                <select
-                  id="gender"
-                  name="gender"
-                  value={form.gender}
-                  onChange={handleChange}
-                  required
-                  className="w-full rounded-md border border-gray-300 p-2"
-                >
-                  <option value="">Pilih jenis kelamin</option>
-                  <option value="Laki-laki">Laki-laki</option>
-                  <option value="Perempuan">Perempuan</option>
-                </select>
-              </div>
-
-              <div>
-                <Label htmlFor="status">Status *</Label>
-                <select
-                  id="status"
-                  name="status"
-                  value={form.status}
-                  onChange={handleChange}
-                  required
-                  className="w-full rounded-md border border-gray-300 p-2"
-                >
-                  <option value="">Pilih status</option>
-                  <option value="Pelajar">Pelajar</option>
-                  <option value="Mahasiswa">Mahasiswa</option>
-                  <option value="Peneliti">Peneliti</option>
-                  <option value="Mancanegara">Mancanegara</option>
-                  <option value="Umum">Umum</option>
-                </select>
-              </div>
-
-              <div>
-                <Label htmlFor="phone">No. Telp / WA *</Label>
-                <Input id="phone" name="phone" required value={form.phone} onChange={handleChange} placeholder="0812xxxxxxx" />
-                <p className="text-xs text-gray-500 mt-1">
-                  Nomor yang dapat dihubungi untuk tindak lanjut laporan.
-                </p>
-              </div>
-
-              <div>
-                <Label htmlFor="description">Deskripsi *</Label>
-                <Textarea
-                  id="description"
-                  name="description"
-                  required
-                  value={form.description}
-                  onChange={handleChange}
-                  rows={4}
-                  placeholder="Jelaskan masalah atau pengaduan anda di sini..."
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="priority">Prioritas *</Label>
-                <select
-                  id="priority"
-                  name="priority"
-                  value={form.priority}
-                  onChange={handleChange}
-                  required
-                  className="w-full rounded-md border border-gray-300 p-2"
-                >
-                  <option value="">Pilih tingkat prioritas</option>
-                  <option value="5">Sangat tinggi</option>
-                  <option value="4">4</option>
-                  <option value="3">3</option>
-                  <option value="2">2</option>
-                  <option value="1">Sangat rendah</option>
-                </select>
-              </div>
 
                 <div className="pt-8 border-t border-gray-200">
                   <Button

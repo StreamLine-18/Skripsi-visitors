@@ -1,4 +1,4 @@
-import { apiRequest } from "./queryClient";
+import { apiRequest, apiMultipartRequest } from "./queryClient";
 import { useAuth } from "@/hooks/use-auth";
 
 // --- Environment Variable Setup ---
@@ -104,6 +104,34 @@ export interface Booking {
   items: BookingItem[];
 }
 
+export interface SurveySubmission {
+  survey_date: string;
+  survey_time: string;
+  access_location: string;
+  is_disabled: boolean;
+  disability_type?: string;
+  gender: string;
+  age: number;
+  education: string;
+  occupation: string;
+  service_type: string;
+  service_received_date: string;
+  service_received_time: string;
+  q1_requirement_match: number;
+  q2_procedure_ease: number;
+  q3_time_match: number;
+  q4_cost_match: number;
+  q5_product_match: number;
+  q6a_app_speed: number;
+  q6b_staff_competence: number;
+  q7a_app_ease: number;
+  q7b_staff_behavior: number;
+  q8_complaint_channel: number;
+  q9a_app_content: number;
+  q9b_facilities: number;
+  q10_feedback: string;
+}
+
 // --- ADDED: Query Parameters Type ---
 export interface QueryParams {
   page?: number;
@@ -190,20 +218,14 @@ export const destinationApi = {
 
 export const bookingApi = {
   getAllBookings: async (params: any, options?: any) => {
-    // ✅ Build the full correct URL
     const url = createUrlWithParams(getFullApiUrl("/bookings"), params);
-
-    // ✅ Call apiRequest normally
     const response = await apiRequest("GET", url, {
       headers: options?.headers,
     });
 
-    // ✅ Parse the response using your handleResponse
     return handleResponse<ApiResponse<Booking[]>>(response);
   },
 
-    // ✅ New endpoint: getBookingById
-    // ✅ New endpoint: getBookingById
   getBookingById: (id: string, options?: any) => {
     const url = getFullApiUrl(`/bookings/${id}`);
     return apiRequest("GET", url, {
@@ -221,7 +243,95 @@ export const bookingApi = {
 };
 
 
+export const surveyApi = {
+  submitSurvey: (data: SurveySubmission) => {
+    const url = getFullApiUrl("/skm/submit");
+    return apiRequest("POST", url, {
+      data,
+      headers: { "Content-Type": "application/json" },
+    }).then(handleResponse<ApiResponse<any>>);
+  },
+};
 
+export interface ComplaintSubmission {
+  full_name: string;
+  email: string;
+  phone: string;
+  gender: string;
+  status: string;
+  complaint_type: string;
+  description: string;
+  priority: string;
+}
+
+export interface Complaint {
+  id_pelaporan: string;
+  id_user?: string;
+  full_name: string;
+  email: string;
+  phone: string;
+  gender: string;
+  status: string;
+  complaint_type: string;
+  description: string;
+  priority: string;
+  complaint_status: string;
+  response?: string;
+  responded_at?: string;
+  responded_by?: string;
+  created_on: string;
+  updated_on: string;
+}
+
+export const complaintApi = {
+  submitComplaint: (data: ComplaintSubmission, options?: any) => {
+    const url = getFullApiUrl("/pelaporan");
+    return apiRequest("POST", url, {
+      data,
+      headers: options?.headers,
+    }).then(handleResponse<ApiResponse<Complaint>>);
+  },
+  
+  getMyReports: (params: QueryParams = {}, options?: any) => {
+    const url = createUrlWithParams(getFullApiUrl("/pelaporan/my-reports"), params);
+    return apiRequest("GET", url, {
+      headers: options?.headers,
+    }).then(handleResponse<ApiResponse<Complaint[]>>);
+  },
+  
+  getReportById: (id: string, options?: any) => {
+    const url = getFullApiUrl(`/pelaporan/my-reports/${id}`);
+    return apiRequest("GET", url, {
+      headers: options?.headers,
+    }).then(handleResponse<ApiResponse<Complaint>>);
+  },
+};
+
+export interface WhistleblowingReport {
+  id_wbs: string;
+  email: string;
+  phone: string;
+  gender: string;
+  what: string;
+  where: string;
+  when: string;
+  who: string;
+  how: string;
+  evidence: string;
+  description?: string;
+  priority: string;
+  files?: string[];
+  status: string;
+  created_on: string;
+}
+
+export const wbsApi = {
+  submitReport: async (formData: FormData) => {
+    const url = getFullApiUrl("/whistleblowing");
+    const response = await apiMultipartRequest("POST", url, formData);
+    return handleResponse<ApiResponse<WhistleblowingReport>>(response);
+  },
+};
 
 export function authHeaders(token?: string | null) {
   const h: Record<string, string> = { "Content-Type": "application/json" };
@@ -229,7 +339,7 @@ export function authHeaders(token?: string | null) {
   return h;
 }
 
-// optional hook helper for queries/mutations
+
 export function useApiBase() {
   const base = import.meta.env.VITE_API_BASE_URL || "";
   const { token } = useAuth();

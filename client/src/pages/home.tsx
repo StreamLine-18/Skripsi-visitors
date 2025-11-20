@@ -537,8 +537,8 @@ function InfoCardSection() {
       icon: (
         <AlertTriangle className="w-8 h-8 text-white-600 group-hover:scale-110 transition-transform" />
       ),
-      title: "WBS",
-      desc: "Whistleblowing System",
+      title: "Whistleblowing System",
+      desc: "Saluran Pengaduan Anonim",
       link: "/wbs",
       gradient: "from-red-500 to-pink-500"
     },

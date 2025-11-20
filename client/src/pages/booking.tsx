@@ -8,7 +8,6 @@ import { useMidtransSnap } from "@/hooks/use-midtrans-snap";
 // === Config ===
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 const HOLIDAY_API = import.meta.env.VITE_HOLIDAY_API || "";
-const CLIENT_KEY = import.meta.env.VITE_MIDTRANS_CLIENT_KEY;
 
 // === Utils ===
 async function checkIsHoliday(dateStr: string): Promise<boolean> {

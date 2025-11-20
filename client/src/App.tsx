@@ -32,6 +32,7 @@ import DestinationsPage from "./pages/destinations";
 import DestinationsDetailPage from "./pages/destination-detail";
 import NewsDetailPage from "./pages/news-detail";
 import BookingDetailPage from "./pages/booking-detail";
+import MyReportsPage from "./pages/my-reports";
 
 // Auth Context
 import { AuthProvider } from "@/hooks/use-auth";
@@ -83,6 +84,12 @@ function Router() {
       <Route path="/profile">
         <ProtectedRoute>
           <Profile />
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/profile/reports">
+        <ProtectedRoute>
+          <MyReportsPage />
         </ProtectedRoute>
       </Route>
 

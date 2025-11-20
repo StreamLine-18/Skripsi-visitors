@@ -6,13 +6,13 @@ import {
   Edit,
   Heart,
   Bell,
-  HelpCircle,
   LogOut,
   Settings,
   MapPin,
   Calendar,
   Shield,
   Camera,
+  FileText,
 } from "lucide-react";
 
 interface UserProfile {
@@ -49,6 +49,13 @@ export default function Profile() {
       color: "emerald"
     },
     { 
+      icon: FileText, 
+      label: "Laporan Pengaduan", 
+      href: "/profile/reports",
+      description: "Lihat status pengaduan Anda",
+      color: "orange"
+    },
+    { 
       icon: Heart, 
       label: "Destinasi Favorit", 
       href: "/profile/favorites",
@@ -61,13 +68,6 @@ export default function Profile() {
       href: "/profile/notifications",
       description: "Atur preferensi notifikasi",
       color: "blue"
-    },
-    { 
-      icon: HelpCircle, 
-      label: "Bantuan & FAQ", 
-      href: "/profile/help",
-      description: "Dapatkan bantuan dan informasi",
-      color: "orange"
     },
   ];
 

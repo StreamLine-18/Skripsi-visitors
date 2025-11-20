@@ -39,6 +39,9 @@ export default function Tickets() {
       booking.expired_at && new Date(booking.expired_at) > new Date()
   ) || [];
 
+  const hasTickets = data && data.length > 0;
+  const hasActiveTickets = activeTickets.length > 0;
+
   const formatDate = (date: Date | string) => {
     if (!date) return "-";
     const d = new Date(date);
@@ -50,15 +53,19 @@ export default function Tickets() {
     });
   };
 
-  const formatDateShort = (date: Date | string) => {
+    const formatDateLong = (date: Date | string) => {
     if (!date) return "-";
     const d = new Date(date);
     return d.toLocaleDateString('id-ID', {
+      hour: 'numeric',
+      minute: 'numeric',
+      weekday: 'long',
       day: 'numeric',
-      month: 'short',
+      month: 'long',
       year: 'numeric'
     });
   };
+
 
   if (isLoading) {
     return (
@@ -138,7 +145,7 @@ export default function Tickets() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-xs opacity-90">Berlaku hingga</p>
-                        <p className="font-semibold">{formatDateShort(booking.expired_at)}</p>
+                        <p className="font-semibold">{formatDateLong(booking.expired_at)}</p>
                       </div>
                       <div className="px-3 py-1 bg-emerald-400/30 rounded-lg backdrop-blur-sm">
                         <span className="text-xs font-bold uppercase">Valid</span>
@@ -183,7 +190,7 @@ export default function Tickets() {
                         <div className="flex items-start gap-3">
                           <Calendar className="w-5 h-5 text-gray-400 mt-0.5" />
                           <div>
-                            <p className="text-xs text-gray-500">Tanggal Kunjungan</p>
+                            <p className="text-xs text-gray-500">Tanggal Pembayaran</p>
                             <p className="font-semibold text-gray-900 text-sm">
                               {formatDate(booking.visit_date || booking.created_on)}
                             </p>
@@ -203,12 +210,15 @@ export default function Tickets() {
                     <div className="mt-6 pt-6 border-t border-gray-200">
                       <p className="text-sm font-semibold text-gray-700 mb-3">Detail Tiket:</p>
                       <div className="space-y-2">
-                        {booking.items?.map((item: any, idx: number) => (
-                          <div key={idx} className="flex items-center justify-between text-sm bg-gray-50 rounded-lg p-3">
-                            <span className="text-gray-700">{item.type}</span>
-                            <span className="font-semibold text-gray-900">{item.quantity}x</span>
-                          </div>
-                        ))}
+                        {booking.items?.map((item: any, idx: number) => {
+                          console.log('Item data:', item);
+                          return (
+                            <div key={idx} className="flex items-center justify-between text-sm bg-gray-50 rounded-lg p-3">
+                              <span className="text-gray-700">{item.gate_name} - {item.category_name}</span>
+                              <span className="font-semibold text-gray-900">{item.quantity}x</span>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
 
@@ -243,8 +253,8 @@ export default function Tickets() {
           </div>
         )}
 
-        {/* Empty State */}
-        {(!data || data.length === 0) && (
+        {/* Empty State - No Tickets at All */}
+        {!hasTickets && (
           <Card className="border-0 shadow-xl rounded-2xl overflow-hidden">
             <CardContent className="p-16 text-center">
               <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full mb-6">
@@ -260,6 +270,34 @@ export default function Tickets() {
                   Jelajahi Destinasi
                 </Button>
               </Link>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Empty State - Has Tickets but All Used/Expired */}
+        {hasTickets && !hasActiveTickets && (
+          <Card className="border-0 shadow-xl rounded-2xl overflow-hidden">
+            <CardContent className="p-16 text-center">
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full mb-6">
+                <Clock className="w-10 h-10 text-gray-500" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">Tidak Ada Tiket Aktif</h3>
+              <p className="text-gray-600 mb-8 max-w-md mx-auto">
+                Semua tiket Anda sudah digunakan atau kadaluarsa. Lihat riwayat pemesanan atau pesan tiket baru!
+              </p>
+              <div className="flex gap-4 justify-center">
+                <Link href="/history">
+                  <Button variant="outline" size="lg" className="px-8 py-6 text-lg rounded-full">
+                    Lihat Riwayat
+                  </Button>
+                </Link>
+                <Link href="/destinations">
+                  <Button size="lg" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 text-lg rounded-full shadow-xl">
+                    <Sparkles className="w-5 h-5 mr-2" />
+                    Pesan Tiket Baru
+                  </Button>
+                </Link>
+              </div>
             </CardContent>
           </Card>
         )}
