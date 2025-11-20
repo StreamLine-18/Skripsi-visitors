@@ -89,7 +89,7 @@ function HeroSection() {
         <div className="max-w-6xl mx-auto space-y-8">
           <div className="space-y-6">
             <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-bold leading-tight drop-shadow-2xl">
-              Taman Nasional 
+              Taman Nasional
             </h1>
             <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold leading-tight drop-shadow-2xl">
               Alas Purwo
@@ -98,14 +98,14 @@ function HeroSection() {
               Hutan Pertama di Pulau Jawa — Jelajahi Keindahan Alam yang Menakjubkan dan Keanekaragaman Hayati yang Luar Biasa
             </p>
           </div>
-          
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link href="/destinations">
               <Button
                 size="lg"
                 className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold shadow-xl px-8 py-6 text-lg rounded-full w-full sm:w-auto border-0"
               >
-                <MapPin className="w-5 h-5 mr-2" /> 
+                <MapPin className="w-5 h-5 mr-2" />
                 Jelajahi Destinasi
               </Button>
             </Link>
@@ -163,7 +163,7 @@ function NewsSection() {
           Dapatkan informasi terbaru dan perkembangan dari Taman Nasional Alas Purwo
         </p>
       </div>
-      
+
       <Card className="border-0 shadow-xl rounded-2xl overflow-hidden">
         <CardContent className="p-8">
           <div className="flex items-center justify-between mb-6">
@@ -215,11 +215,11 @@ function NewsSection() {
                     <Link href={`/news/${featuredNews.id_news}`}>
                       <div className="group cursor-pointer">
                         <div className="relative overflow-hidden rounded-2xl bg-gray-100 mb-4">
-                          <img 
-                            src={getFullImageUrl(featuredNews.image_url)} 
-                            alt={featuredNews.title} 
-                            className="w-full h-72 object-cover group-hover:scale-105 transition-transform duration-500" 
-                            onError={(e) => (e.currentTarget.src = 'https://placehold.co/600x400/EEE/31343C?text=Error')} 
+                          <img
+                            src={getFullImageUrl(featuredNews.image_url)}
+                            alt={featuredNews.title}
+                            className="w-full h-72 object-cover group-hover:scale-105 transition-transform duration-500"
+                            onError={(e) => (e.currentTarget.src = 'https://placehold.co/600x400/EEE/31343C?text=Error')}
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                           <div className="absolute top-4 right-4">
@@ -246,11 +246,11 @@ function NewsSection() {
                     {secondaryNews?.map((item) => (
                       <Link key={item.id_news} href={`/news/${item.id_news}`}>
                         <div className="group cursor-pointer flex items-start space-x-4 p-4 rounded-xl hover:bg-gray-50 transition-colors">
-                          <img 
-                            src={getFullImageUrl(item.image_url)} 
-                            alt={item.title} 
-                            className="w-24 h-20 object-cover rounded-xl flex-shrink-0 group-hover:scale-105 transition-transform duration-300" 
-                            onError={(e) => (e.currentTarget.src = 'https://placehold.co/96x80/EEE/31343C?text=Error')} 
+                          <img
+                            src={getFullImageUrl(item.image_url)}
+                            alt={item.title}
+                            className="w-24 h-20 object-cover rounded-xl flex-shrink-0 group-hover:scale-105 transition-transform duration-300"
+                            onError={(e) => (e.currentTarget.src = 'https://placehold.co/96x80/EEE/31343C?text=Error')}
                           />
                           <div className="space-y-2 flex-1">
                             <div className="flex items-center text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full w-fit">
@@ -360,7 +360,7 @@ function EventsSection() {
           Ikuti berbagai kegiatan menarik dan event spesial di Taman Nasional Alas Purwo
         </p>
       </div>
-      
+
       <Card className="border-0 shadow-xl rounded-2xl overflow-hidden">
         <CardContent className="p-8">
           <div className="flex items-center justify-between mb-6">
@@ -405,11 +405,11 @@ function EventsSection() {
                         <Card className="group cursor-pointer border-0 shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden">
                           <CardContent className="p-0">
                             <div className="relative h-48 overflow-hidden">
-                              <img 
-                                src={getFullImageUrl(item.image_url)} 
-                                alt={item.title} 
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                                onError={(e) => (e.currentTarget.src = 'https://placehold.co/400x200/EEE/31343C?text=Error')} 
+                              <img
+                                src={getFullImageUrl(item.image_url)}
+                                alt={item.title}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                onError={(e) => (e.currentTarget.src = 'https://placehold.co/400x200/EEE/31343C?text=Error')}
                               />
                               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
                               <div className="absolute top-4 right-4">
@@ -463,7 +463,7 @@ function DestinationsSection() {
           Jelajahi keindahan alam dan destinasi menakjubkan di Taman Nasional Alas Purwo
         </p>
       </div>
-      
+
       <Card className="border-0 shadow-xl rounded-2xl overflow-hidden">
         <CardContent className="p-8">
           <div className="flex items-center justify-between mb-6">
@@ -479,7 +479,7 @@ function DestinationsSection() {
               </Button>
             </Link>
           </div>
-          
+
           {isLoading ? (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
@@ -519,8 +519,8 @@ function InfoCardSection() {
       icon: (
         <BarChart3 className="w-8 h-8 text-white-600 group-hover:scale-110 transition-transform" />
       ),
-      title: "SKM",
-      desc: "Survei Kepuasan Masyarakat",
+      title: "Survei Kepuasan",
+      desc: "Beri penilaian atas layanan kami",
       link: "/survey",
       gradient: "from-emerald-500 to-teal-500"
     },
@@ -529,7 +529,7 @@ function InfoCardSection() {
         <Megaphone className="w-8 h-8 text-white-600 group-hover:scale-110 transition-transform" />
       ),
       title: "Pengaduan Masyarakat",
-      desc: "Saluran Pengaduan Elektronik",
+      desc: "Kirim keluhan atau masukan Anda",
       link: "/complaint",
       gradient: "from-orange-500 to-amber-500"
     },
@@ -537,8 +537,8 @@ function InfoCardSection() {
       icon: (
         <AlertTriangle className="w-8 h-8 text-white-600 group-hover:scale-110 transition-transform" />
       ),
-      title: "Whistleblowing System",
-      desc: "Saluran Pengaduan Anonim",
+      title: "Whistleblowing",
+      desc: "Laporkan pelanggaran secara anonim",
       link: "/wbs",
       gradient: "from-red-500 to-pink-500"
     },
@@ -547,14 +547,14 @@ function InfoCardSection() {
         <MapPin className="w-8 h-8 text-white-600 group-hover:scale-110 transition-transform" />
       ),
       title: "Destinasi Wisata",
-      desc: "Objek dan Daya Tarik Wisata Alam",
+      desc: "Jelajahi objek wisata terbaik kami",
       link: "/destinations",
       gradient: "from-blue-500 to-indigo-500"
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {infoItems.map((item, i) => (
         <Link key={i} href={item.link}>
           <Card className="group cursor-pointer border-0 shadow-lg hover:shadow-2xl transition-all duration-500 rounded-2xl overflow-hidden">
@@ -593,7 +593,7 @@ export default function home() {
         <EventsSection />
         <DestinationsSection />
       </div>
-      
+
       {/* Call to Action Section */}
       <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 py-20">
         <div className="max-w-7xl mx-auto px-4 text-center">
