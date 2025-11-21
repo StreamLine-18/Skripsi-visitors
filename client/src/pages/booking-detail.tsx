@@ -64,6 +64,7 @@ export default function BookingDetailPage() {
   const now = new Date();
 
   const isPaymentExpired = booking.status === "Expired";
+  const isUsed = booking.status === "Used";
   const isTicketExpired =
     booking.status === "Success" &&
     booking.expired_at &&
@@ -80,8 +81,6 @@ export default function BookingDetailPage() {
       day: "numeric",
       month: "long",
       year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
     });
   };
 
@@ -95,8 +94,28 @@ export default function BookingDetailPage() {
     });
   };
 
+    const formatDateLong = (dateStr: string | number | Date) => {
+    if (!dateStr) return "-";
+    const d = new Date(dateStr);
+    return d.toLocaleDateString("id-ID", {
+      hour:"2-digit",
+      minute:"2-digit",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
   // === Status Style Map ===
   const getStatusConfig = () => {
+    if (isUsed)
+      return {
+        bg: "bg-gradient-to-br from-purple-50 to-indigo-50",
+        border: "border-purple-200",
+        icon: <CheckCircle2 className="w-6 h-6 text-purple-600" />,
+        text: "Tiket Telah Digunakan",
+        textColor: "text-purple-700",
+      };
     if (isPaymentExpired)
       return {
         bg: "bg-gradient-to-br from-red-50 to-red-100",
@@ -226,19 +245,11 @@ export default function BookingDetailPage() {
               </div>
 
               <div className="flex flex-wrap gap-3">
-                {booking.paid_at && (
-                  <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-200">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    <span className="text-sm font-medium text-gray-700">
-                      Dibayar {formatDateShort(booking.paid_at)}
-                    </span>
-                  </div>
-                )}
                 {booking.expired_at && isPaid && (
                   <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-200">
                     <Clock className="w-4 h-4 text-amber-600" />
                     <span className="text-sm font-medium text-gray-700">
-                      Berlaku hingga {formatDateShort(booking.expired_at)}
+                      Berlaku hingga {formatDateLong(booking.expired_at)}
                     </span>
                   </div>
                 )}
@@ -259,7 +270,9 @@ export default function BookingDetailPage() {
                     <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
                       <User className="w-5 h-5" />
                     </div>
-                    Informasi Pemimpin Rombongan
+                    {booking.items?.reduce((sum: number, item: any) => sum + item.quantity, 0) === 1 
+                      ? "Informasi Pengunjung" 
+                      : "Informasi Pemimpin Rombongan"}
                   </h2>
                 </div>
                 <div className="p-8">
@@ -303,7 +316,7 @@ export default function BookingDetailPage() {
                       Tanggal Kunjungan
                     </p>
                     <p className="text-xl md:text-2xl font-bold text-gray-900">
-                      {formatDate(booking.visit_date || booking.created_on)}
+                      {booking.visit_date ? formatDate(booking.visit_date) : "-"}
                     </p>
                   </div>
                 </div>
@@ -384,12 +397,23 @@ export default function BookingDetailPage() {
                       </Button>
                     )}
 
-                    {isPaid && (
+                    {isPaid && !isUsed && (
                       <Link href="/tickets">
                         <Button className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-6 text-lg rounded-lg shadow-lg">
                           Lihat Tiket Saya
                         </Button>
                       </Link>
+                    )}
+
+                    {isUsed && (
+                      <div className="w-full p-6 bg-gradient-to-br from-purple-50 to-indigo-50 border-2 border-purple-200 rounded-xl shadow-sm">
+                        <div className="flex items-center justify-center gap-3 mb-3">
+                          <h4 className="text-lg font-bold text-purple-700">Tiket Telah Digunakan</h4>
+                        </div>
+                        <p className="text-sm text-center text-purple-600">
+                          Digunakan pada <span className="font-semibold">{formatDateLong(booking.used_at || booking.created_on)}</span>
+                        </p>
+                      </div>
                     )}
 
                     <Button
@@ -404,14 +428,22 @@ export default function BookingDetailPage() {
                     <div className="flex justify-between items-center">
                       <span className="text-gray-600">Dibuat</span>
                       <span className="font-semibold text-gray-900">
-                        {formatDateShort(booking.created_on)}
+                        {formatDateLong(booking.created_on)}
                       </span>
                     </div>
                     {booking.paid_at && (
                       <div className="flex justify-between items-center">
                         <span className="text-gray-600">Dibayar</span>
                         <span className="font-semibold text-gray-900">
-                          {formatDateShort(booking.paid_at)}
+                          {formatDateLong(booking.paid_at)}
+                        </span>
+                      </div>
+                    )}
+                    {booking.used_at && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">Digunakan</span>
+                        <span className="font-semibold text-gray-900">
+                          {formatDateLong(booking.used_at)}
                         </span>
                       </div>
                     )}

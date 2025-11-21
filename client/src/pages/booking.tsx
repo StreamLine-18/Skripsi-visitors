@@ -34,6 +34,7 @@ type Leader = {
   id_number: string;
   phone: string;
   gender: string;
+  visit_date: string;
 };
 
 type TicketPrice = {
@@ -62,6 +63,19 @@ const labelCls = "block text-sm font-medium text-gray-700 mb-1";
 export default function BookingPage() {
   // ✅ Load Midtrans Snap (false = sandbox)
   useMidtransSnap(false);
+  const [bookingType, setBookingType] = useState<"individual" | "group">("individual");
+  const [departDate, setDepartDate] = useState("");
+  const [dayType, setDayType] = useState<"Weekday" | "Weekend">("Weekday");
+  const [tickets, setTickets] = useState<TicketOrder[]>([]);
+  const [selectedGate, setSelectedGate] = useState("");
+
+  
+  useEffect(() => {
+  setLeader((prev) => ({
+    ...prev,
+    visit_date: departDate
+  }));
+}, [departDate]);
 
   const [leader, setLeader] = useState<Leader>({
     name: "",
@@ -70,11 +84,8 @@ export default function BookingPage() {
     gender: "",
     id_type: "",
     id_number: "",
+    visit_date:"",
   });
-  const [departDate, setDepartDate] = useState("");
-  const [dayType, setDayType] = useState<"Weekday" | "Weekend">("Weekday");
-  const [tickets, setTickets] = useState<TicketOrder[]>([]);
-  const [selectedGate, setSelectedGate] = useState("");
 
   // === Fetch Gates ===
   const gatesQuery = useQuery({
@@ -110,13 +121,18 @@ export default function BookingPage() {
   // === Auto-select Ticket ===
   useEffect(() => {
     if (!ticketsQuery.data || !leader.nationality || !selectedGate) return;
-    const base = ticketsQuery.data.find(
-      (t) =>
-        t.gate.name === selectedGate &&
-        t.category.name === leader.nationality &&
-        t.dayType.name === dayType
-    );
-    setTickets(base ? [{ id_ticket_price: base.id_ticket_price, quantity: 1 }] : []);
+    
+    // For individual booking, always auto-select with quantity 1
+    // For group booking, only auto-select if no tickets exist yet
+    if (bookingType === "individual" || tickets.length === 0) {
+      const base = ticketsQuery.data.find(
+        (t) =>
+          t.gate.name === selectedGate &&
+          t.category.name === leader.nationality &&
+          t.dayType.name === dayType
+      );
+      setTickets(base ? [{ id_ticket_price: base.id_ticket_price, quantity: 1 }] : []);
+    }
   }, [leader.nationality, selectedGate, dayType, ticketsQuery.data]);
 
   const totalPrice = useMemo(() => {
@@ -135,6 +151,7 @@ export default function BookingPage() {
       if (!departDate) throw new Error("Pilih tanggal kunjungan");
       if (!selectedGate) throw new Error("Pilih gerbang");
       if (tickets.length === 0) throw new Error("Tidak ada tiket yang sesuai");
+
 
       const payload: CreateBookingPayload = { leader, ticketOrders: tickets };
       const headers: Record<string, string> = { "Content-Type": "application/json" };
@@ -177,6 +194,36 @@ export default function BookingPage() {
         </p>
       </div>
 
+      {/* Booking Type Toggle */}
+      <Card className="border border-gray-200">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-center gap-4">
+            <button
+              onClick={() => setBookingType("individual")}
+              className={`flex-1 md:flex-none px-6 py-3 rounded-lg font-semibold transition-all ${
+                bookingType === "individual"
+                  ? "bg-emerald-600 text-white shadow-lg"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              <Users className="w-5 h-5 inline-block mr-2" />
+              Perorangan
+            </button>
+            <button
+              onClick={() => setBookingType("group")}
+              className={`flex-1 md:flex-none px-6 py-3 rounded-lg font-semibold transition-all ${
+                bookingType === "group"
+                  ? "bg-emerald-600 text-white shadow-lg"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              <Users className="w-5 h-5 inline-block mr-2" />
+              Kelompok
+            </button>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           {/* Leader Data */}
@@ -186,12 +233,16 @@ export default function BookingPage() {
                 <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center">
                   <Users className="w-5 h-5 text-emerald-600" />
                 </div>
-                <h2 className="text-lg font-semibold text-gray-900">Data Ketua Kelompok</h2>
+                <h2 className="text-lg font-semibold text-gray-900">
+                  {bookingType === "individual" ? "Data Pengunjung" : "Data Ketua Kelompok"}
+                </h2>
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="md:col-span-2">
-                  <label className={labelCls}>Nama Ketua</label>
+                  <label className={labelCls}>
+                    {bookingType === "individual" ? "Nama Lengkap" : "Nama Ketua"}
+                  </label>
                   <input
                     className={inputCls}
                     value={leader.name}
@@ -316,15 +367,16 @@ export default function BookingPage() {
             </CardContent>
           </Card>
 
-          {/* Tickets */}
-          <Card className="border border-gray-200 hover:shadow-md transition-shadow">
-            <CardContent className="p-6 space-y-4">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center">
-                  <Ticket className="w-5 h-5 text-emerald-600" />
+          {/* Tickets - Only show for group booking */}
+          {bookingType === "group" && (
+            <Card className="border border-gray-200 hover:shadow-md transition-shadow">
+              <CardContent className="p-6 space-y-4">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center">
+                    <Ticket className="w-5 h-5 text-emerald-600" />
+                  </div>
+                  <h2 className="text-lg font-semibold text-gray-900">Tiket Dipilih</h2>
                 </div>
-                <h2 className="text-lg font-semibold text-gray-900">Tiket Dipilih</h2>
-              </div>
 
               {tickets.length === 0 ? (
                 <div className="text-center py-8 px-4 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
@@ -422,8 +474,9 @@ export default function BookingPage() {
                     Tambah Tiket Kategori Lain
                   </Button>
                 )}
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Summary Sidebar */}

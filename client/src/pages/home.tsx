@@ -153,7 +153,17 @@ function NewsSection() {
   const featuredNews = news?.[0];
   const secondaryNews = news?.slice(1, 4);
 
-  if (error) return <Card className="border-0 shadow-lg rounded-2xl"><CardContent className="p-8 text-red-600">Gagal memuat berita: {error.message}</CardContent></Card>;
+  if (error) return (
+    <Card className="border-0 shadow-lg rounded-2xl">
+      <CardContent className="p-8 text-center">
+        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <FileText className="w-8 h-8 text-red-600" />
+        </div>
+        <p className="text-gray-700 font-medium">Tidak dapat memuat berita saat ini</p>
+        <p className="text-gray-500 text-sm mt-2">Silakan coba lagi nanti</p>
+      </CardContent>
+    </Card>
+  );
 
   return (
     <div className="space-y-8">
@@ -350,7 +360,17 @@ function EventsSection() {
 
   const events = apiResponse?.data;
 
-  if (error) return <Card className="border-0 shadow-lg rounded-2xl"><CardContent className="p-8 text-red-600">Gagal memuat event: {error.message}</CardContent></Card>;
+  if (error) return (
+    <Card className="border-0 shadow-lg rounded-2xl">
+      <CardContent className="p-8 text-center">
+        <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Calendar className="w-8 h-8 text-orange-600" />
+        </div>
+        <p className="text-gray-700 font-medium">Tidak dapat memuat event saat ini</p>
+        <p className="text-gray-500 text-sm mt-2">Silakan coba lagi nanti</p>
+      </CardContent>
+    </Card>
+  );
 
   return (
     <div className="space-y-8">
@@ -453,7 +473,17 @@ function DestinationsSection() {
 
   const destinations = apiResponse?.data;
 
-  if (error) return <Card className="border-0 shadow-lg rounded-2xl"><CardContent className="p-8 text-red-600">Gagal memuat destinasi: {error.message}</CardContent></Card>;
+  if (error) return (
+    <Card className="border-0 shadow-lg rounded-2xl">
+      <CardContent className="p-8 text-center">
+        <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <MapPin className="w-8 h-8 text-emerald-600" />
+        </div>
+        <p className="text-gray-700 font-medium">Tidak dapat memuat destinasi saat ini</p>
+        <p className="text-gray-500 text-sm mt-2">Silakan coba lagi nanti</p>
+      </CardContent>
+    </Card>
+  );
 
   return (
     <div className="space-y-8">

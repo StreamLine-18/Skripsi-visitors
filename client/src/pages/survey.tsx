@@ -151,7 +151,7 @@ export default function SurveyPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label className="text-sm font-semibold text-gray-700">Jam Survei *</Label>
+                      <Label className="text-sm font-semibold text-gray-700">Waktu Pelayanan Anda *</Label>
                       <select 
                         name="survey_time" 
                         required 

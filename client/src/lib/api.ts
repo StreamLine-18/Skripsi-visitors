@@ -99,6 +99,7 @@ export interface Booking {
   created_on: string;
   updated_on: string;
   expired_at?: string;
+  used_at?: string;
   paid_at?: string;
   payment_gateway_token?: string;
   items: BookingItem[];

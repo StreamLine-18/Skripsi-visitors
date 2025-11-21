@@ -68,42 +68,31 @@ export default function HistoryPage() {
     });
   };
 
-  // Check if booking is expired
-  const isBookingExpired = (booking: any) => {
-    if (booking.status !== "Success") return false;
-    if (!booking.expired_at) return false;
-    return new Date(booking.expired_at) < new Date();
-  };
+
 
   const getStatusColor = (booking: any) => {
-    // Check if expired first
-    if (isBookingExpired(booking)) {
-      return "bg-red-100 text-red-700 border-red-200";
-    }
-    
     const status = booking.status;
     if (!status) return "bg-gray-100 text-gray-700 border-gray-200";
     
     switch (status.toLowerCase()) {
       case "used":
-        return "bg-emerald-100 text-emerald-700 border-emerald-200";
+        return "bg-purple-100 text-purple-700 border-purple-200";
       case "expired":
         return "bg-red-100 text-red-700 border-red-200";
       case "pending":
         return "bg-amber-100 text-amber-700 border-amber-200";
       case "success":
-        return "bg-blue-100 text-blue-700 border-blue-200";
+        // Check if ticket is expired
+        if (booking.expired_at && new Date(booking.expired_at) < new Date()) {
+          return "bg-red-100 text-red-700 border-red-200";
+        }
+        return "bg-emerald-100 text-emerald-700 border-emerald-200";
       default:
         return "bg-gray-100 text-gray-700 border-gray-200";
     }
   };
 
   const getStatusIcon = (booking: any) => {
-    // Check if expired first
-    if (isBookingExpired(booking)) {
-      return <XCircle className="w-4 h-4" />;
-    }
-    
     const status = booking.status;
     if (!status) return <AlertCircle className="w-4 h-4" />;
     
@@ -113,20 +102,19 @@ export default function HistoryPage() {
       case "expired":
         return <XCircle className="w-4 h-4" />;
       case "success":
+        // Check if ticket is expired
+        if (booking.expired_at && new Date(booking.expired_at) < new Date()) {
+          return <XCircle className="w-4 h-4" />;
+        }
         return <CheckCircle2 className="w-4 h-4" />;
       case "pending":
-        return <AlertCircle className="w-4 h-4" />;
+        return <Clock className="w-4 h-4" />;
       default:
         return <AlertCircle className="w-4 h-4" />;
     }
   };
 
   const getStatusText = (booking: any) => {
-    // Check if expired first
-    if (isBookingExpired(booking)) {
-      return "Kadaluarsa";
-    }
-    
     const status = booking.status;
     if (!status) return "Status Tidak Diketahui";
     
@@ -136,7 +124,11 @@ export default function HistoryPage() {
       case "expired":
         return "Kadaluarsa";
       case "success":
-        return "Berhasil Dibayar";
+        // Check if ticket is expired
+        if (booking.expired_at && new Date(booking.expired_at) < new Date()) {
+          return "Tiket Kadaluarsa";
+        }
+        return "Aktif";
       case "pending":
         return "Menunggu Pembayaran";
       default:
@@ -166,19 +158,39 @@ export default function HistoryPage() {
               <XCircle className="w-10 h-10 text-red-600" />
             </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-3">
-              Tidak Dapat Memuat Data
+              {!token ? "Silakan Login Terlebih Dahulu" : "Gagal Memuat Riwayat"}
             </h3>
             <p className="text-gray-600 mb-6">
-              {error instanceof Error ? error.message : "Terjadi kesalahan saat memuat riwayat"}
+              {!token 
+                ? "Anda perlu login untuk melihat riwayat pemesanan tiket Anda."
+                : "Terjadi kesalahan saat memuat data. Silakan coba lagi atau hubungi customer service jika masalah berlanjut."}
             </p>
-            {!token && (
-              <Button
-                onClick={() => (window.location.href = "/login")}
-                className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-full px-8 shadow-lg"
-              >
-                Login Sekarang
-              </Button>
-            )}
+            <div className="space-y-3">
+              {!token ? (
+                <Button
+                  onClick={() => (window.location.href = "/login")}
+                  className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-lg px-8 py-3 shadow-lg"
+                >
+                  Login Sekarang
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    onClick={() => window.location.reload()}
+                    className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-lg px-8 py-3 shadow-lg"
+                  >
+                    Coba Lagi
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => (window.location.href = "/")}
+                    className="w-full border-2 border-gray-200 hover:bg-gray-50 rounded-lg px-8 py-3"
+                  >
+                    Kembali ke Beranda
+                  </Button>
+                </>
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -254,6 +266,7 @@ export default function HistoryPage() {
                   <option value="success">Berhasil Dibayar</option>
                   <option value="used">Selesai</option>
                   <option value="expired">Kadaluarsa</option>
+                  <option value="used">Sudah Digunakan</option>
                 </select>
               </div>
 

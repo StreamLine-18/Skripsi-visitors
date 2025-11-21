@@ -182,7 +182,11 @@ export default function Tickets() {
                         <div className="flex items-start gap-3">
                           <User className="w-5 h-5 text-gray-400 mt-0.5" />
                           <div>
-                            <p className="text-xs text-gray-500">Pemimpin Rombongan</p>
+                            <p className="text-xs text-gray-500">
+                              {booking.items?.reduce((sum: number, item: any) => sum + item.quantity, 0) === 1 
+                                ? "Nama Pengunjung" 
+                                : "Pemimpin Rombongan"}
+                            </p>
                             <p className="font-semibold text-gray-900">{booking.leader_name}</p>
                           </div>
                         </div>
@@ -213,9 +217,15 @@ export default function Tickets() {
                         {booking.items?.map((item: any, idx: number) => {
                           console.log('Item data:', item);
                           return (
-                            <div key={idx} className="flex items-center justify-between text-sm bg-gray-50 rounded-lg p-3">
-                              <span className="text-gray-700">{item.gate_name} - {item.category_name}</span>
-                              <span className="font-semibold text-gray-900">{item.quantity}x</span>
+                            <div key={idx} className="flex items-center gap-3 bg-gray-50 rounded-lg p-3 hover:bg-gray-100 transition-colors">
+                              <div className="flex items-center justify-center w-10 h-10 bg-emerald-100 rounded-lg flex-shrink-0">
+                                <span className="text-lg font-bold text-emerald-700">{item.quantity}</span>
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-gray-900 text-sm truncate">{item.gate_name}</p>
+                                <p className="text-xs text-gray-500">{item.category_name}</p>
+                              </div>
+                              <TicketIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
                             </div>
                           );
                         })}

@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { Instagram, Youtube, Facebook } from "lucide-react";
+import { Instagram, Youtube, Facebook, MessageCircle } from "lucide-react";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -45,6 +45,14 @@ export default function Footer() {
               className="text-gray-600 hover:text-teal-600 p-2 rounded-md"
             >
               <Youtube className="w-5 h-5" />
+            </a>
+            <a
+              href="https://api.whatsapp.com/send/?phone=062333428675&text&type=phone_number&app_absent=0"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-600 hover:text-teal-600 p-2 rounded-md"
+            >
+              <MessageCircle className="w-5 h-5" />
             </a>
           </div>
         </div>
