@@ -215,14 +215,13 @@ export default function Tickets() {
                       <p className="text-sm font-semibold text-gray-700 mb-3">Detail Tiket:</p>
                       <div className="space-y-2">
                         {booking.items?.map((item: any, idx: number) => {
-                          console.log('Item data:', item);
                           return (
                             <div key={idx} className="flex items-center gap-3 bg-gray-50 rounded-lg p-3 hover:bg-gray-100 transition-colors">
                               <div className="flex items-center justify-center w-10 h-10 bg-emerald-100 rounded-lg flex-shrink-0">
                                 <span className="text-lg font-bold text-emerald-700">{item.quantity}</span>
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className="font-medium text-gray-900 text-sm truncate">{item.gate_name}</p>
+                                <p className="font-medium text-gray-900 text-sm truncate">{item.gate_name} - {item.day_type_name}</p>
                                 <p className="text-xs text-gray-500">{item.category_name}</p>
                               </div>
                               <TicketIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
