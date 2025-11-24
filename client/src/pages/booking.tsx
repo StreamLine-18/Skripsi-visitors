@@ -30,7 +30,7 @@ function detectDayType(date: string, isHoliday: boolean): "Weekday" | "Weekend" 
 type Leader = {
   name: string;
   nationality: "Nusantara" | "Mancanegara" | "";
-  id_type: "KTP" | "Passport" | "KTM" | "SIM" | "Lainnya" | "";
+  id_type: "KTP" | "Passport" | "KTM" | "SIM" | "";
   id_number: string;
   phone: string;
   gender: string;
@@ -65,7 +65,7 @@ export default function BookingPage() {
   useMidtransSnap(false);
   const [bookingType, setBookingType] = useState<"individual" | "group">("individual");
   const [departDate, setDepartDate] = useState("");
-  const [dayType, setDayType] = useState<"Weekday" | "Weekend">("Weekday");
+  const [dayType, setDayType] = useState<string>("");
   const [tickets, setTickets] = useState<TicketOrder[]>([]);
   const [selectedGate, setSelectedGate] = useState("");
 
@@ -98,6 +98,28 @@ export default function BookingPage() {
     },
   });
 
+  // === Fetch Categories (Nationality) ===
+  const categoriesQuery = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      const res = await fetch(`${BASE_URL}/public/visitor-categories`);
+      const json = await res.json();
+      if (!res.ok) throw new Error("Gagal memuat kategori");
+      return json.data as { id_category: string; name: string }[];
+    },
+  });
+
+  // === Fetch Day Types ===
+  const dayTypesQuery = useQuery({
+    queryKey: ["dayTypes"],
+    queryFn: async () => {
+      const res = await fetch(`${BASE_URL}/public/day-types`);
+      const json = await res.json();
+      if (!res.ok) throw new Error("Gagal memuat tipe hari");
+      return json.data as { id_day_type: string; name: string }[];
+    },
+  });
+
   // === Fetch Tickets ===
   const ticketsQuery = useQuery({
     queryKey: ["tickets"],
@@ -109,18 +131,52 @@ export default function BookingPage() {
     },
   });
 
-  // === Detect Holiday ===
+  // === Detect Holiday and Map to Backend Day Type ===
   useEffect(() => {
-    if (!departDate) return;
+    if (!departDate || !dayTypesQuery.data) return;
+    
     (async () => {
       const holiday = await checkIsHoliday(departDate);
-      setDayType(detectDayType(departDate, holiday));
+      const detectedType = detectDayType(departDate, holiday);
+      
+      // Map frontend day type to backend day type name
+      // Backend might use different names, so we find the matching one
+      const backendDayType = dayTypesQuery.data.find(dt => {
+        const name = dt.name.toLowerCase();
+        if (detectedType === "Weekend") {
+          return name.includes("weekend") || name.includes("akhir pekan") || name.includes("libur");
+        } else {
+          return name.includes("weekday") || name.includes("kerja") || name.includes("biasa");
+        }
+      });
+      
+      console.log("📅 Day type mapping:", {
+        date: departDate,
+        isHoliday: holiday,
+        detected: detectedType,
+        backendTypes: dayTypesQuery.data,
+        selected: backendDayType?.name
+      });
+      
+      setDayType(backendDayType?.name || detectedType);
     })();
-  }, [departDate]);
+  }, [departDate, dayTypesQuery.data]);
 
   // === Auto-select Ticket ===
   useEffect(() => {
-    if (!ticketsQuery.data || !leader.nationality || !selectedGate) return;
+    console.log("🎫 Auto-select check:", {
+      hasData: !!ticketsQuery.data,
+      nationality: leader.nationality,
+      gate: selectedGate,
+      dayType,
+      bookingType,
+      currentTickets: tickets.length
+    });
+
+    if (!ticketsQuery.data || !leader.nationality || !selectedGate) {
+      console.log("⏭️ Skipping auto-select: missing data");
+      return;
+    }
     
     // For individual booking, always auto-select with quantity 1
     // For group booking, only auto-select if no tickets exist yet
@@ -131,9 +187,26 @@ export default function BookingPage() {
           t.category.name === leader.nationality &&
           t.dayType.name === dayType
       );
-      setTickets(base ? [{ id_ticket_price: base.id_ticket_price, quantity: 1 }] : []);
+      
+      console.log("🔍 Looking for ticket:", {
+        gate: selectedGate,
+        category: leader.nationality,
+        dayType,
+        found: !!base,
+        ticket: base
+      });
+      
+      if (base) {
+        console.log("✅ Auto-selected ticket:", base.id_ticket_price);
+        setTickets([{ id_ticket_price: base.id_ticket_price, quantity: 1 }]);
+      } else {
+        console.log("❌ No matching ticket found");
+        setTickets([]);
+      }
+    } else {
+      console.log("⏭️ Skipping auto-select: group booking with existing tickets");
     }
-  }, [leader.nationality, selectedGate, dayType, ticketsQuery.data]);
+  }, [leader.nationality, selectedGate, dayType, ticketsQuery.data, bookingType]);
 
   const totalPrice = useMemo(() => {
     if (!ticketsQuery.data || tickets.length === 0) return 0;
@@ -146,18 +219,24 @@ export default function BookingPage() {
   // === Create Booking ===
   const createBooking = useMutation({
     mutationFn: async () => {
+      // Validation
       if (!leader.name) throw new Error("Nama wajib diisi");
       if (!leader.nationality) throw new Error("Pilih kebangsaan");
+      if (!leader.gender) throw new Error("Pilih jenis kelamin");
+      if (!leader.phone) throw new Error("Nomor telepon wajib diisi");
+      if (!leader.id_type) throw new Error("Pilih jenis identitas");
+      if (!leader.id_number) throw new Error("Nomor identitas wajib diisi");
       if (!departDate) throw new Error("Pilih tanggal kunjungan");
       if (!selectedGate) throw new Error("Pilih gerbang");
-      if (tickets.length === 0) throw new Error("Tidak ada tiket yang sesuai");
-
+      if (tickets.length === 0) throw new Error("Tidak ada tiket yang dipilih");
 
       const payload: CreateBookingPayload = { leader, ticketOrders: tickets };
       const headers: Record<string, string> = { "Content-Type": "application/json" };
       const token = localStorage.getItem("token");
       if (token) headers["Authorization"] = `Bearer ${token}`;
-      console.log("Create Booking Payload:", payload);
+      
+      console.log("📤 Create Booking Payload:", JSON.stringify(payload, null, 2));
+      
       const resp = await fetch(`${BASE_URL}/public/bookings`, {
         method: "POST",
         headers,
@@ -165,19 +244,45 @@ export default function BookingPage() {
       });
 
       const json = await resp.json();
-      console.log("Create Booking Response:", json);
-      if (!resp.ok) throw new Error(json?.meta?.message || "Gagal membuat booking");
+      console.log("📥 Create Booking Response:", json);
+      
+      if (!resp.ok) {
+        const errorMsg = json?.meta?.message || json?.message || "Gagal membuat booking";
+        console.error("❌ Booking Error:", errorMsg);
+        throw new Error(errorMsg);
+      }
+      
       return { token: json.data.transactionToken, id_booking: json.data.id_booking };
     },
     onSuccess: ({ token, id_booking }) => {
+      console.log("✅ Booking created:", id_booking);
       const snap = (window as any).snap;
       if (!snap || typeof snap.pay !== "function") {
         alert("Layanan pembayaran sedang bermasalah. Silakan muat ulang halaman.");
-        console.error("Midtrans Snap not available", snap);
+        console.error("❌ Midtrans Snap not available", snap);
         return;
       }
-    console.log("Midtrans Snap:", snap);
-      snap.pay(token);
+      console.log("💳 Opening Midtrans payment...");
+      snap.pay(token, {
+        onSuccess: () => {
+          console.log("✅ Payment success");
+          window.location.href = `/history/${id_booking}`;
+        },
+        onPending: () => {
+          console.log("⏳ Payment pending");
+          window.location.href = `/history/${id_booking}`;
+        },
+        onError: () => {
+          console.log("❌ Payment error");
+          alert("Terjadi kesalahan saat pembayaran");
+        },
+        onClose: () => {
+          console.log("🚪 Payment popup closed");
+        },
+      });
+    },
+    onError: (error: Error) => {
+      console.error("❌ Booking mutation error:", error.message);
     },
   });
 
@@ -274,8 +379,11 @@ export default function BookingPage() {
                     }
                   >
                     <option value="">Pilih kebangsaan</option>
-                    <option value="Nusantara">Nusantara</option>
-                    <option value="Mancanegara">Mancanegara</option>
+                    {categoriesQuery.data?.map((cat) => (
+                      <option key={cat.id_category} value={cat.name}>
+                        {cat.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
@@ -356,10 +464,10 @@ export default function BookingPage() {
                     className={inputCls}
                     min={new Date().toISOString().split("T")[0]}
                   />
-                  {departDate && (
+                  {departDate && dayType && (
                     <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium">
                       <Calendar className="w-3 h-3" />
-                      Jenis Hari: {dayType === "Weekend" ? "Akhir Pekan/Hari Libur Nasional" : "Hari Kerja"}
+                      Jenis Hari: {dayType}
                     </div>
                   )}
                 </div>

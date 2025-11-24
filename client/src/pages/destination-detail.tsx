@@ -157,9 +157,10 @@ export default function AttractionDetail() {
                 </h2>
               </div>
               <div className="prose prose-lg max-w-none">
-                <p className="text-gray-700 leading-relaxed text-lg">
-                  {destination.description || destination.summary}
-                </p>
+                <div 
+                  className="text-gray-700 leading-relaxed text-lg"
+                  dangerouslySetInnerHTML={{ __html: destination.description || destination.summary || "" }}
+                />
               </div>
             </section>
 
@@ -171,9 +172,10 @@ export default function AttractionDetail() {
                 </h3>
                 <Card className="border-emerald-100 bg-emerald-50/30">
                   <CardContent className="p-6">
-                    <p className="text-gray-700 leading-relaxed">
-                      {destination.features}
-                    </p>
+                    <div 
+                      className="text-gray-700 leading-relaxed prose prose-sm max-w-none"
+                      dangerouslySetInnerHTML={{ __html: destination.features }}
+                    />
                   </CardContent>
                 </Card>
               </section>
@@ -187,9 +189,10 @@ export default function AttractionDetail() {
                 </h3>
                 <Card className="border-blue-100 bg-blue-50/30">
                   <CardContent className="p-6">
-                    <p className="text-gray-700 leading-relaxed">
-                      {destination.facilities}
-                    </p>
+                    <div 
+                      className="text-gray-700 leading-relaxed prose prose-sm max-w-none"
+                      dangerouslySetInnerHTML={{ __html: destination.facilities }}
+                    />
                   </CardContent>
                 </Card>
               </section>

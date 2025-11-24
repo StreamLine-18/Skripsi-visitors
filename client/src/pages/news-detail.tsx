@@ -145,32 +145,10 @@ export default function NewsDetailPage() {
                                 </h2>
                             </div>
                             <div className="prose prose-lg max-w-none">
-                                <div className="text-gray-700 leading-relaxed text-lg space-y-6">
-                                    {news.content.split(/\r?\n/).map((p, i) => {
-                                        const trimmed = p.trim();
-                                        if (!trimmed) return null;
-
-                                        // First paragraph with drop cap
-                                        if (i === 0) {
-                                            const firstChar = trimmed.charAt(0);
-                                            const rest = trimmed.slice(1);
-                                            return (
-                                                <p key={i} className="text-justify">
-                                                    <span className="float-left text-6xl font-bold text-blue-600 mr-3 leading-none mt-1">
-                                                        {firstChar}
-                                                    </span>
-                                                    {rest}
-                                                </p>
-                                            );
-                                        }
-
-                                        return (
-                                            <p key={i} className="text-justify">
-                                                {trimmed}
-                                            </p>
-                                        );
-                                    })}
-                                </div>
+                                <div 
+                                    className="text-gray-700 leading-relaxed text-lg"
+                                    dangerouslySetInnerHTML={{ __html: news.content }}
+                                />
                             </div>
                         </section>
 
