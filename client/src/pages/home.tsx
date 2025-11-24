@@ -12,14 +12,10 @@ import {
   type Event,
   Destination,
   destinationApi,
-} from "@/lib/api"; // Mengimpor semua dari api.ts yang telah kita siapkan
+} from "@/lib/api";
+import { getFullImageUrl } from "@/lib/image-utils";
 
-// --- Environment Variable & Helper Functions ---
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
-// Dapatkan root URL server dengan menghapus '/api' jika ada
-const SERVER_ROOT_URL = BASE_URL.endsWith('/api') ? BASE_URL.replace('/api', '') : BASE_URL;
-
-
+// --- Helper Functions ---
 const formatDate = (date: Date | string | undefined) => {
   if (!date) return 'Tanggal tidak diketahui';
   const d = new Date(date);
@@ -29,26 +25,6 @@ const formatDate = (date: Date | string | undefined) => {
   });
 };
 
-const getFullImageUrl = (relativePath: string): string => {
-
-  if (!SERVER_ROOT_URL || !relativePath) {
-    console.error('[DEBUG] Gagal membuat URL gambar: SERVER_ROOT_URL atau relativePath kosong.');
-    return 'https://placehold.co/600x400/EEE/31343C?text=URL+Error';
-  }
-  if (relativePath.startsWith('http')) {
-    return relativePath;
-  }
-
-  // Menggunakan logika yang Anda berikan: hapus '/public' dari path
-  const cleanedPath = relativePath.replace('/public', '');
-  // Pastikan tidak ada garis miring di awal path agar tidak jadi '//'
-  const finalPath = cleanedPath.startsWith('/') ? cleanedPath.slice(1) : cleanedPath;
-
-  const fullUrl = `${SERVER_ROOT_URL}/${finalPath}`;
-
-
-  return fullUrl;
-};
 
 const stripHtml = (html: string): string => {
   try {

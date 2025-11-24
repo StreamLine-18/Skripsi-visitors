@@ -1,23 +1,7 @@
 import { Link } from "wouter";
 import { Star, MapPin } from "lucide-react";
 import type { Destination } from "@/lib/api";
-
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
-const SERVER_ROOT_URL = BASE_URL.endsWith("/api")
-  ? BASE_URL.replace("/api", "")
-  : BASE_URL;
-
-const getFullImageUrl = (relativePath: string): string => {
-  if (!SERVER_ROOT_URL || !relativePath) {
-    return "https://placehold.co/600x400/EEE/31343C?text=No+Image";
-  }
-  if (relativePath.startsWith("http")) return relativePath;
-  const cleanedPath = relativePath.replace("/public", "");
-  const finalPath = cleanedPath.startsWith("/")
-    ? cleanedPath.slice(1)
-    : cleanedPath;
-  return `${SERVER_ROOT_URL}/${finalPath}`;
-};
+import { getFullImageUrl } from "@/lib/image-utils";
 
 interface DestinationCardProps {
   destination: Destination;
