@@ -14,25 +14,24 @@ import Footer from "@/components/layout/footer";
 
 // Pages
 import Home from "@/pages/home";
-import Tickets from "@/pages/tickets";
-import History from "@/pages/history";
-import Profile from "@/pages/profile";
-import AttractionDetail from "@/pages/destination-detail";
-import NotFound from "@/pages/not-found";
-import NewsPage from "@/pages/news";
-import EventsPage from "@/pages/events";
-import EventDetail from "@/pages/event-detail";
-import Survey from "@/pages/survey";
-import ComplaintPage from "@/pages/pengaduan";
-import WBS from "@/pages/wbs";
-import RegisterPage from "@/pages/register";
-import LoginPage from "@/pages/login";
-import BookingPage from "./pages/booking";
-import DestinationsPage from "./pages/destinations";
-import DestinationsDetailPage from "./pages/destination-detail";
-import NewsDetailPage from "./pages/news-detail";
-import BookingDetailPage from "./pages/booking-detail";
-import MyReportsPage from "./pages/my-reports";
+import Tickets from "@/pages/Booking/tickets";
+import History from "@/pages/Booking/history";
+import Profile from "@/pages/Profile/profile";
+import NotFound from "@/pages/Utils/not-found";
+import NewsPage from "@/pages/News/news";
+import EventsPage from "@/pages/Event/events";
+import EventDetail from "@/pages/Event/event-detail";
+import Survey from "@/pages/Survey/survey";
+import ComplaintPage from "@/pages/Survey/pengaduan";
+import WBS from "@/pages/Survey/wbs";
+import RegisterPage from "@/pages/Auth/register";
+import LoginPage from "@/pages/Auth/login";
+import BookingPage from "./pages/Booking/booking";
+import DestinationsPage from "./pages/Destination/destinations";
+import DestinationsDetailPage from "./pages/Destination/destination-detail";
+import NewsDetailPage from "./pages/News/news-detail";
+import BookingDetailPage from "./pages/Booking/booking-detail";
+import MyReportsPage from "./pages/Profile/my-reports";
 
 // Auth Context
 import { AuthProvider } from "@/hooks/use-auth";
@@ -50,7 +49,6 @@ function Router() {
       <Route path="/survey" component={Survey} />
       <Route path="/complaint" component={ComplaintPage} />
       <Route path="/wbs" component={WBS} />
-      <Route path="/attraction/:slug" component={AttractionDetail} />
       <Route path="/destinations" component={DestinationsPage} />
       <Route path="/destination/:slug" component={DestinationsDetailPage} />
       <Route path="/register" component={RegisterPage} />

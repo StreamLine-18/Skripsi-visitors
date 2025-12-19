@@ -14,16 +14,7 @@ import {
   destinationApi,
 } from "@/lib/api";
 import { getFullImageUrl } from "@/lib/image-utils";
-
-// --- Helper Functions ---
-const formatDate = (date: Date | string | undefined) => {
-  if (!date) return 'Tanggal tidak diketahui';
-  const d = new Date(date);
-  if (isNaN(d.getTime())) return 'Tanggal tidak valid';
-  return d.toLocaleDateString('id-ID', {
-    day: 'numeric', month: 'long', year: 'numeric'
-  });
-};
+import { formatDateNoWeekday as formatDate } from "@/lib/date-utils";
 
 
 const stripHtml = (html: string): string => {

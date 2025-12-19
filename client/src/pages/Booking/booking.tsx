@@ -69,14 +69,6 @@ export default function BookingPage() {
   const [tickets, setTickets] = useState<TicketOrder[]>([]);
   const [selectedGate, setSelectedGate] = useState("");
 
-  
-  useEffect(() => {
-  setLeader((prev) => ({
-    ...prev,
-    visit_date: departDate
-  }));
-}, [departDate]);
-
   const [leader, setLeader] = useState<Leader>({
     name: "",
     nationality: "",
@@ -86,6 +78,37 @@ export default function BookingPage() {
     id_number: "",
     visit_date:"",
   });
+
+  // === Fetch User Profile ===
+  const token = localStorage.getItem("token");
+  const { data: userProfile } = useQuery({
+    queryKey: ["profile"],
+    queryFn: async () => {
+      const res = await fetch(`${BASE_URL}/public/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const json = await res.json();
+      return json.data as { full_name: string; email: string };
+    },
+    enabled: !!token,
+  });
+
+  // Pre-fill leader name from user profile
+  useEffect(() => {
+    if (userProfile?.full_name && !leader.name) {
+      setLeader((prev) => ({
+        ...prev,
+        name: userProfile.full_name,
+      }));
+    }
+  }, [userProfile]);
+
+  useEffect(() => {
+    setLeader((prev) => ({
+      ...prev,
+      visit_date: departDate
+    }));
+  }, [departDate]);
 
   // === Fetch Gates ===
   const gatesQuery = useQuery({
@@ -150,13 +173,6 @@ export default function BookingPage() {
         }
       });
       
-      console.log("📅 Day type mapping:", {
-        date: departDate,
-        isHoliday: holiday,
-        detected: detectedType,
-        backendTypes: dayTypesQuery.data,
-        selected: backendDayType?.name
-      });
       
       setDayType(backendDayType?.name || detectedType);
     })();
@@ -164,17 +180,8 @@ export default function BookingPage() {
 
   // === Auto-select Ticket ===
   useEffect(() => {
-    console.log("🎫 Auto-select check:", {
-      hasData: !!ticketsQuery.data,
-      nationality: leader.nationality,
-      gate: selectedGate,
-      dayType,
-      bookingType,
-      currentTickets: tickets.length
-    });
-
+    
     if (!ticketsQuery.data || !leader.nationality || !selectedGate) {
-      console.log("⏭️ Skipping auto-select: missing data");
       return;
     }
     
@@ -188,23 +195,13 @@ export default function BookingPage() {
           t.dayType.name === dayType
       );
       
-      console.log("🔍 Looking for ticket:", {
-        gate: selectedGate,
-        category: leader.nationality,
-        dayType,
-        found: !!base,
-        ticket: base
-      });
       
       if (base) {
-        console.log("✅ Auto-selected ticket:", base.id_ticket_price);
         setTickets([{ id_ticket_price: base.id_ticket_price, quantity: 1 }]);
       } else {
-        console.log("❌ No matching ticket found");
         setTickets([]);
       }
     } else {
-      console.log("⏭️ Skipping auto-select: group booking with existing tickets");
     }
   }, [leader.nationality, selectedGate, dayType, ticketsQuery.data, bookingType]);
 
@@ -235,7 +232,7 @@ export default function BookingPage() {
       const token = localStorage.getItem("token");
       if (token) headers["Authorization"] = `Bearer ${token}`;
       
-      console.log("📤 Create Booking Payload:", JSON.stringify(payload, null, 2));
+      // console.log("📤 Create Booking Payload:", JSON.stringify(payload, null, 2));
       
       const resp = await fetch(`${BASE_URL}/public/bookings`, {
         method: "POST",
@@ -244,11 +241,11 @@ export default function BookingPage() {
       });
 
       const json = await resp.json();
-      console.log("📥 Create Booking Response:", json);
+      // console.log("📥 Create Booking Response:", json);
       
       if (!resp.ok) {
         const errorMsg = json?.meta?.message || json?.message || "Gagal membuat booking";
-        console.error("❌ Booking Error:", errorMsg);
+        // console.error("❌ Booking Error:", errorMsg);
         throw new Error(errorMsg);
       }
       
@@ -259,30 +256,30 @@ export default function BookingPage() {
       const snap = (window as any).snap;
       if (!snap || typeof snap.pay !== "function") {
         alert("Layanan pembayaran sedang bermasalah. Silakan muat ulang halaman.");
-        console.error("❌ Midtrans Snap not available", snap);
+        // console.error("❌ Midtrans Snap not available", snap);
         return;
       }
       console.log("💳 Opening Midtrans payment...");
       snap.pay(token, {
         onSuccess: () => {
-          console.log("✅ Payment success");
+          // console.log("✅ Payment success");
           window.location.href = `/history/${id_booking}`;
         },
         onPending: () => {
-          console.log("⏳ Payment pending");
+          // console.log("⏳ Payment pending");
           window.location.href = `/history/${id_booking}`;
         },
         onError: () => {
-          console.log("❌ Payment error");
+          // console.log("❌ Payment error");
           alert("Terjadi kesalahan saat pembayaran");
         },
         onClose: () => {
-          console.log("🚪 Payment popup closed");
+          // console.log("🚪 Payment popup closed");
         },
       });
     },
     onError: (error: Error) => {
-      console.error("❌ Booking mutation error:", error.message);
+      // console.error("❌ Booking mutation error:", error.message);
     },
   });
 
@@ -349,7 +346,7 @@ export default function BookingPage() {
                     {bookingType === "individual" ? "Nama Lengkap" : "Nama Ketua"}
                   </label>
                   <input
-                    className={inputCls}
+                    className={inputCls} disabled
                     value={leader.name}
                     onChange={(e) => setLeader({ ...leader, name: e.target.value })}
                     placeholder="Masukkan nama lengkap"
@@ -411,7 +408,6 @@ export default function BookingPage() {
                     <option value="SIM">SIM</option>
                     <option value="Passport">Paspor</option>
                     <option value="KTM">Kartu Mahasiswa</option>
-                    <option value="Lainnya">Lainnya</option>
                   </select>
                 </div>
 

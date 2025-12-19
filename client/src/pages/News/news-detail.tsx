@@ -13,19 +13,7 @@ import {
   Newspaper,
 } from "lucide-react";
 import { getFullImageUrl } from "@/lib/image-utils";
-
-// === HELPERS ===
-const formatDate = (date: string | Date | undefined) => {
-    if (!date) return "Tanggal tidak diketahui";
-    const d = date instanceof Date ? date : new Date(date);
-    if (isNaN(d.getTime())) return "Tanggal tidak diketahui";
-    return d.toLocaleDateString("id-ID", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-    });
-};
+import { formatDate } from "@/lib/date-utils";
 
 // === MAIN COMPONENT ===
 export default function NewsDetailPage() {

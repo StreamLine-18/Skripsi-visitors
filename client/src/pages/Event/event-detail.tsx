@@ -15,30 +15,7 @@ import {
 import { eventApi, type ApiResponse, type Event } from "@/lib/api";
 
 import { getFullImageUrl } from "@/lib/image-utils";
-
-// --- Helper Functions ---
-
-const formatDate = (date: Date | string | undefined) => {
-  if (!date) return "Tanggal tidak diketahui";
-  const d = new Date(date);
-  if (isNaN(d.getTime())) return "Tanggal tidak valid";
-  return d.toLocaleDateString("id-ID", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-};
-
-const formatTime = (date: Date | string | undefined) => {
-  if (!date) return "";
-  const d = new Date(date);
-  if (isNaN(d.getTime())) return "";
-  return d.toLocaleTimeString("id-ID", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
+import { formatDate, formatTime } from "@/lib/date-utils";
 
 const getEventStatus = (eventDate: Date | string | null | undefined) => {
   if (!eventDate) return { text: "Unknown", color: "bg-gray-100 text-gray-700" };

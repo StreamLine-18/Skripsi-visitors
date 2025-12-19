@@ -83,6 +83,10 @@ export interface Destination {
 export interface BookingItem {
   quantity: number;
   id_ticket_price: string;
+  gate_name?: string;
+  category_name?: string;
+  price?: number;
+  subtotal?: number;
 }
 
 export interface Booking {
@@ -95,14 +99,15 @@ export interface Booking {
   leader_id_type: string;
   visit_date: string | null;
   total_amount: string;
-  status: string;
+  status: "Pending" | "Success" | "Used" | "Expired" | "Failed";
   created_on: string;
   updated_on: string;
   expired_at?: string;
   used_at?: string;
   paid_at?: string;
   payment_gateway_token?: string;
-  items: BookingItem[];
+  items?: BookingItem[];
+  details?: BookingItem[];
 }
 
 export interface SurveySubmission {

@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { complaintApi } from "@/lib/api";
 import { useAuth } from "@/hooks/use-auth";
+import { formatDateNoWeekday as formatDate } from "@/lib/date-utils";
 
 export default function MyReportsPage() {
   const { token } = useAuth();
@@ -74,14 +75,6 @@ export default function MyReportsPage() {
           label: status,
         };
     }
-  };
-
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString("id-ID", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
   };
 
   if (isLoading) {
