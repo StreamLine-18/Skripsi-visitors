@@ -62,6 +62,9 @@ export default function BookingDetailPage() {
 
   const booking = data;
   const now = new Date();
+  
+  // Handle both 'items' and 'details' from API response
+  const ticketItems = booking.items || booking.details || [];
 
   const isPaymentExpired = booking.status === "Expired";
   const isUsed = booking.status === "Used";
@@ -182,10 +185,9 @@ export default function BookingDetailPage() {
         onSuccess: () => window.location.reload(),
         onPending: () => window.location.reload(),
         onError: () => alert("Terjadi kesalahan pembayaran."),
-        onClose: () => console.log("🟡 Popup ditutup oleh user"),
+        onClose: () => setIsPaying(false)
       });
     } catch (err: any) {
-      console.error(err);
       alert("Gagal memproses ulang pembayaran.");
     } finally {
       setIsPaying(false);
@@ -270,7 +272,7 @@ export default function BookingDetailPage() {
                     <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
                       <User className="w-5 h-5" />
                     </div>
-                    {booking.items?.reduce((sum: number, item: any) => sum + item.quantity, 0) === 1 
+                    {ticketItems.reduce((sum: number, item: any) => sum + item.quantity, 0) === 1 
                       ? "Informasi Pengunjung" 
                       : "Informasi Pemimpin Rombongan"}
                   </h2>
@@ -335,24 +337,45 @@ export default function BookingDetailPage() {
                   </h2>
                 </div>
                 <div className="p-8 space-y-4">
-                  {booking.items?.map((item: any, idx: number) => (
-                    <div
-                      key={idx}
-                      className="flex items-center justify-between p-5 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200 hover:shadow-md transition-shadow"
-                    >
+                  {ticketItems.length > 0 ? (
+                    ticketItems.map((item: any, idx: number) => (
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between p-5 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200 hover:shadow-md transition-shadow"
+                      >
+                        <div className="flex-1">
+                          <p className="font-semibold text-gray-900 text-base mb-1">
+                            {item.gate_name} - {item.category_name}
+                          </p>
+                          <p className="text-xs text-gray-500 mb-1">{item.day_type_name}</p>
+                          <p className="text-sm text-gray-600">
+                            Rp {Number(item.price).toLocaleString("id-ID")} × {item.quantity}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <span className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-lg text-sm font-bold">
+                            Rp {Number(item.subtotal || item.price * item.quantity).toLocaleString("id-ID")}
+                          </span>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="flex items-center justify-between p-5 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200">
                       <div className="flex-1">
-                        <p className="font-semibold text-gray-900 text-base mb-1">{item.gate_name} - {item.category_name}</p>
+                        <p className="font-semibold text-gray-900 text-base mb-1">
+                          Tiket Masuk - {booking.leader_nationality}
+                        </p>
                         <p className="text-sm text-gray-600">
-                          Rp {Number(item.price).toLocaleString("id-ID")} × {item.quantity}
+                          Total Pembayaran
                         </p>
                       </div>
                       <div className="text-right">
                         <span className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-lg text-sm font-bold">
-                          Rp {(Number(item.price) * item.quantity).toLocaleString("id-ID")}
+                          Rp {Number(booking.total_amount).toLocaleString("id-ID")}
                         </span>
                       </div>
                     </div>
-                  ))}
+                  )}
                 </div>
               </CardContent>
             </Card>

@@ -14,6 +14,8 @@ export default function RegisterPage() {
   const [full_name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   const { mutate, isPending, error } = useMutation({
     mutationFn: async () => register(full_name, email, password),
@@ -22,6 +24,20 @@ export default function RegisterPage() {
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate password match
+    if (password !== confirmPassword) {
+      setPasswordError("Password tidak cocok");
+      return;
+    }
+    
+    // Validate password length
+    if (password.length < 8) {
+      setPasswordError("Password harus minimal 8 karakter");
+      return;
+    }
+    
+    setPasswordError("");
     mutate();
   };
 
@@ -134,13 +150,38 @@ export default function RegisterPage() {
                         id="password"
                         type="password"
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={(e) => {
+                          setPassword(e.target.value);
+                          setPasswordError("");
+                        }}
                         placeholder="Minimal 8 karakter"
                         className="h-12 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 rounded-lg"
                         required
                       />
-                      <p className="text-xs text-gray-500">Password harus minimal 8 karakter</p>
                     </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="confirmPassword" className="text-sm font-semibold text-gray-700">Konfirmasi Password</Label>
+                      <Input
+                        id="confirmPassword"
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => {
+                          setConfirmPassword(e.target.value);
+                          setPasswordError("");
+                        }}
+                        placeholder="Ketik ulang password"
+                        className="h-12 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 rounded-lg"
+                        required
+                      />
+                      <p className="text-xs text-gray-500">Password harus minimal 8 karakter dan cocok</p>
+                    </div>
+
+                    {passwordError && (
+                      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                        <p className="text-sm text-red-600">{passwordError}</p>
+                      </div>
+                    )}
 
                     {error && (
                       <div className="bg-red-50 border border-red-200 rounded-lg p-4">

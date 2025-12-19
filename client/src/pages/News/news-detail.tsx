@@ -11,36 +11,9 @@ import {
   Camera,
   Info,
   Newspaper,
-  Clock,
 } from "lucide-react";
-
-// === BASE CONFIG ===
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
-const SERVER_ROOT_URL = BASE_URL.endsWith("/api")
-    ? BASE_URL.replace("/api", "")
-    : BASE_URL;
-
-// === HELPERS ===
-const formatDate = (date: string | Date | undefined) => {
-    if (!date) return "Tanggal tidak diketahui";
-    const d = date instanceof Date ? date : new Date(date);
-    if (isNaN(d.getTime())) return "Tanggal tidak diketahui";
-    return d.toLocaleDateString("id-ID", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-    });
-};
-
-const getFullImageUrl = (path: string) => {
-    if (!SERVER_ROOT_URL || !path)
-        return "https://placehold.co/1200x600/EEE/31343C?text=No+Image";
-    if (path.startsWith("http")) return path;
-    const clean = path.replace("/public", "");
-    const normalized = clean.startsWith("/") ? clean.slice(1) : clean;
-    return `${SERVER_ROOT_URL}/${normalized}`;
-};
+import { getFullImageUrl } from "@/lib/image-utils";
+import { formatDate } from "@/lib/date-utils";
 
 // === MAIN COMPONENT ===
 export default function NewsDetailPage() {
@@ -164,11 +137,11 @@ export default function NewsDetailPage() {
                                             <User className="w-6 h-6 text-blue-600" />
                                         </div>
                                         <div>
-                                            <h4 className="font-semibold text-gray-900 mb-2">
+                                            <h4 className="font-semibold text-gray-900">
                                                 {news.author_name}
                                             </h4>
                                             <p className="text-gray-600 text-sm mb-2">
-                                                Penulis Taman Nasional Alas Purwo
+                                                Penulis
                                             </p>
                                             <div className="flex items-center text-xs text-gray-500">
                                                 <Calendar className="w-3 h-3 mr-1" />

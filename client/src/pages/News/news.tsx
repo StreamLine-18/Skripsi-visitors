@@ -14,30 +14,8 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-// --- Environment Variable & Helper Functions ---
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
-const SERVER_ROOT_URL = BASE_URL.endsWith('/api') ? BASE_URL.replace('/api', '') : BASE_URL;
-
-const formatDate = (date: Date | string | undefined) => {
-  if (!date) return 'Tanggal tidak diketahui';
-  const d = new Date(date);
-  if (isNaN(d.getTime())) return 'Tanggal tidak valid';
-  return d.toLocaleDateString('id-ID', {
-    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-  });
-};
-
-const getFullImageUrl = (relativePath: string): string => {
-  if (!SERVER_ROOT_URL || !relativePath) {
-    return 'https://placehold.co/600x400/EEE/31343C?text=No+Image';
-  }
-  if (relativePath.startsWith('http')) {
-    return relativePath;
-  }
-  const cleanedPath = relativePath.replace('/public', '');
-  const finalPath = cleanedPath.startsWith('/') ? cleanedPath.slice(1) : cleanedPath;
-  return `${SERVER_ROOT_URL}/${finalPath}`;
-};
+import { getFullImageUrl } from "@/lib/image-utils";
+import { formatDate } from "@/lib/date-utils";
 
 const stripHtml = (html: string): string => {
   try {

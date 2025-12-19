@@ -83,7 +83,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // 🔑 Login
   const login = async (email: string, password: string) => {
-    console.log('🔐 Attempting login to:', `${base}/public/auth/login`);
     
     const res = await fetch(`${base}/public/auth/login`, {
       method: "POST",
@@ -91,18 +90,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       body: JSON.stringify({ email, password }),
     });
     
-    console.log('📡 Response status:', res.status);
-    
     const data = await res.json();
-    console.log('📦 Response data:', data);
     
     if (!res.ok) throw new Error(data?.meta?.message || "Login gagal");
 
     setToken(data.data.accessToken);
     setRole(data.data.role ?? null);
     setUser({ email });
-    
-    console.log('✅ Login successful');
+
   };
 
   // 📝 Register

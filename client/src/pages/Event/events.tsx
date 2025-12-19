@@ -14,44 +14,8 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-// --- Environment Variable & Helper Functions ---
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
-const SERVER_ROOT_URL = BASE_URL.endsWith("/api") ? BASE_URL.replace("/api", "") : BASE_URL;
-
-const formatDate = (date: Date | string | undefined) => {
-  if (!date) return "Tanggal tidak diketahui";
-  const d = new Date(date);
-  if (isNaN(d.getTime())) return "Tanggal tidak valid";
-  return d.toLocaleDateString("id-ID", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-};
-
-const formatTime = (date: Date | string | undefined) => {
-  if (!date) return "";
-  const d = new Date(date);
-  if (isNaN(d.getTime())) return "";
-  return d.toLocaleTimeString("id-ID", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
-
-const getFullImageUrl = (relativePath: string): string => {
-  if (!SERVER_ROOT_URL || !relativePath) {
-    return "https://placehold.co/600x400/EEE/31343C?text=No+Image";
-  }
-  if (relativePath.startsWith("http")) return relativePath;
-  const cleanedPath = relativePath.replace("/public", "");
-  const finalPath = cleanedPath.startsWith("/") ? cleanedPath.slice(1) : cleanedPath;
-  return `${SERVER_ROOT_URL}/${finalPath}`;
-};
+import { getFullImageUrl } from "@/lib/image-utils";
+import { formatDate, formatDateTimeFull as formatTime } from "@/lib/date-utils";
 
 const getEventStatus = (eventDate: Date | string | null | undefined) => {
   if (!eventDate) return { text: "Unknown", color: "bg-gray-100 text-gray-700" };
@@ -64,10 +28,6 @@ const getEventStatus = (eventDate: Date | string | null | undefined) => {
   const eventDay = new Date(event.getFullYear(), event.getMonth(), event.getDate()).getTime();
 
   const diffDays = Math.floor((eventDay - today) / 86400000);
-
-  console.log("DiffDays :", diffDays);
-  console.log("Event :", event);
-  console.log("Now :", now);
 
   if (diffDays > 7) return { text: "Segera Hadir", color: "text-emerald-700" };
   if (diffDays > 0) return { text: "Akan Datang", color: "text-teal-700" };
