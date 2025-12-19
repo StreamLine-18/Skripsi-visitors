@@ -4,7 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useRef, useLayoutEffect, useState } from "react";
+import { useRef } from "react";
 import { ScrollToTop } from "@/hooks/scroll-top"
 
 // Layout Components
@@ -100,15 +100,6 @@ function Router() {
 function App() {
   const isMobile = useIsMobile();
   const navRef = useRef<HTMLDivElement>(null);
-  const [navHeight, setNavHeight] = useState(0);
-
-  useLayoutEffect(() => {
-    if (isMobile && navRef.current) {
-      setNavHeight(navRef.current.offsetHeight);
-    } else {
-      setNavHeight(0);
-    }
-  }, [isMobile]);
 
   return (
     <QueryClientProvider client={queryClient}>

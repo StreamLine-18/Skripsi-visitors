@@ -252,14 +252,11 @@ export default function BookingPage() {
       return { token: json.data.transactionToken, id_booking: json.data.id_booking };
     },
     onSuccess: ({ token, id_booking }) => {
-      console.log("✅ Booking created:", id_booking);
       const snap = (window as any).snap;
       if (!snap || typeof snap.pay !== "function") {
         alert("Layanan pembayaran sedang bermasalah. Silakan muat ulang halaman.");
-        // console.error("❌ Midtrans Snap not available", snap);
         return;
       }
-      console.log("💳 Opening Midtrans payment...");
       snap.pay(token, {
         onSuccess: () => {
           // console.log("✅ Payment success");

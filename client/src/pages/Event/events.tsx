@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, ArrowLeft, MapPin, CalendarCheck, Camera, Star } from "lucide-react";
+import { Calendar, Clock, ArrowLeft, MapPin, Camera, Star } from "lucide-react";
 import { Link } from "wouter";
 import { eventApi, type ApiResponse, type Event } from "@/lib/api";
 import {
