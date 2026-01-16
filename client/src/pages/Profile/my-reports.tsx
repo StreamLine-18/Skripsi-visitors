@@ -19,18 +19,21 @@ import { useAuth } from "@/hooks/use-auth";
 import { formatDateNoWeekday as formatDate } from "@/lib/date-utils";
 
 export default function MyReportsPage() {
-  const { token } = useAuth();
+  const { token, user, isLoadingUser } = useAuth();
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["my-reports"],
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["my-reports", user?.id_user],
     queryFn: async () => {
       const res = await complaintApi.getMyReports({}, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return res.data;
     },
-    enabled: !!token,
+    enabled: !!token && !isLoadingUser,
   });
+
+  // Debug log (can be removed later)
+  console.log("MyReports - token:", !!token, "isLoadingUser:", isLoadingUser, "data:", data, "error:", error);
 
   const getStatusConfig = (status: string) => {
     switch (status) {
@@ -77,7 +80,7 @@ export default function MyReportsPage() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || isLoadingUser) {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 py-12">
@@ -97,7 +100,7 @@ export default function MyReportsPage() {
       <div className="relative h-[300px] bg-gradient-to-r from-orange-600 via-amber-600 to-yellow-600 overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1920')] bg-cover bg-center opacity-20"></div>
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
-        
+
         <div className="relative max-w-7xl mx-auto px-4 h-full flex flex-col justify-center">
           <Link href="/profile">
             <Button
@@ -109,7 +112,7 @@ export default function MyReportsPage() {
               Kembali ke Profil
             </Button>
           </Link>
-          
+
           <div className="space-y-4 text-white">
             <div className="flex items-center space-x-2">
               <FileText className="w-6 h-6" />
@@ -131,7 +134,7 @@ export default function MyReportsPage() {
           <div className="space-y-6">
             {data.map((report: any) => {
               const statusConfig = getStatusConfig(report.complaint_status);
-              
+
               return (
                 <Card key={report.id_pelaporan} className="border-0 shadow-lg rounded-2xl overflow-hidden hover:shadow-xl transition-shadow">
                   <CardContent className="p-0">
@@ -201,16 +204,15 @@ export default function MyReportsPage() {
                             <span className="inline-block px-3 py-1 bg-orange-100 text-orange-700 rounded-lg text-sm font-medium">
                               {report.complaint_type}
                             </span>
-                            <span className={`inline-block px-3 py-1 rounded-lg text-sm font-medium ${
-                              report.priority === 'SangatTinggi' ? 'bg-red-100 text-red-700' :
+                            <span className={`inline-block px-3 py-1 rounded-lg text-sm font-medium ${report.priority === 'SangatTinggi' ? 'bg-red-100 text-red-700' :
                               report.priority === 'Tinggi' ? 'bg-orange-100 text-orange-700' :
-                              report.priority === 'Sedang' ? 'bg-yellow-100 text-yellow-700' :
-                              report.priority === 'Rendah' ? 'bg-blue-100 text-blue-700' :
-                              'bg-gray-100 text-gray-700'
-                            }`}>
+                                report.priority === 'Sedang' ? 'bg-yellow-100 text-yellow-700' :
+                                  report.priority === 'Rendah' ? 'bg-blue-100 text-blue-700' :
+                                    'bg-gray-100 text-gray-700'
+                              }`}>
                               {report.priority === 'SangatTinggi' ? 'Sangat Tinggi' :
-                               report.priority === 'SangatRendah' ? 'Sangat Rendah' :
-                               report.priority}
+                                report.priority === 'SangatRendah' ? 'Sangat Rendah' :
+                                  report.priority}
                             </span>
                           </div>
                         </div>
