@@ -1,9 +1,16 @@
 import { createContext, useContext, useEffect, useMemo, useState, useCallback } from "react";
 
+type User = {
+  id_user: string;
+  email: string;
+  full_name: string;
+};
+
 type AuthValue = {
   token: string | null;
   role: string | null;
-  user: { email?: string } | null;
+  user: User | null;
+  isLoadingUser: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (full_name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
@@ -14,10 +21,8 @@ const AuthContext = createContext<AuthValue | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(() => localStorage.getItem("token"));
   const [role, setRole] = useState<string | null>(() => localStorage.getItem("role"));
-  const [user, setUser] = useState<{ email?: string } | null>(() => {
-    const raw = localStorage.getItem("user");
-    return raw ? JSON.parse(raw) : null;
-  });
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoadingUser, setIsLoadingUser] = useState(false);
 
   const base = import.meta.env.VITE_API_BASE_URL;
 
@@ -39,10 +44,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
     localStorage.removeItem("token");
     localStorage.removeItem("role");
-    localStorage.removeItem("user");
   }, []);
 
-  // 🔁 Persist to localStorage
+  // 📡 Fetch user profile from /me endpoint
+  const fetchUserProfile = useCallback(async (authToken: string) => {
+    setIsLoadingUser(true);
+    try {
+      const res = await fetch(`${base}/public/auth/me`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+
+      if (!res.ok) {
+        // If unauthorized or error, logout
+        if (res.status === 401) {
+          logout();
+        }
+        return;
+      }
+
+      const data = await res.json();
+      if (data.data) {
+        setUser({
+          id_user: data.data.id_user,
+          email: data.data.email,
+          full_name: data.data.full_name,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to fetch user profile:", error);
+    } finally {
+      setIsLoadingUser(false);
+    }
+  }, [base, logout]);
+
+  // 🔁 Persist token and role to localStorage
   useEffect(() => {
     if (token) localStorage.setItem("token", token);
     else localStorage.removeItem("token");
@@ -53,10 +88,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     else localStorage.removeItem("role");
   }, [role]);
 
+  // 👤 Fetch user profile when token exists (on mount or token change)
   useEffect(() => {
-    if (user) localStorage.setItem("user", JSON.stringify(user));
-    else localStorage.removeItem("user");
-  }, [user]);
+    if (token && !user) {
+      fetchUserProfile(token);
+    }
+  }, [token, user, fetchUserProfile]);
 
   // 🕒 Auto logout when token expires
   useEffect(() => {
@@ -83,21 +120,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // 🔑 Login
   const login = async (email: string, password: string) => {
-    
     const res = await fetch(`${base}/public/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
     });
-    
+
     const data = await res.json();
-    
+
     if (!res.ok) throw new Error(data?.meta?.message || "Login gagal");
 
-    setToken(data.data.accessToken);
+    const accessToken = data.data.accessToken;
+    setToken(accessToken);
     setRole(data.data.role ?? null);
-    setUser({ email });
 
+    // Fetch user profile after login
+    await fetchUserProfile(accessToken);
   };
 
   // 📝 Register
@@ -115,8 +153,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const value = useMemo<AuthValue>(
-    () => ({ token, role, user, login, register, logout }),
-    [token, role, user, logout]
+    () => ({ token, role, user, isLoadingUser, login, register, logout }),
+    [token, role, user, isLoadingUser, logout]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

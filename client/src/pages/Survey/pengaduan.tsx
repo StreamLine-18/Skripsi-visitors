@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +11,7 @@ import { complaintApi } from "@/lib/api";
 import { useAuth } from "@/hooks/use-auth";
 
 export default function ComplaintPage() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const [form, setForm] = useState({
     full_name: "",
     email: "",
@@ -23,11 +23,24 @@ export default function ComplaintPage() {
     priority: "",
   });
 
+  // Pre-fill form with user data when logged in
+  useEffect(() => {
+    if (user) {
+      setForm((prev) => ({
+        ...prev,
+        full_name: user.full_name || prev.full_name,
+        email: user.email || prev.email,
+      }));
+    }
+  }, [user]);
+
   const { mutate, isPending, isSuccess } = useMutation({
     mutationFn: async () => {
-      return complaintApi.submitComplaint(form, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+      return complaintApi.submitComplaint(form, { headers });
     },
   });
 
@@ -46,7 +59,7 @@ export default function ComplaintPage() {
       <div className="relative h-[400px] bg-gradient-to-r from-orange-600 via-amber-600 to-yellow-600 overflow-hidden">
         <div className="absolute inset-0 bg-[url('/assets/hero.png')] bg-cover bg-center opacity-20"></div>
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
-        
+
         <div className="relative max-w-7xl mx-auto px-4 h-full flex flex-col justify-center">
           <Link href="/">
             <Button
@@ -57,7 +70,7 @@ export default function ComplaintPage() {
               ← Kembali
             </Button>
           </Link>
-          
+
           <div className="space-y-4 text-white max-w-4xl">
             <div className="flex items-center space-x-2">
               <Megaphone className="w-6 h-6" />
@@ -106,43 +119,51 @@ export default function ComplaintPage() {
                     </div>
                     <h2 className="text-2xl font-bold text-gray-900">Informasi Pengadu</h2>
                   </div>
-                  
+
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="full_name" className="text-sm font-semibold text-gray-700">Nama Lengkap *</Label>
-                      <Input 
-                        id="full_name" 
-                        name="full_name" 
-                        required 
-                        value={form.full_name} 
-                        onChange={handleChange} 
+                      <Input
+                        id="full_name"
+                        name="full_name"
+                        required
+                        value={form.full_name}
+                        onChange={handleChange}
                         placeholder="Nama lengkap anda"
-                        className="h-12 border-gray-200 focus:border-orange-500 focus:ring-orange-500 rounded-lg"
+                        disabled={!!user?.full_name}
+                        className={`h-12 border-gray-200 focus:border-orange-500 focus:ring-orange-500 rounded-lg ${user?.full_name ? 'bg-gray-100 cursor-not-allowed' : ''}`}
                       />
+                      {user?.full_name && (
+                        <p className="text-xs text-gray-500">Data diambil dari akun Anda</p>
+                      )}
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="email" className="text-sm font-semibold text-gray-700">Alamat Email *</Label>
-                      <Input 
-                        id="email" 
-                        name="email" 
-                        type="email" 
-                        required 
-                        value={form.email} 
-                        onChange={handleChange} 
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        required
+                        value={form.email}
+                        onChange={handleChange}
                         placeholder="email@gmail.com"
-                        className="h-12 border-gray-200 focus:border-orange-500 focus:ring-orange-500 rounded-lg"
+                        disabled={!!user?.email}
+                        className={`h-12 border-gray-200 focus:border-orange-500 focus:ring-orange-500 rounded-lg ${user?.email ? 'bg-gray-100 cursor-not-allowed' : ''}`}
                       />
+                      {user?.email && (
+                        <p className="text-xs text-gray-500">Data diambil dari akun Anda</p>
+                      )}
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="phone" className="text-sm font-semibold text-gray-700">No. Telp / WA *</Label>
-                      <Input 
-                        id="phone" 
-                        name="phone" 
-                        required 
-                        value={form.phone} 
-                        onChange={handleChange} 
+                      <Input
+                        id="phone"
+                        name="phone"
+                        required
+                        value={form.phone}
+                        onChange={handleChange}
                         placeholder="0812xxxxxxx"
                         className="h-12 border-gray-200 focus:border-orange-500 focus:ring-orange-500 rounded-lg"
                       />
