@@ -21,7 +21,7 @@ import { formatDateNoWeekday as formatDate } from "@/lib/date-utils";
 export default function MyReportsPage() {
   const { token, user, isLoadingUser } = useAuth();
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, isFetching, error } = useQuery({
     queryKey: ["my-reports", user?.id_user],
     queryFn: async () => {
       const res = await complaintApi.getMyReports({}, {
@@ -29,7 +29,7 @@ export default function MyReportsPage() {
       });
       return res.data;
     },
-    enabled: !!token && !isLoadingUser,
+    enabled: !!token && !isLoadingUser && !!user,
   });
 
   // Debug log (can be removed later)
@@ -80,7 +80,7 @@ export default function MyReportsPage() {
     }
   };
 
-  if (isLoading || isLoadingUser) {
+  if (isLoading || isLoadingUser || isFetching) {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 py-12">

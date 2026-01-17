@@ -1,6 +1,17 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   User,
   Edit,
@@ -24,6 +35,7 @@ interface UserProfile {
 }
 
 export default function Profile() {
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
   const { data, isLoading } = useQuery<UserProfile>({
@@ -41,30 +53,30 @@ export default function Profile() {
   });
 
   const menuItems = [
-    { 
-      icon: Edit, 
-      label: "Edit Profil", 
+    {
+      icon: Edit,
+      label: "Edit Profil",
       href: "/profile/edit",
       description: "Ubah informasi pribadi Anda",
       color: "emerald"
     },
-    { 
-      icon: FileText, 
-      label: "Laporan Pengaduan", 
+    {
+      icon: FileText,
+      label: "Laporan Pengaduan",
       href: "/profile/reports",
       description: "Lihat status pengaduan Anda",
       color: "orange"
     },
-    { 
-      icon: Heart, 
-      label: "Destinasi Favorit", 
+    {
+      icon: Heart,
+      label: "Destinasi Favorit",
       href: "/profile/favorites",
       description: "Kelola destinasi yang Anda sukai",
       color: "red"
     },
-    { 
-      icon: Bell, 
-      label: "Notifikasi", 
+    {
+      icon: Bell,
+      label: "Notifikasi",
       href: "/profile/notifications",
       description: "Atur preferensi notifikasi",
       color: "blue"
@@ -77,7 +89,7 @@ export default function Profile() {
         <div className="animate-pulse">
           {/* Hero shimmer */}
           <div className="h-[400px] bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200"></div>
-          
+
           {/* Content shimmer */}
           <div className="max-w-7xl mx-auto px-4 py-16">
             <div className="grid lg:grid-cols-3 gap-8">
@@ -103,7 +115,7 @@ export default function Profile() {
       <div className="relative h-[400px] bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1920')] bg-cover bg-center opacity-20"></div>
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
-        
+
         <div className="relative max-w-7xl mx-auto px-4 h-full flex flex-col justify-center">
           <div className="space-y-4 text-white max-w-4xl">
             <div className="flex items-center space-x-2">
@@ -134,7 +146,7 @@ export default function Profile() {
                   </div>
                   <h2 className="text-2xl font-bold text-gray-900">Informasi Profil</h2>
                 </div>
-                
+
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div>
@@ -181,7 +193,7 @@ export default function Profile() {
                   </div>
                   <h2 className="text-2xl font-bold text-gray-900">Pengaturan Akun</h2>
                 </div>
-                
+
                 <div className="grid gap-4">
                   {menuItems.map(({ icon: Icon, label, href, description, color }) => (
                     <Button
@@ -191,18 +203,16 @@ export default function Profile() {
                       onClick={() => (window.location.href = href)}
                     >
                       <div className="flex items-center space-x-4 w-full">
-                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                          color === 'emerald' ? 'bg-emerald-100' :
+                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${color === 'emerald' ? 'bg-emerald-100' :
                           color === 'red' ? 'bg-red-100' :
-                          color === 'blue' ? 'bg-blue-100' :
-                          'bg-orange-100'
-                        }`}>
-                          <Icon className={`w-6 h-6 ${
-                            color === 'emerald' ? 'text-emerald-600' :
+                            color === 'blue' ? 'bg-blue-100' :
+                              'bg-orange-100'
+                          }`}>
+                          <Icon className={`w-6 h-6 ${color === 'emerald' ? 'text-emerald-600' :
                             color === 'red' ? 'text-red-600' :
-                            color === 'blue' ? 'text-blue-600' :
-                            'text-orange-600'
-                          }`} />
+                              color === 'blue' ? 'text-blue-600' :
+                                'text-orange-600'
+                            }`} />
                         </div>
                         <div className="flex-1 text-left">
                           <h3 className="font-semibold text-gray-900">{label}</h3>
@@ -255,7 +265,7 @@ export default function Profile() {
                       <MapPin className="w-4 h-4 mr-2" />
                       Jelajahi Destinasi
                     </Button>
-                    
+
                     <Button
                       variant="outline"
                       className="w-full border-emerald-200 text-emerald-700 hover:bg-emerald-50 font-semibold py-3 rounded-lg"
@@ -306,10 +316,7 @@ export default function Profile() {
                   <Button
                     variant="outline"
                     className="w-full border-red-200 text-red-700 hover:bg-red-100 font-semibold"
-                    onClick={() => {
-                      localStorage.removeItem("token");
-                      window.location.href = "/login";
-                    }}
+                    onClick={() => setShowLogoutDialog(true)}
                   >
                     <LogOut className="w-4 h-4 mr-2" />
                     Keluar Sekarang
@@ -340,6 +347,34 @@ export default function Profile() {
           </Button>
         </div>
       </div>
+
+      {/* Logout Confirmation Dialog */}
+      <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <LogOut className="h-5 w-5 text-red-500" />
+              Konfirmasi Logout
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Apakah Anda yakin ingin keluar dari akun? Anda harus login kembali untuk mengakses fitur akun seperti riwayat booking dan pengaduan.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                localStorage.removeItem("token");
+                localStorage.removeItem("role");
+                window.location.href = "/login";
+              }}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Ya, Keluar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
