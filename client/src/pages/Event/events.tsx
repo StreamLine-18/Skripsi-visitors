@@ -38,7 +38,7 @@ const getEventStatus = (eventDate: Date | string | null | undefined) => {
 
 export default function EventsPage() {
   const [page, setPage] = useState(1);
-  const pageSize = 5;
+  const pageSize = 6;
 
   const { data: apiResponse, isLoading, error } = useQuery<ApiResponse<Event[]>>({
     queryKey: ["events", page, pageSize],
@@ -87,7 +87,7 @@ export default function EventsPage() {
       <div className="relative h-[400px] bg-gradient-to-r from-orange-600 via-amber-600 to-yellow-600 overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1920')] bg-cover bg-center opacity-20"></div>
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
-        
+
         <div className="relative max-w-7xl mx-auto px-4 h-full flex flex-col justify-center">
           <Link href="/" data-testid="link-back-home">
             <Button
@@ -99,7 +99,7 @@ export default function EventsPage() {
               Kembali
             </Button>
           </Link>
-          
+
           <div className="space-y-4 text-white">
             <div className="flex items-center space-x-2">
               <Camera className="w-6 h-6" />
@@ -125,7 +125,7 @@ export default function EventsPage() {
             Bergabunglah dengan kegiatan edukatif dan rekreatif yang menginspirasi
           </p>
         </div>
-                
+
         {/* Event List */}
         {events && events.length > 0 ? (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -136,64 +136,64 @@ export default function EventsPage() {
                   <Card
                     className="group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 rounded-xl bg-white cursor-pointer"
                   >
-                  {/* Image */}
-                  <div className="relative h-56 overflow-hidden">
-                    <img
-                      src={getFullImageUrl(event.image_url)}
-                      alt={event.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-                    
-                    {/* Status Badge */}
-                    <div className={`absolute top-4 right-4 backdrop-blur-sm text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg flex items-center space-x-1 bg-gray-100 ${status.color}`}>
-                      <Star className="w-3 h-3 text-orange-500 fill-orange-500" />
-                      <span>{status.text}</span>
-                    </div>
+                    {/* Image */}
+                    <div className="relative h-56 overflow-hidden">
+                      <img
+                        src={getFullImageUrl(event.image_url)}
+                        alt={event.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
 
-                    {/* Title Overlay */}
-                    <div className="absolute bottom-0 left-0 right-0 p-5">
-                      <h3 className="text-lg font-bold text-white mb-1 line-clamp-2">
-                        {event.title}
-                      </h3>
-                      <div className="flex items-center text-white/90 text-sm">
-                        <Calendar className="w-4 h-4 mr-1" />
-                        <span>{formatDate(event.event_date)}</span>
+                      {/* Status Badge */}
+                      <div className={`absolute top-4 right-4 backdrop-blur-sm text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg flex items-center space-x-1 bg-gray-100 ${status.color}`}>
+                        <Star className="w-3 h-3 text-orange-500 fill-orange-500" />
+                        <span>{status.text}</span>
                       </div>
-                    </div>
-                  </div>
 
-                  {/* Content */}
-                  <CardContent className="p-5">
-                    <div
-                      className="text-gray-600 text-sm line-clamp-3 mb-4"
-                      dangerouslySetInnerHTML={{ __html: event.content }}
-                    ></div>
-
-                    <div className="space-y-2 mb-4">
-                      <div className="flex items-center text-sm text-gray-500">
-                        <Clock className="w-4 h-4 mr-1.5 text-orange-600" />
-                        <span>{formatTime(event.event_date)}</span>
-                      </div>
-                      <div className="flex items-center text-sm text-gray-500">
-                        <MapPin className="w-4 h-4 mr-1.5 text-orange-600" />
-                        <span className="line-clamp-1">{event.location}</span>
+                      {/* Title Overlay */}
+                      <div className="absolute bottom-0 left-0 right-0 p-5">
+                        <h3 className="text-lg font-bold text-white mb-1 line-clamp-2">
+                          {event.title}
+                        </h3>
+                        <div className="flex items-center text-white/90 text-sm">
+                          <Calendar className="w-4 h-4 mr-1" />
+                          <span>{formatDate(event.event_date)}</span>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                      <div className="flex items-center text-xs text-gray-500">
-                        <span>Dipublikasikan</span>
+                    {/* Content */}
+                    <CardContent className="p-5">
+                      <div
+                        className="text-gray-600 text-sm line-clamp-3 mb-4"
+                        dangerouslySetInnerHTML={{ __html: event.content }}
+                      ></div>
+
+                      <div className="space-y-2 mb-4">
+                        <div className="flex items-center text-sm text-gray-500">
+                          <Clock className="w-4 h-4 mr-1.5 text-orange-600" />
+                          <span>{formatTime(event.event_date)}</span>
+                        </div>
+                        <div className="flex items-center text-sm text-gray-500">
+                          <MapPin className="w-4 h-4 mr-1.5 text-orange-600" />
+                          <span className="line-clamp-1">{event.location}</span>
+                        </div>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-orange-600 hover:text-orange-700 hover:bg-orange-50 font-semibold -mr-2"
-                      >
-                        Info Lengkap
-                      </Button>
-                    </div>
-                  </CardContent>
+
+                      <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                        <div className="flex items-center text-xs text-gray-500">
+                          <span>Dipublikasikan</span>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-orange-600 hover:text-orange-700 hover:bg-orange-50 font-semibold -mr-2"
+                        >
+                          Info Lengkap
+                        </Button>
+                      </div>
+                    </CardContent>
                   </Card>
                 </Link>
               );
@@ -227,11 +227,10 @@ export default function EventsPage() {
                           e.preventDefault();
                           handlePageChange(page - 1);
                         }}
-                        className={`rounded-xl ${
-                          page <= 1
+                        className={`rounded-xl ${page <= 1
                             ? "pointer-events-none opacity-50"
                             : "hover:bg-orange-50 hover:text-orange-700"
-                        }`}
+                          }`}
                       />
                     </PaginationItem>
 
@@ -244,11 +243,10 @@ export default function EventsPage() {
                             handlePageChange(i + 1);
                           }}
                           isActive={page === i + 1}
-                          className={`rounded-xl ${
-                            page === i + 1
+                          className={`rounded-xl ${page === i + 1
                               ? "bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-lg"
                               : "hover:bg-orange-50 hover:text-orange-700"
-                          }`}
+                            }`}
                         >
                           {i + 1}
                         </PaginationLink>
@@ -262,11 +260,10 @@ export default function EventsPage() {
                           e.preventDefault();
                           handlePageChange(page + 1);
                         }}
-                        className={`rounded-xl ${
-                          page >= paginationData.total_pages
+                        className={`rounded-xl ${page >= paginationData.total_pages
                             ? "pointer-events-none opacity-50"
                             : "hover:bg-orange-50 hover:text-orange-700"
-                        }`}
+                          }`}
                       />
                     </PaginationItem>
                   </PaginationContent>

@@ -2,10 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { 
-  Ticket as TicketIcon, 
-  Calendar, 
-  CheckCircle2, 
+import {
+  Ticket as TicketIcon,
+  Calendar,
+  CheckCircle2,
   Clock,
   MapPin,
   QrCode,
@@ -33,8 +33,8 @@ export default function Tickets() {
 
   // Filter tickets: only active, unused, and not expired
   const activeTickets = data?.filter(
-    (booking: any) => 
-      booking.status === "Success" && 
+    (booking: any) =>
+      booking.status === "Success" &&
       booking.used_at === null &&
       booking.expired_at && new Date(booking.expired_at) > new Date()
   ) || [];
@@ -53,7 +53,7 @@ export default function Tickets() {
     });
   };
 
-    const formatDateLong = (date: Date | string) => {
+  const formatDateLong = (date: Date | string) => {
     if (!date) return "-";
     const d = new Date(date);
     return d.toLocaleDateString('id-ID', {
@@ -86,7 +86,7 @@ export default function Tickets() {
       <div className="relative h-[300px] bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=1920')] bg-cover bg-center opacity-20"></div>
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
-        
+
         <div className="relative max-w-7xl mx-auto px-4 h-full flex flex-col justify-center">
           <div className="space-y-4 text-white">
             <div className="flex items-center space-x-2">
@@ -131,7 +131,7 @@ export default function Tickets() {
                     <div className="absolute top-0 right-0 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-bl-2xl">
                       <CheckCircle2 className="w-5 h-5" />
                     </div>
-                    
+
                     <div className="flex items-center gap-3 mb-4">
                       <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
                         <TicketIcon className="w-6 h-6" />
@@ -141,7 +141,7 @@ export default function Tickets() {
                         <p className="font-bold text-lg">Taman Nasional Alas Purwo</p>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-xs opacity-90">Berlaku hingga</p>
@@ -158,8 +158,8 @@ export default function Tickets() {
                       {/* Left: QR Code */}
                       <div className="flex flex-col items-center justify-center bg-white border-2 border-dashed border-gray-300 rounded-xl p-6">
                         <div className="bg-white p-4 rounded-lg shadow-sm">
-                          <QRCodeSVG 
-                            value={booking.id_booking} 
+                          <QRCodeSVG
+                            value={booking.id_booking}
                             size={160}
                             level="H"
                             includeMargin={false}
@@ -183,8 +183,8 @@ export default function Tickets() {
                           <User className="w-5 h-5 text-gray-400 mt-0.5" />
                           <div>
                             <p className="text-xs text-gray-500">
-                              {booking.items?.reduce((sum: number, item: any) => sum + item.quantity, 0) === 1 
-                                ? "Nama Pengunjung" 
+                              {booking.details?.reduce((sum: number, item: any) => sum + item.quantity, 0) === 1
+                                ? "Nama Pengunjung"
                                 : "Pemimpin Rombongan"}
                             </p>
                             <p className="font-semibold text-gray-900">{booking.leader_name}</p>
@@ -214,7 +214,7 @@ export default function Tickets() {
                     <div className="mt-6 pt-6 border-t border-gray-200">
                       <p className="text-sm font-semibold text-gray-700 mb-3">Detail Tiket:</p>
                       <div className="space-y-2">
-                        {booking.items?.map((item: any, idx: number) => {
+                        {booking.details?.map((item: any, idx: number) => {
                           return (
                             <div key={idx} className="flex items-center gap-3 bg-gray-50 rounded-lg p-3 hover:bg-gray-100 transition-colors">
                               <div className="flex items-center justify-center w-10 h-10 bg-emerald-100 rounded-lg flex-shrink-0">
@@ -238,8 +238,8 @@ export default function Tickets() {
                           Lihat Detail
                         </Button>
                       </Link>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         size="icon"
                         onClick={() => {
                           const canvas = document.querySelector(`canvas[data-id="${booking.id_booking}"]`) as HTMLCanvasElement;

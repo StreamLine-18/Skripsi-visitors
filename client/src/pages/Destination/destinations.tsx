@@ -1,19 +1,39 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MapPin, Compass, ArrowLeft, Star, Clock, Camera } from "lucide-react";
 import { Link } from "wouter";
-import { destinationApi, type ApiResponse } from "@/lib/api";
+import { destinationApi, type ApiResponse, type Destination } from "@/lib/api";
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/components/ui/pagination";
 
 import { getFullImageUrl } from "@/lib/image-utils";
 
 export default function DestinationsPage() {
-    const { data: apiResponse, isLoading, error } = useQuery<ApiResponse<any[]>>({
-        queryKey: ["destinations"],
-        queryFn: () => destinationApi.getAllDestination(),
+    const [page, setPage] = useState(1);
+    const pageSize = 6;
+
+    const { data: apiResponse, isLoading, error } = useQuery<ApiResponse<Destination[]>>({
+        queryKey: ["destinations", page, pageSize],
+        queryFn: () => destinationApi.getAllDestination({ page, pageSize }),
     });
 
     const destinations = apiResponse?.data || [];
+    const paginationData = apiResponse?.pagination;
+
+    const handlePageChange = (newPage: number) => {
+        if (newPage > 0 && (!paginationData || newPage <= paginationData.total_pages)) {
+            setPage(newPage);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+    };
 
     if (isLoading)
         return (
@@ -45,7 +65,7 @@ export default function DestinationsPage() {
             <div className="relative h-[400px] bg-gradient-to-r from-emerald-600 via-green-600 to-cyan-600 overflow-hidden">
                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920')] bg-cover bg-center opacity-20"></div>
                 <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
-                
+
                 <div className="relative max-w-7xl mx-auto px-4 h-full flex flex-col justify-center">
                     <Link href="/" data-testid="link-back-home">
                         <Button
@@ -57,7 +77,7 @@ export default function DestinationsPage() {
                             Kembali
                         </Button>
                     </Link>
-                    
+
                     <div className="space-y-4 text-white">
                         <div className="flex items-center space-x-2">
                             <Camera className="w-6 h-6" />
@@ -85,66 +105,65 @@ export default function DestinationsPage() {
                 </div>
 
                 {/* Destinations Grid */}
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {destinations.map((d) => (
-                        <Link key={d.id_destination} href={`/destination/${d.slug}`}>
-                            <Card
-                                className="group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 rounded-xl bg-white cursor-pointer"
-                            >
-                                {/* Image */}
-                                <div className="relative h-64 overflow-hidden">
-                                    <img
-                                        src={getFullImageUrl(d.image_url)}
-                                        alt={d.name}
-                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-                                    
-                                    {/* Badge */}
-                                    <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm text-gray-800 text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg flex items-center space-x-1">
-                                        <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
-                                        <span>Populer</span>
-                                    </div>
+                {destinations.length > 0 ? (
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {destinations.map((d) => (
+                            <Link key={d.id_destination} href={`/destination/${d.slug}`}>
+                                <Card
+                                    className="group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 rounded-xl bg-white cursor-pointer"
+                                >
+                                    {/* Image */}
+                                    <div className="relative h-64 overflow-hidden">
+                                        <img
+                                            src={getFullImageUrl(d.image_url)}
+                                            alt={d.name}
+                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
 
-                                    {/* Title Overlay */}
-                                    <div className="absolute bottom-0 left-0 right-0 p-5">
-                                        <h3 className="text-xl font-bold text-white mb-1 line-clamp-2">
-                                            {d.name}
-                                        </h3>
-                                        <div className="flex items-center text-white/90 text-sm">
-                                            <MapPin className="w-4 h-4 mr-1" />
-                                            <span>Pintu {d.gate?.name || "-"}</span>
+                                        {/* Badge */}
+                                        <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm text-gray-800 text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg flex items-center space-x-1">
+                                            <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                                            <span>Populer</span>
+                                        </div>
+
+                                        {/* Title Overlay */}
+                                        <div className="absolute bottom-0 left-0 right-0 p-5">
+                                            <h3 className="text-xl font-bold text-white mb-1 line-clamp-2">
+                                                {d.name}
+                                            </h3>
+                                            <div className="flex items-center text-white/90 text-sm">
+                                                <MapPin className="w-4 h-4 mr-1" />
+                                                <span>Pintu {d.gate?.name || "-"}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                {/* Content */}
-                                <CardContent className="p-5">
-                                    <p className="text-gray-600 text-sm line-clamp-3 mb-4">
-                                        {d.summary}
-                                    </p>
+                                    {/* Content */}
+                                    <CardContent className="p-5">
+                                        <p className="text-gray-600 text-sm line-clamp-3 mb-4">
+                                            {d.summary}
+                                        </p>
 
-                                    <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                                        <div className="flex items-center text-sm text-gray-500">
-                                            <Clock className="w-4 h-4 mr-1.5" />
-                                            <span>Buka Setiap Hari</span>
+                                        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                                            <div className="flex items-center text-sm text-gray-500">
+                                                <Clock className="w-4 h-4 mr-1.5" />
+                                                <span>Buka Setiap Hari</span>
+                                            </div>
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 font-semibold -mr-2"
+                                            >
+                                                Lihat Detail
+                                            </Button>
                                         </div>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 font-semibold -mr-2"
-                                        >
-                                            Lihat Detail
-                                        </Button>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </Link>
-                    ))}
-                </div>
-
-                {/* Empty State */}
-                {destinations.length === 0 && (
+                                    </CardContent>
+                                </Card>
+                            </Link>
+                        ))}
+                    </div>
+                ) : (
                     <Card className="border-0 shadow-xl rounded-2xl">
                         <CardContent className="p-16 text-center">
                             <div className="w-24 h-24 bg-gradient-to-br from-emerald-100 to-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -156,6 +175,66 @@ export default function DestinationsPage() {
                             </p>
                         </CardContent>
                     </Card>
+                )}
+
+                {/* Pagination */}
+                {paginationData && paginationData.total_pages > 1 && (
+                    <div className="flex justify-center pt-12">
+                        <Card className="border-0 shadow-lg rounded-2xl">
+                            <CardContent className="p-3">
+                                <Pagination>
+                                    <PaginationContent className="gap-1">
+                                        <PaginationItem>
+                                            <PaginationPrevious
+                                                href="#"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    handlePageChange(page - 1);
+                                                }}
+                                                className={`rounded-xl ${page <= 1
+                                                        ? "pointer-events-none opacity-50"
+                                                        : "hover:bg-emerald-50 hover:text-emerald-700"
+                                                    }`}
+                                            />
+                                        </PaginationItem>
+
+                                        {[...Array(paginationData.total_pages)].map((_, i) => (
+                                            <PaginationItem key={i}>
+                                                <PaginationLink
+                                                    href="#"
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        handlePageChange(i + 1);
+                                                    }}
+                                                    isActive={page === i + 1}
+                                                    className={`rounded-xl ${page === i + 1
+                                                            ? "bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-lg"
+                                                            : "hover:bg-emerald-50 hover:text-emerald-700"
+                                                        }`}
+                                                >
+                                                    {i + 1}
+                                                </PaginationLink>
+                                            </PaginationItem>
+                                        ))}
+
+                                        <PaginationItem>
+                                            <PaginationNext
+                                                href="#"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    handlePageChange(page + 1);
+                                                }}
+                                                className={`rounded-xl ${page >= paginationData.total_pages
+                                                        ? "pointer-events-none opacity-50"
+                                                        : "hover:bg-emerald-50 hover:text-emerald-700"
+                                                    }`}
+                                            />
+                                        </PaginationItem>
+                                    </PaginationContent>
+                                </Pagination>
+                            </CardContent>
+                        </Card>
+                    </div>
                 )}
             </div>
 
@@ -181,3 +260,4 @@ export default function DestinationsPage() {
         </div>
     );
 }
+
