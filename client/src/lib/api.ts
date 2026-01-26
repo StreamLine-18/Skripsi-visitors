@@ -290,13 +290,19 @@ export interface Complaint {
 }
 
 export const complaintApi = {
-  submitComplaint: (data: ComplaintSubmission, options?: any) => {
+  submitComplaint: async (payload: ComplaintSubmission, options?: { headers?: HeadersInit }) => {
     const url = getFullApiUrl("/pelaporan");
-    return apiRequest("POST", url, {
-      data,
-      headers: options?.headers,
-    }).then(handleResponse<ApiResponse<Complaint>>);
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(options?.headers ?? {}),
+      },
+      body: JSON.stringify(payload),
+    });
+    return handleResponse<ApiResponse<Complaint>>(res);
   },
+
   
   getMyReports: (params: QueryParams = {}, options?: any) => {
     const url = createUrlWithParams(getFullApiUrl("/pelaporan/my-reports"), params);
