@@ -37,7 +37,7 @@ export default function BookingDetailPage() {
   useMidtransSnap(false); // load Snap sandbox
 
   // === Fetch Booking Detail ===
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["booking-detail", bookingId],
     queryFn: async () => {
       const res = await bookingApi.getBookingById(bookingId!, {
@@ -66,6 +66,9 @@ export default function BookingDetailPage() {
   // Handle both 'items' and 'details' from API response
   const ticketItems = booking.items || booking.details || [];
 
+  // Debug: log the actual status
+  console.log("Booking status:", booking.status);
+
   const isPaymentExpired = booking.status === "Expired";
   const isUsed = booking.status === "Used";
   const isTicketExpired =
@@ -74,6 +77,9 @@ export default function BookingDetailPage() {
     new Date(booking.expired_at) < now;
   const isPaid = booking.status === "Success" && !isTicketExpired;
   const isPending = booking.status === "Pending";
+
+  // Check if expired booking can still be retried (visit date hasn't passed)
+  const canRetryExpired = isPaymentExpired && booking.visit_date && new Date(booking.visit_date) >= now;
 
   // === Format Helpers ===
   const formatDate = (dateStr: string | number | Date) => {
@@ -182,13 +188,29 @@ export default function BookingDetailPage() {
       }
 
       window.snap.pay(tokenSnap, {
-        onSuccess: () => window.location.reload(),
-        onPending: () => window.location.reload(),
-        onError: () => alert("Terjadi kesalahan pembayaran."),
-        onClose: () => setIsPaying(false)
+        onSuccess: () => {
+          refetch();
+          window.location.reload();
+        },
+        onPending: () => {
+          refetch();
+          window.location.reload();
+        },
+        onError: () => {
+          alert("Terjadi kesalahan pembayaran.");
+          refetch();
+        },
+        onClose: () => {
+          setIsPaying(false);
+          // Reload to get updated status
+          refetch();
+        }
       });
     } catch (err: any) {
-      alert("Gagal memproses ulang pembayaran.");
+      const errorMessage = err?.message || "Gagal memproses ulang pembayaran.";
+      alert(errorMessage);
+      // Refetch to check if status was updated
+      refetch();
     } finally {
       setIsPaying(false);
     }
@@ -400,23 +422,27 @@ export default function BookingDetailPage() {
                   </div>
 
                   <div className="space-y-3 mb-6">
-                    {isPaymentExpired && (
-                      <Button
-                        onClick={handleRetryPayment}
-                        disabled={isPaying}
-                        className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-6 text-lg rounded-lg shadow-lg"
-                      >
-                        {isPaying ? "Memproses..." : "Bayar Lagi"}
-                      </Button>
+                    {isPaymentExpired && !canRetryExpired && (
+                      <div className="w-full p-6 bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-200 rounded-xl shadow-sm">
+                        <div className="flex items-center justify-center gap-3 mb-3">
+                          <XCircle className="w-6 h-6 text-red-600" />
+                          <h4 className="text-lg font-bold text-red-700">Pembayaran Kadaluarsa</h4>
+                        </div>
+                        <p className="text-sm text-center text-red-600">
+                          {booking.visit_date && new Date(booking.visit_date) < now
+                            ? "Tanggal kunjungan telah lewat. Silakan buat pemesanan baru."
+                            : "Waktu pembayaran telah habis. Silakan buat pemesanan baru untuk melanjutkan."}
+                        </p>
+                      </div>
                     )}
 
-                    {isPending && (
+                    {(isPending || canRetryExpired) && (
                       <Button
                         onClick={handleRetryPayment}
                         disabled={isPaying}
                         className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-6 text-lg rounded-lg shadow-lg"
                       >
-                        {isPaying ? "Memproses..." : "Lanjutkan Pembayaran"}
+                        {isPaying ? "Memproses..." : canRetryExpired ? "Bayar Sekarang" : "Lanjutkan Pembayaran"}
                       </Button>
                     )}
 
