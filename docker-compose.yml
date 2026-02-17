@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  visitors:
+    container_name: skripsi_visitors
+    build:
+      context: .
+      args:
+        VITE_API_BASE_URL: "https://api.strmlns.app/api"
+        VITE_MIDTRANS_CLIENT_KEY: "Mid-server-W-HY7BjvZNRJj7pTmxfBORf9"
+        VITE_HOLIDAY_API: "https://api-harilibur.vercel.app/api"
+    ports:
+      - "127.0.0.1:3200:80"
+    restart: always

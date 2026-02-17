@@ -32,8 +32,6 @@ export default function MyReportsPage() {
     enabled: !!token && !isLoadingUser && !!user,
   });
 
-  // Debug log (can be removed later)
-  console.log("MyReports - token:", !!token, "isLoadingUser:", isLoadingUser, "data:", data, "error:", error);
 
   const getStatusConfig = (status: string) => {
     switch (status) {
