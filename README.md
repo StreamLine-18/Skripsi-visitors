@@ -17,9 +17,9 @@ Built using **React 18**, **TypeScript**, **Vite**, **Tailwind CSS**, **Shadcn U
 
 This visitor web app is part of a 3-tier multi-repository system:
 
-- 🌐 **[Visitor Portal (`Skripsi-visitors`)](../Skripsi-visitors)** - Mobile-first visitor web app for ticket booking, SKM surveys, complaints & WBS *(Current Repository)*.
-- ⚙️ **[Backend RESTful API (`Skripsi-Backend`)](../Skripsi-Backend)** - Core API server, database ORM, payment webhooks & business logic.
-- 🛡️ **[Admin Dashboard (`Skripsi-Admin`)](../Skripsi-Admin)** - Management web portal for administrative staff, POS ticketing, analytics & live QR gate scanning.
+- 🌐 **Visitor Portal (`Skripsi-visitors`)** - Mobile-first visitor web app for ticket booking, SKM surveys, complaints & WBS *(Current Repository)*.
+- ⚙️ **[Backend RESTful API (`Skripsi-Backend`)](https://github.com/StreamLine-18/Skripsi-Backend)** - Core API server, database ORM, payment webhooks & business logic.
+- 🛡️ **[Admin Dashboard (`Skripsi-Admin`)](https://github.com/StreamLine-18/Skripsi-Admin)** - Management web portal for administrative staff, POS ticketing, analytics & live QR gate scanning.
 
 ---
 
